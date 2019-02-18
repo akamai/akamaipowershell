@@ -3,7 +3,8 @@ function Get-PapiProperties
     Param(
         [Parameter(Mandatory=$true)]  [string] $GroupID,
         [Parameter(Mandatory=$true)]  [string] $ContractId,
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi'
+        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     # Check creds
@@ -11,6 +12,11 @@ function Get-PapiProperties
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties?contractId=$ContractId&groupId=$GroupID"
+    if($AccountSwitchKey)
+    {
+        $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
+    }
+
     $Properties = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
     $returnProperties = $Properties.properties.items
     return $returnProperties     

@@ -8,5 +8,5 @@
 #
 #************************************************************************
 
-Get-ChildItem *.ps1 -Recurse | foreach { . $_.FullName }
-Get-ChildItem *.ps1 -Recurse -Exclude "private" | foreach { Export-ModuleMember $_.BaseName }
+Get-ChildItem $PSScriptRoot\*.ps1 -Recurse | foreach { . $_.FullName }
+Get-ChildItem $PSScriptRoot\*.ps1 -Recurse -Exclude "private" | foreach { Export-ModuleMember $_.BaseName }

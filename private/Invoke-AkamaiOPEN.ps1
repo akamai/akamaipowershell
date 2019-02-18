@@ -159,7 +159,14 @@ function Invoke-AkamaiOPEN
     else {
       try {
         #Invoke API call with GET or DELETE and return
-        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
+        if($PSVersionTable.PSVersion.Major -ge 6)
+        {
+            $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -PreserveAuthorizationOnRedirect
+        }
+        else
+        {
+            $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
+        }
       }
       catch {
         $_.Exception.Response
