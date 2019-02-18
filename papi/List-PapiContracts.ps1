@@ -1,7 +1,8 @@
 function List-PapiContracts
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi'
+        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     # Check creds
@@ -9,6 +10,11 @@ function List-PapiContracts
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/papi/v1/contracts"
+    if($AccountSwitchKey)
+    {
+        $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
+    }
+    
     $Contracts = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
    
     return $Contracts.Contracts.items       

@@ -5,7 +5,8 @@ function Push-PapiVersionLive
         [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$true)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi'
+        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     # Check creds
@@ -13,6 +14,11 @@ function Push-PapiVersionLive
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/activations/?contractId=$ContractId&groupId=$GroupID"
+    if($AccountSwitchKey)
+    {
+        $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
+    }
+    
     try
     {
         $PushVersionLive = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $Body

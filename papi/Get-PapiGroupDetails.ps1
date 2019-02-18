@@ -2,7 +2,8 @@ function Get-PapiGroupDetails
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $Group,
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi'
+        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     # Check creds
