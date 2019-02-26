@@ -17,11 +17,10 @@ function Get-EdgeHostnames
         $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
     }
 
-    
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-        return = $Result.edgeHostnames.items
+        return $Result.edgeHostnames.items
     }
     catch {
         return $_
