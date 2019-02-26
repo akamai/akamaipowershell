@@ -28,12 +28,11 @@ function Update-CPCode
 
     try {
         $Result = Invoke-AkamaiOPEN -Method PUT -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $Body
-
+        return $Result
     }
     catch {
         Write-Host "Error updating CP Code $CPCode"
-        Write-Host $_
-        return
+        return $_
     }
 }
 

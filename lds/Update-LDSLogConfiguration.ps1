@@ -11,7 +11,12 @@ function Update-LDSLogConfiguration
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/lds-api/v3/log-configurations/$logConfigurationId"
-    $Result = Invoke-AkamaiOPEN -Method PUT -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $NewConfigJSON
-    return $Result
+    
+    try {
+        $Result = Invoke-AkamaiOPEN -Method PUT -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $NewConfigJSON
+        return $Result 
+    }
+    catch {
+        return $_
+    }
 }
-

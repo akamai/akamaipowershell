@@ -17,15 +17,18 @@ function Get-CPCodeDetail
         $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
     }
 
-    $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-    
-    if($JSON)
-    {
-        return $Result | ConvertTo-Json -Depth 10
+    try {
+        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        if($JSON)
+        {
+            return $Result | ConvertTo-Json -Depth 10
+        }
+        else
+        {
+            return $Result
+        }
     }
-    else
-    {
-        $Result
+    catch {
+        return $_
     }
 }
-

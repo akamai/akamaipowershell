@@ -22,8 +22,11 @@ function List-CloudletPolicies
     if($ClonePolicyID)                 { $ReqURL += "&clonepolicyid=$ClonePolicyID" }
     if($Version)                       { $ReqURL += "&version=$Version" }
 
-
-    $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-    return $Result
+    try {
+        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        return $Result
+    }
+    catch {
+        return $_
+    }
 }
-

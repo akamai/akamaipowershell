@@ -1,4 +1,4 @@
-function Find-LDSLogformatIDorName
+function Find-LDSLogformatIDOrName
 {
     Param(
         [Parameter(Mandatory=$false)] [int] $LogFormatID,
@@ -21,6 +21,3 @@ function Find-LDSLogformatIDorName
         return $Format.id
     }
 }
-
-### Firewall Rules Manager
-

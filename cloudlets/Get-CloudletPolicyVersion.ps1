@@ -18,8 +18,11 @@ function Get-CloudletPolicyVersion
     if($MatchRuleFormat)               { $ReqURL += "&matchRuleFormat=$MatchRuleFormat" }
     if($OmitRules)                     { $ReqURL += "&omitRules=true" }
 
-    $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-    return $Result
+    try {
+        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        return $Result
+    }
+    catch {
+        return $_
+    }
 }
-
-

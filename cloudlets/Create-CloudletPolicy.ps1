@@ -28,7 +28,12 @@ function Create-CloudletPolicy
     $Post = @{ name = $Name; cloudletId = $CloudletID; groupId = $GroupID; description = $Description }
     $PostJson = ConvertTo-Json $Post -Depth 10
 
-    $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $PostJson
-    return $Result
+    try {
+        $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $PostJson
+        return $Result
+    }
+    catch {
+        return $_
+    }
 }
 

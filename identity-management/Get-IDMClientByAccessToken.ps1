@@ -9,8 +9,13 @@ function Get-IDMClientByAccessToken
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/identity-management/v1/open-identities/tokens/$($Credentials.access_token)"
-    $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
     
-    return $Result.identity
+    try {
+        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        return $Result.identity
+    }
+    catch {
+        return $_
+    }
 }
 

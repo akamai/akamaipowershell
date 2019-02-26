@@ -9,7 +9,12 @@ function Get-LDSLogSources
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/lds-api/v3/log-sources"
-    $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-    return $Result
+    
+    try {
+        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        return $Result
+    }
+    catch {
+        return $_ 
+    }
 }
-

@@ -14,7 +14,12 @@ function Activate-CloudletPolicyVersion
     $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/activations"
     $Body = @{ network = $Network }
     $JsonBody = $Body | ConvertTo-Json -Depth 100
-    $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $JsonBody
-    return $Result
-}
 
+    try {
+        $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $JsonBody
+        return $Result
+    }
+    catch {
+        return $_
+    }
+}

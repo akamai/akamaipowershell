@@ -20,8 +20,12 @@ function List-NetworkLists
         $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
     }
 
-    $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-
-    return $Result.networkLists       
+    try {
+        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        return $Result
+    }
+    catch {
+        return $_
+    }
 }
 
