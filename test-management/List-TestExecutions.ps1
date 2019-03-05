@@ -1,10 +1,9 @@
-function Get-PropertyInfo
+function List-TestExecutions
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
-        [Parameter(Mandatory=$true)]  [string] $ContractId,
-        [Parameter(Mandatory=$true)]  [string] $PropertyName,
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $TestDefinitionIDs,
+        [Parameter(Mandatory=$false)] [switch] $LatestPerTestDefinition,
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -12,7 +11,7 @@ function Get-PropertyInfo
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties?contractId=$ContractId&groupId=$GroupID"
+    $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definition-executions?latestPerTestDefinition=$LatestPerTestDefinition&testDefinitionIds=$TestDefinitionIDs"
     if($AccountSwitchKey)
     {
         $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
@@ -20,10 +19,9 @@ function Get-PropertyInfo
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-        return $Result.properties.items | where {$_.propertyName -eq $PropertyName}
+        return $Result
     }
     catch {
-        return $_
+        return $_ 
     }
 }
-
