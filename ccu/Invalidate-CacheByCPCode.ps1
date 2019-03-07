@@ -3,7 +3,8 @@ function Invalidate-CacheByCPCode
     Param(
         [Parameter(Mandatory=$true)]  [string] $CPCode,
         [Parameter(Mandatory=$false)] [string] $Network = 'production',
-        [Parameter(Mandatory=$false)] [string] $Section = 'ccu'
+        [Parameter(Mandatory=$false)] [string] $Section = 'ccu',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     # Check creds
@@ -13,6 +14,11 @@ function Invalidate-CacheByCPCode
     $PostBody = @{ objects = @("$CPCode") }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
     $ReqURL = "https://" + $Credentials.host + "/ccu/v3/invalidate/cpcode/$Network"
+
+    if($AccountSwitchKey)
+    {
+        $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
+    }
 
     try
     {

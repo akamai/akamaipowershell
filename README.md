@@ -17,6 +17,6 @@ If you find there are functions missing (and there are many, many missing) pleas
 1. All functions must be (where practical) single-use functions, not multi-function scripts. If you wish to write complex scripts, great, but keep this module to just building blocks.
 2. Currently, all functions must read credentials from your ~/.edgerc file, though you may specify the section. Entering the credential attributes as individual params is currently not supported, and would be a hassle to implement. Adding support for specifying a different file is in the works.
 3. All functions must support AccountSwitchKey params. This is an internal Akamai feature, but keeps the function universally usable.
-4. All functions must use approved Powershell verbs (Get, New, Set etc.). For "list" operations, use Get. Not ideal but keeps things simple.
+4. Please use approved Powershell verbs where applicable. The use of List is fine, as are others when the approved verb would be confusion (like deleting or invalidating from cache. 'removing' isn't really a thing)
 5. Please arrange functions into folders based on the name of the API as Akamai have stated it (see the existing folder structure for examples)
 6. Update functions (POST/PUT) should have a $Body param for the user to specify the JSON body for the request. If you also wish to allow users to specify individual params and construct the request in the function, that is fine, but make sure the JSON body and individual params are in different Parameter Sets to avoid confusion. Check New-PropertyVersion for an example
