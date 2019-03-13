@@ -1,4 +1,4 @@
-function Get-PropertyHosts
+function Get-PropertyHostnames
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $GroupID,
@@ -13,11 +13,7 @@ function Get-PropertyHosts
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$versionNo/hostnames/?contractId=$ContractId&groupId=$GroupID"
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
-    }
+    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$versionNo/hostnames/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
