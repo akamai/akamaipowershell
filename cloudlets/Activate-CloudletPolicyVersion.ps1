@@ -5,7 +5,7 @@ function Activate-CloudletPolicyVersion
         [Parameter(Mandatory=$true)]   [string] $Version,
         [Parameter(Mandatory=$false)]  [string] $Network = 'production',
         [Parameter(Mandatory=$false)]  [string] $Section = 'cloudlets',
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory=$false)]  [string] $AccountSwitchKey
     )
 
     # Check creds

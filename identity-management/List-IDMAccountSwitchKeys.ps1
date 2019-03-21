@@ -2,7 +2,7 @@
 {
     Param(
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
-        [Parameter(Mandatory=$true)] [string] $SearchString
+        [Parameter(Mandatory=$true)]  [string] $SearchString
     )
 
     # Check creds

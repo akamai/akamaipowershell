@@ -10,7 +10,7 @@ function Get-GroupDetails
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/groups"
+    $ReqURL = "https://" + $Credentials.host + "/papi/v1/groups?accountSwitchKey=$AccountSwitchKey"
     
     
     try {

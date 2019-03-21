@@ -1,10 +1,10 @@
 function Update-CPCode
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey,
         [Parameter(Mandatory=$true)]  [string] $CPCode,
-        [Parameter(Mandatory=$true)]  [string] $Body
+        [Parameter(Mandatory=$true)]  [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     # Check creds
@@ -20,11 +20,7 @@ function Update-CPCode
         }
     }
 
-    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes/$CPCode"
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
-    }
+    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes/$CPCode?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method PUT -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $Body

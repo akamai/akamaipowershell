@@ -10,11 +10,7 @@ function Acknowledge-SiteShieldMapByID
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/siteshield/v1/maps/$SiteShieldID/acknowledge"
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
-    }
+    $ReqURL = "https://" + $Credentials.host + "/siteshield/v1/maps/$SiteShieldID/acknowledge?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

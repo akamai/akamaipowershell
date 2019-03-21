@@ -165,12 +165,11 @@ function Invoke-AkamaiOPEN
         }
         else
         {
-            $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
+          $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
         }
       }
       catch {
-        $_.Exception.Response
-        return $null
+        return $_.Exception.Response
       }
     }
 

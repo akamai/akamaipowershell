@@ -10,11 +10,7 @@ function List-TestCases
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definitions/$TestDefinitionID/test-cases"
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
-    }
+    $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definitions/$TestDefinitionID/test-cases?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

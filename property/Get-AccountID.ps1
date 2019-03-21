@@ -9,13 +9,7 @@ function Get-AccountID
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/groups"
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
-    }
-
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/groups"
+    $ReqURL = "https://" + $Credentials.host + "/papi/v1/groups?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

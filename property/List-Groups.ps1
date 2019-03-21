@@ -1,4 +1,4 @@
-function Get-Groups
+function List-Groups
 {
     Param(
         [Parameter(Mandatory=$false)] [switch] $Detail,

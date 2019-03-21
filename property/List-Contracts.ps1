@@ -9,19 +9,13 @@ function List-Contracts
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/contracts"
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
-    }
-    
+    $ReqURL = "https://" + $Credentials.host + "/papi/v1/contracts?accountSwitchKey=$AccountSwitchKey"
+
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-        return $Result.Contracts.items     
+        return $Result.contracts.items
     }
     catch {
         return $_
-    }
-      
+    }  
 }
-
