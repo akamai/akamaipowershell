@@ -1,7 +1,6 @@
-function Get-CPCodeDetail
+function List-AppSecConfigurations
 {
     Param(
-        [Parameter(Mandatory=$true)] [string] $CPCode,
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
@@ -10,11 +9,11 @@ function Get-CPCodeDetail
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes/$CPCode`?accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/appsec/v1/configs?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-        return $Result.cpcodes
+        return $Result.configurations
     }
     catch {
         return $_ 

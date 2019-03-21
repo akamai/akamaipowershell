@@ -10,7 +10,7 @@ function Get-TestDefinition
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definitions/$TestDefinitionID?accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definitions/$TestDefinitionID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

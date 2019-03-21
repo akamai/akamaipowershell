@@ -13,12 +13,7 @@ function Delete-CacheByURL
 
     $PostBody = @{ objects = @("$URL") }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
-    $ReqURL = "https://" + $Credentials.host + "/ccu/v3/delete/url/$Network"
-
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
-    }
+    $ReqURL = "https://" + $Credentials.host + "/ccu/v3/delete/url/$Network`?accountSwitchKey=$AccountSwitchKey"
 
     try
     {

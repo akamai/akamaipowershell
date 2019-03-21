@@ -20,7 +20,7 @@ function Get-TestExecutionDifference
     
     if($AccountSwitchKey)
     {
-        $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
+        $ReqURL += "`?accountSwitchKey=$AccountSwitchKey"
     }
 
     try {

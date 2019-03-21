@@ -13,12 +13,8 @@ function Delete-CacheByCPCode
 
     $PostBody = @{ objects = @("$CPCode") }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
-    $ReqURL = "https://" + $Credentials.host + "/ccu/v3/delete/cpcode/$Network"
+    $ReqURL = "https://" + $Credentials.host + "/ccu/v3/delete/cpcode/$Network`?accountSwitchKey=$AccountSwitchKey"
 
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
-    }
     try
     {
         $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $PostJson

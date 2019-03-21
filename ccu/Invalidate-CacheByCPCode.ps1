@@ -13,12 +13,7 @@ function Invalidate-CacheByCPCode
 
     $PostBody = @{ objects = @("$CPCode") }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
-    $ReqURL = "https://" + $Credentials.host + "/ccu/v3/invalidate/cpcode/$Network"
-
-    if($AccountSwitchKey)
-    {
-        $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
-    }
+    $ReqURL = "https://" + $Credentials.host + "/ccu/v3/invalidate/cpcode/$Network`?accountSwitchKey=$AccountSwitchKey"
 
     try
     {
