@@ -6,26 +6,24 @@ function Get-AllProperties
     )
 
     $Properties = @()
-    if($AccountSwitchKey)
+    $Groups = List-Groups -Section $Section -AccountSwitchKey $AccountSwitchKey    
+    if($PSCmdlet.MyInvocation.BoundParameters["Verbose"] -eq $true)
     {
-        $Groups = Get-Groups -Section $Section -AccountSwitchKey $AccountSwitchKey
-    }
-    else
-    {
-        $Groups = Get-Groups -Section $Section
+        Write-Host "Found $($Groups.Count) groups"
     }
     
     foreach($Group in $Groups)
     {
         if($Group.contractIds.length -gt 0)
         {
-            if($AccountSwitchKey)
-            {
-                $Properties += Get-Properties -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0] -AccountSwitchKey $AccountSwitchKey
+            try {
+                $Properties += List-Properties -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0] -AccountSwitchKey $AccountSwitchKey
             }
-            else
-            {
-                $Properties += Get-Properties -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0]
+            catch {
+                if($PSCmdlet.MyInvocation.BoundParameters["Verbose"] -eq $true)
+                {
+                    Write-Host "Warning: Could not retrieve properties for group $($Group.groupName)"
+                }
             }
         }
     }

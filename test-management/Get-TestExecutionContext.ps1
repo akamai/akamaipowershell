@@ -17,6 +17,6 @@ function Get-TestExecutionContext
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

@@ -17,6 +17,6 @@ function Get-CloudletPolicy
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

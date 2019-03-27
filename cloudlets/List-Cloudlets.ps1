@@ -17,6 +17,6 @@ function List-Cloudlets
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

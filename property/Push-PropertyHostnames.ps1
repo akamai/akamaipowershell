@@ -22,7 +22,7 @@ function Push-PorpertyVersionLive
     }
     catch
     {
-        return $_
+        throw $_.Exception
     }
 }
 

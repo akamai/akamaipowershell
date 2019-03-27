@@ -15,7 +15,7 @@ function Get-IDMClientByAccessToken
         return $Result.identity
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }
 

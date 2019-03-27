@@ -28,6 +28,6 @@ function Get-TestExecutionDifference
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

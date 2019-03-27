@@ -22,6 +22,6 @@ function Activate-CloudletPolicyVersion
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

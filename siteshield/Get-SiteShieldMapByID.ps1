@@ -17,6 +17,6 @@ function Get-SiteShieldMapByID
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

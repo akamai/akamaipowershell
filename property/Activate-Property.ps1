@@ -22,7 +22,7 @@ function Activate-Property #same as Push-VersionLive, just different name
     }
     catch
     {
-        return $_
+        throw $_.Exception
     }
 }
 

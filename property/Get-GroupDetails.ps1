@@ -18,6 +18,6 @@ function Get-GroupDetails
         return $Result.groups.items | where {$_.groupName -eq $group} 
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

@@ -21,6 +21,6 @@ function Push-PropertyHostNames
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

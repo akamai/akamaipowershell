@@ -19,7 +19,7 @@ function Get-NetworkList
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }
 

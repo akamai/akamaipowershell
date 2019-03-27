@@ -20,6 +20,6 @@ function List-AppSecConfigurationVersions
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

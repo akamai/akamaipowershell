@@ -16,6 +16,6 @@ function List-CloudletGroups
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

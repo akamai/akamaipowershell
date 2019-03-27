@@ -16,6 +16,6 @@ function Get-FRMCidrBlock
         return $Result
     }
     catch {
-        return $_  
+        throw $_.Exception  
     }
 }

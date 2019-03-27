@@ -16,7 +16,7 @@ function Get-AccountID
         return $Result.accountId.Replace("act_","")
     }
     catch {
-        return $_
+        throw $_.Exception
     }
               
 }

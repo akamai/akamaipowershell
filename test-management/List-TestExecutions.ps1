@@ -18,6 +18,6 @@ function List-TestExecutions
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

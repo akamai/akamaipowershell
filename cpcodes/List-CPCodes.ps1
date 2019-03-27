@@ -19,13 +19,19 @@ function List-CPCodes
         $GroupID = $GroupID.replace("grp_","")
     }
 
-    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes?contractId=$ContractID&groupID=$GroupID&productID=$ProductID&name=$Name&accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes?contractId=$ContractID&groupId=$GroupID&productId=$ProductID&name=$Name&accountSwitchKey=$AccountSwitchKey"
+
+    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes?accountSwitchKey=$AccountSwitchKey"
+    if($ContractID){ $ReqURL += "&contractId=$ContractID"}
+    if($GroupID)   { $ReqURL += "&groupId=$GroupID"      }
+    if($ProductID) { $ReqURL += "&productId=$ProductID"  }
+    if($Name)      { $ReqURL += "&name=$Name"            }
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-        return $Result.cpcodes   
+        return $Result.cpcodes
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

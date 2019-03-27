@@ -17,6 +17,6 @@ function List-TestExecutionDifferences
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

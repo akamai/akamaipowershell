@@ -19,7 +19,7 @@ function Get-PropertyByName
         return $Result.properties.items | where {$_.propertyName -eq $PropertyName}
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }
 

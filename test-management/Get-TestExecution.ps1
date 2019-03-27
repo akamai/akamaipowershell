@@ -17,6 +17,6 @@ function Get-TestExecution
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

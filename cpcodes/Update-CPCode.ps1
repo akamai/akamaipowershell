@@ -28,7 +28,7 @@ function Update-CPCode
     }
     catch {
         Write-Host "Error updating CP Code $CPCode"
-        return $_
+        throw $_.Exception
     }
 }
 

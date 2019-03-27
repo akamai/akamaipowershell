@@ -16,6 +16,6 @@ function List-Contracts
         return $Result.contracts.items
     }
     catch {
-        return $_
+        throw $_.Exception
     }  
 }

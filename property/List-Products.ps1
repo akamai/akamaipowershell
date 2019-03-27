@@ -17,6 +17,6 @@ function List-Products
         return $Result.products.items
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

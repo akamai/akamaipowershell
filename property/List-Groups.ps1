@@ -24,6 +24,6 @@ function List-Groups
         return $returnGroup 
     }
     catch {
-        return $_
+        throw $_.Exception
     }           
 }

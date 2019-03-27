@@ -18,6 +18,6 @@ function List-Properties
         return $Result.properties.items
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

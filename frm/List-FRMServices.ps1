@@ -16,6 +16,6 @@ function List-FRMServices
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

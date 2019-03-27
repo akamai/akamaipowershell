@@ -17,6 +17,6 @@ function List-LDSLogFormatsByType
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

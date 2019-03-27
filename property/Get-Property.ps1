@@ -19,7 +19,7 @@ function Get-Property
         return $Result.properties.items
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }
 

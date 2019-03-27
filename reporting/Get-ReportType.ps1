@@ -18,6 +18,6 @@ function Get-ReportType
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

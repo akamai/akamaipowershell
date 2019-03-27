@@ -19,6 +19,6 @@ function New-Property
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

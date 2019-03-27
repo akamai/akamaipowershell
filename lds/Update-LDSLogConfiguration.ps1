@@ -18,6 +18,6 @@ function Update-LDSLogConfiguration
         return $Result 
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

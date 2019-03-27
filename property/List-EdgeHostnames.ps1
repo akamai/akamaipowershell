@@ -18,7 +18,7 @@ function List-EdgeHostnames
         return $Result.edgeHostnames.items
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }
 

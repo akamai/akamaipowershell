@@ -22,6 +22,6 @@ function Delete-CacheByCPCode
     }
     catch
     {
-        return $_
+        throw $_.Exception
     }   
 }

@@ -16,6 +16,6 @@ function List-SiteShieldMaps
         return $Result.SiteShieldMaps
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

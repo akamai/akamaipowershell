@@ -25,7 +25,7 @@ function Invalidate-CacheByURL
     }
     catch
     {
-       return $_ 
+       throw $_.Exception 
     }
 }
 

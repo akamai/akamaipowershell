@@ -18,6 +18,6 @@ function Get-LDSLogSource
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

@@ -56,19 +56,19 @@ function Invoke-AkamaiOPEN
     #Function to generate HMAC SHA256 Base64
     Function Crypto ($secret, $message)
     {
-      [byte[]] $keyByte = [System.Text.Encoding]::ASCII.GetBytes($secret)
-      [byte[]] $messageBytes = [System.Text.Encoding]::ASCII.GetBytes($message)
-      $hmac = new-object System.Security.Cryptography.HMACSHA256((,$keyByte))
-      [byte[]] $hashmessage = $hmac.ComputeHash($messageBytes)
-      $Crypt = [System.Convert]::ToBase64String($hashmessage)
+        [byte[]] $keyByte = [System.Text.Encoding]::ASCII.GetBytes($secret)
+        [byte[]] $messageBytes = [System.Text.Encoding]::ASCII.GetBytes($message)
+        $hmac = new-object System.Security.Cryptography.HMACSHA256((,$keyByte))
+        [byte[]] $hashmessage = $hmac.ComputeHash($messageBytes)
+        $Crypt = [System.Convert]::ToBase64String($hashmessage)
 
-      return $Crypt
+        return $Crypt
     }
 
     #ReqURL Verification
     If (($ReqURL -as [System.URI]).AbsoluteURI -eq $null -or $ReqURL -notmatch "akamaiapis.net")
     {
-      throw "Error: Ivalid Request URI"
+        throw "Error: Ivalid Request URI"
     }
 
     #Sanitize Method param
@@ -91,19 +91,19 @@ function Invoke-AkamaiOPEN
 
     if ($Body -and $Method -eq "POST")
     {
-      $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
-      if($Body.Length -gt $MaxBody){
-        $Post_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body.Substring(0,$MaxBody))))
-      }
-      else{
-        $Post_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body)))
-      }
+        $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
+        if($Body.Length -gt $MaxBody){
+            $Post_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body.Substring(0,$MaxBody))))
+        }
+        else{
+            $Post_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body)))
+        }
 
-      $SignatureData += "`t`t" + $Post_Hash + "`t"
+        $SignatureData += "`t`t" + $Post_Hash + "`t"
     }
     else
     {
-      $SignatureData += "`t`t`t"
+        $SignatureData += "`t`t`t"
     }
 
     $SignatureData += "EG1-HMAC-SHA256 "
@@ -143,34 +143,39 @@ function Invoke-AkamaiOPEN
     #Check for valid Methods and required switches
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
     if ($Method -eq "PUT" -or $Method -eq "POST") {
-      try {
-        if ($Body) {
-          $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json'
+        try {
+            if ($Body) {
+                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json' -ErrorAction Stop
+            }
+            else {
+                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -ErrorAction Stop
+            }
         }
-        else {
-          $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json'
+        catch {
+            $_.Exception.Response
+            return $null
         }
-      }
-      catch {
-        $_.Exception.Response
-        return $null
-      }
     }
     else {
-      try {
-        #Invoke API call with GET or DELETE and return
-        if($PSVersionTable.PSVersion.Major -ge 6)
-        {
-          $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -PreserveAuthorizationOnRedirect
+        try {
+            $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop #-Proxy http://localhost:8888
         }
-        else
-        {
-          $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
+        catch {
+            #Redirects aren't well handled due to signatures needing regenerated
+            if($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302)
+            {
+                try {
+                    $NewReqURL = "https://" + $_.Exception.Response.Headers.Location.Host + $_.Exception.Response.Headers.Location.PathAndQuery
+                    Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL
+                }
+                catch {
+                    throw $_.ErrorDetails
+                }
+            }
+            else {
+                throw $_.ErrorDetails
+            }
         }
-      }
-      catch {
-        return $_.Exception.Response
-      }
     }
 
     Return $Response

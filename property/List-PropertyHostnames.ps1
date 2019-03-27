@@ -20,7 +20,7 @@ function List-PropertyHostnames
         return $Result.hostnames.items
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }
 

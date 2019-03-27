@@ -25,6 +25,6 @@ function Get-CPCodeDetail
         }
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }

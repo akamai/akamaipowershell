@@ -22,6 +22,6 @@ function Delete-CacheByURL
     }
     catch
     {
-        return $_
+        throw $_.Exception
     }
 }

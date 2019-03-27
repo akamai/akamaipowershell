@@ -22,7 +22,7 @@ function Invalidate-CacheByCPCode
     }
     catch
     {
-       return $_ 
+       throw $_.Exception 
     }
 }
 

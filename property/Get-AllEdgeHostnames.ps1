@@ -8,11 +8,11 @@ function Get-AllEdgeHostnames
     $EdgeHostnames = @()
     if($AccountSwitchKey)
     {
-        $Groups = Get-Groups -Section $Section -AccountSwitchKey $AccountSwitchKey
+        $Groups = List-Groups -Section $Section -AccountSwitchKey $AccountSwitchKey
     }
     else
     {
-        $Groups = Get-Groups -Section $Section
+        $Groups = List-Groups -Section $Section
     }
     
     foreach($Group in $Groups)
@@ -21,11 +21,11 @@ function Get-AllEdgeHostnames
         {
             if($AccountSwitchKey)
             {
-                $EdgeHostnames += Get-EdgeHostNames -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0] -AccountSwitchKey $AccountSwitchKey
+                $EdgeHostnames += List-EdgeHostNames -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0] -AccountSwitchKey $AccountSwitchKey
             }
             else
             {
-                $EdgeHostnames += Get-EdgeHostNames -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0]
+                $EdgeHostnames += List-EdgeHostNames -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0]
             }
         }
     }

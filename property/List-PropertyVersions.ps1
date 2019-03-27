@@ -19,7 +19,7 @@ function List-PropertyVersions
         return $Result.versions.items 
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }
 

@@ -19,7 +19,7 @@ function Get-EdgeHostname
         return $Result
     }
     catch {
-        return $_
+        throw $_.Exception
     }
 }
 

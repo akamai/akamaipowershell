@@ -16,6 +16,6 @@ function List-AppSecConfigurations
         return $Result.configurations
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

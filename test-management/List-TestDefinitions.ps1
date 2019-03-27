@@ -16,6 +16,6 @@ function List-TestDefinitions
         return $Result
     }
     catch {
-        return $_ 
+        throw $_.Exception 
     }
 }

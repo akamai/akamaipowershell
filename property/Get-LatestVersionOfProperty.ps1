@@ -16,10 +16,9 @@ function Get-LatestVersionOfProperty
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-        # return $Result.versions.items 
-        return $Result
+        return $Result.versions.items
     }
     catch {
-        return $_
+        throw $_
     }
 }

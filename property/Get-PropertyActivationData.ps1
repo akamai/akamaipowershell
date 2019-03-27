@@ -21,7 +21,7 @@ function Get-PropertyActivationData
         return $Result.activations.items | where {$_.propertyVersion -eq $VersionNo -and $_.network -eq $Network}
     }
     catch {
-        return $_   
+        throw $_.Exception   
     }
 }
 
