@@ -145,15 +145,14 @@ function Invoke-AkamaiOPEN
     if ($Method -eq "PUT" -or $Method -eq "POST") {
         try {
             if ($Body) {
-                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json' -ErrorAction Stop
+                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json' #-Proxy http://localhost:8888
             }
             else {
-                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -ErrorAction Stop
+                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' #-Proxy http://localhost:8888
             }
         }
         catch {
-            $_.Exception.Response
-            return $null
+            throw $_.ErrorDetails
         }
     }
     else {

@@ -1,10 +1,11 @@
 function List-PropertyHostnames
 {
     Param(
+        [Parameter(Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$true)]  [string] $GroupID,
         [Parameter(Mandatory=$true)]  [string] $ContractId,
-        [Parameter(Mandatory=$true)]  [string] $PropertyId,
-        [Parameter(Mandatory=$true)]  [string] $versionNo,
+        [Parameter(Mandatory=$false)] [switch] $ValidateHostnames,
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
@@ -13,7 +14,7 @@ function List-PropertyHostnames
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$versionNo/hostnames/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnames&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
