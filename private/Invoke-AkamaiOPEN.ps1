@@ -165,7 +165,7 @@ function Invoke-AkamaiOPEN
             {
                 try {
                     $NewReqURL = "https://" + $_.Exception.Response.Headers.Location.Host + $_.Exception.Response.Headers.Location.PathAndQuery
-                    Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL
+                    Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL #-Proxy http://localhost:8888
                 }
                 catch {
                     throw $_.ErrorDetails
