@@ -9,7 +9,7 @@
 #************************************************************************
 
 Get-ChildItem $PSScriptRoot\*.ps1 -Recurse | foreach { . $_.FullName }
-Get-ChildItem $PSScriptRoot\*.ps1 -Recurse -Exclude "private" | foreach { Export-ModuleMember $_.BaseName }
+Get-ChildItem $PSScriptRoot\*.ps1 -Recurse | foreach { Export-ModuleMember $_.BaseName }
 
 # Alias all List- cmdlets to Get- also for ease of use
 Get-ChildItem $PSScriptRoot\List-*.ps1 -Recurse | foreach {
