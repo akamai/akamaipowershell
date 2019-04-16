@@ -1,12 +1,12 @@
 function New-PropertyVersion
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
+        [Parameter(Mandatory=$true)] [string] $PropertyId,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)]  [int] $CreateFromVersion,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)]  [string] $CreateFromEtag,
         [Parameter(ParameterSetName='postbody', Mandatory=$false)]  [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
-        [Parameter(Mandatory=$false)] [string] $PropertyId,
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
