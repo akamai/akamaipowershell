@@ -1,4 +1,4 @@
-Function Set-PropertyRuleTree
+Function Update-PropertyRuleTree
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $GroupID,
@@ -14,7 +14,7 @@ Function Set-PropertyRuleTree
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
     try
     {

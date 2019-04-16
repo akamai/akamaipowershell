@@ -3,7 +3,6 @@ function Get-PropertyByName
     Param(
         [Parameter(Mandatory=$true)]  [string] $GroupID,
         [Parameter(Mandatory=$true)]  [string] $ContractId,
-        [Parameter(Mandatory=$true)]  [string] $PropertyName,
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

@@ -1,10 +1,10 @@
-function Get-PropertyActivationData
+function Get-PropertyActivations
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
-        [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$true)]  [string] $PropertyId,
-        [Parameter(Mandatory=$true)]  $VersionNo,
+        [Parameter(Mandatory=$false)] [string] $GroupID,
+        [Parameter(Mandatory=$false)] [string] $ContractId,
+        [Parameter(Mandatory=$true)]  [int] $VersionNo,
         [Parameter(Mandatory=$true)]  [string] $Network,
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -14,7 +14,7 @@ function Get-PropertyActivationData
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/activations/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

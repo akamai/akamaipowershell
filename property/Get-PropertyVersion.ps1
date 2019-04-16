@@ -1,10 +1,10 @@
 function Get-PropertyVersion
 {
     Param(
-      [Parameter(Mandatory=$true)]  [string] $GroupID,
-      [Parameter(Mandatory=$true)]  [string] $ContractId,
       [Parameter(Mandatory=$true)]  [string] $PropertyId,
       [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
+      [Parameter(Mandatory=$false)] [string] $GroupID,
+      [Parameter(Mandatory=$false)] [string] $ContractId,
       [Parameter(Mandatory=$false)] [switch] $XML,
       [Parameter(Mandatory=$false)] [string] $Section = 'papi',
       [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
