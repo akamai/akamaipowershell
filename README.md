@@ -12,6 +12,10 @@ The central function of the module is Invoke-AkamaiOpen, which is a heavily modi
 2. Clone the repo to your local disk
 3. Import the module using the standard command `Import-Module path/to/module/AkamaiPowershell.psm1`
 
+### Proxy Support
+
+If you wish to use an https proxy with your commands, simply set the *https_proxy* environment variable to your proxy address (e.g. http://localhost:8888). Once complete set the variable back to $null. Remember that this var might be persistent so could cause odd behaviours if left in place and the proxy disabled.
+
 ### Contribution
 
 If you find there are functions missing (and there are many, many missing) please contribute to the module, following these recommendations
