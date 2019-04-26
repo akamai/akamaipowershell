@@ -1,6 +1,7 @@
 ﻿function Get-IDMUserProfile
 {
     Param(
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default'
     )
 

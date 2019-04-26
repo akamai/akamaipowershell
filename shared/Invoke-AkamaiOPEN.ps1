@@ -192,12 +192,7 @@ function Invoke-AkamaiOPEN
             {
                 try {
                     $NewReqURL = "https://" + $_.Exception.Response.Headers.Location.Host + $_.Exception.Response.Headers.Location.PathAndQuery
-                    if($UseProxy) {
-                        Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL -Proxy $ENV:https_proxy
-                    }
-                    else {
-                        Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL
-                    }
+                    Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL
                 }
                 catch {
                     throw $_.ErrorDetails

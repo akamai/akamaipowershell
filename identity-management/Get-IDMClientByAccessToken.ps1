@@ -1,6 +1,7 @@
 function Get-IDMClientByAccessToken
 {
     Param(
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default'
     )
 
