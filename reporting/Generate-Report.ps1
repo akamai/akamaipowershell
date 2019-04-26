@@ -7,6 +7,7 @@ function Generate-Report
         [Parameter(Mandatory=$true)] [String] $End,
         [Parameter(Mandatory=$true)] [ValidateSet("FIVE_MINUTES","HOUR", "DAY", "WEEK", "MONTH")] [String] $Interval,
         [Parameter(Mandatory=$false)] [String] $Body,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

@@ -1,20 +1,20 @@
 function Get-AKCredentialsFromRC
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
-        [Parameter(Mandatory=$false)] [string] $ConfigFile = '~\.edgerc'
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default'
     )
 
-    if(!(Test-Path $ConfigFile))
+    if(!(Test-Path $EdgeRCFile))
     {
-        Write-Host -ForegroundColor Red "ConfigFile $ConfigFile not found"
+        Write-Host -ForegroundColor Red "EdgeRCFile $EdgeRCFile not found"
         return $false
     }
 
-    $Config = Get-Content $ConfigFile
+    $Config = Get-Content $EdgeRCFile
     if("[$Section]" -notin $Config)
     {
-        Write-Host -ForegroundColor Red "Config section [$Section] not found in $ConfigFile"
+        Write-Host -ForegroundColor Red "Config section [$Section] not found in $EdgeRCFile"
         return $false
     }
 

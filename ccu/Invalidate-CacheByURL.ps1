@@ -3,6 +3,7 @@ function Invalidate-CacheByURL
     Param(
         [Parameter(Mandatory=$true)]  [string] $URL,
         [Parameter(Mandatory=$false)] [string] $Network = 'production',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'ccu',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

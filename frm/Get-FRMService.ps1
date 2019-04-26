@@ -2,6 +2,7 @@ function Get-FRMService
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $ServiceID,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'firewall',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

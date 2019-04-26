@@ -17,6 +17,7 @@ function Activate-Property
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $PeerReviewdBy,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch] $UnitTested,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $TicketID,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

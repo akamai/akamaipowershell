@@ -1,6 +1,7 @@
 ﻿function List-IDMAccountSwitchKeys
 {
     Param(
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$true)]  [string] $SearchString
     )

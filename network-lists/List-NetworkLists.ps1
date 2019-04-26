@@ -5,6 +5,7 @@ function List-NetworkLists
         [Parameter(Mandatory=$false)] [switch] $IncludeElements,
         [Parameter(Mandatory=$false)] [string] $ListType = "IP",
         [Parameter(Mandatory=$false)] [string] $Search,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

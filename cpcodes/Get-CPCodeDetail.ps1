@@ -3,6 +3,7 @@ function Get-CPCodeDetail
     Param(
         [Parameter(Mandatory=$true)]  [string] $CPCode,
         [Parameter(Mandatory=$false)] [switch] $JSON,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

@@ -11,6 +11,7 @@ function New-Property
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $ClonePropertyID,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [int] $ClonePropertyVersion,
         [Parameter(ParameterSetName='postbody', Mandatory=$true)]  [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

@@ -21,7 +21,7 @@ If you wish to use an https proxy with your commands, simply set the *https_prox
 If you find there are functions missing (and there are many, many missing) please contribute to the module, following these recommendations
 
 1. All functions must be (where practical) single-use functions, not multi-function scripts. If you wish to write complex scripts, great, but keep this module to just building blocks.
-2. Currently, all functions must read credentials from your ~/.edgerc file, though you may specify the section. Entering the credential attributes as individual params is currently not supported, and would be a hassle to implement. Adding support for specifying a different file is in the works.
+2. All functions take option parameters for your .edgerc file and the section to read from. The default is always ~/.edgerc, though the default section varies from API to API. Entering the credential attributes as individual params is currently not supported, and would be a hassle to implement.
 3. All functions must support AccountSwitchKey params. This is an internal Akamai feature, but keeps the function universally usable.
 4. Please use approved Powershell verbs where applicable. The use of List is fine, as are others when the approved verb would be confusion (like deleting or invalidating from cache. 'removing' isn't really a thing)
 5. Please arrange functions into folders based on the name of the API as Akamai have stated it (see the existing folder structure for examples)

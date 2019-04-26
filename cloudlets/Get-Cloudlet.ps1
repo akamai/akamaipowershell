@@ -2,6 +2,7 @@ function Get-Cloudlet
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $CloudletID,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

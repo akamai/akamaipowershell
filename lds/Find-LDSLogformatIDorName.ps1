@@ -3,6 +3,7 @@ function Find-LDSLogformatIDOrName
     Param(
         [Parameter(Mandatory=$false)] [int]    $LogFormatID,
         [Parameter(Mandatory=$false)] [string] $LogFormatName,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

@@ -3,6 +3,7 @@ function List-ReportTypes
     Param(
         [Parameter(Mandatory=$false)] [switch] $ShowDeprecated,
         [Parameter(Mandatory=$false)] [switch] $ShowUnavailable,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

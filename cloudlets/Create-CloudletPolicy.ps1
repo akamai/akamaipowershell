@@ -9,6 +9,7 @@ function Create-CloudletPolicy
         [Parameter(Mandatory=$false)] [int]    $ClonePolicyID,
         [Parameter(Mandatory=$false)] [string] $Version,
         [Parameter(ParameterSetName='postbody', Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

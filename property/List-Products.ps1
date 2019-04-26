@@ -2,6 +2,7 @@ function List-Products
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $ContractId,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

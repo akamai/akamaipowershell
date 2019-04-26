@@ -1,6 +1,7 @@
 function List-SiteShieldMaps
 {
     Param(
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'site-shield',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

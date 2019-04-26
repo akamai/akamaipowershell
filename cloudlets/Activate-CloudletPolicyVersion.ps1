@@ -1,11 +1,12 @@
 function Activate-CloudletPolicyVersion
 {
     Param(
-        [Parameter(Mandatory=$true)]   [string] $PolicyID,
-        [Parameter(Mandatory=$true)]   [string] $Version,
-        [Parameter(Mandatory=$false)]  [string] $Network = 'production',
-        [Parameter(Mandatory=$false)]  [string] $Section = 'cloudlets',
-        [Parameter(Mandatory=$false)]  [string] $AccountSwitchKey
+        [Parameter(Mandatory=$true)]  [string] $PolicyID,
+        [Parameter(Mandatory=$true)]  [string] $Version,
+        [Parameter(Mandatory=$false)] [string] $Network = 'production',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
+        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     # Check creds

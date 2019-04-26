@@ -5,6 +5,7 @@ function List-AppSecConfigurationVersions
         [Parameter(Mandatory=$false)] [switch] $Detail,
         [Parameter(Mandatory=$false)] [int]    $Page = 1,
         [Parameter(Mandatory=$false)] [int]    $PageSize = 25,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

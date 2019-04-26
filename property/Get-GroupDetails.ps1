@@ -2,6 +2,7 @@ function Get-GroupDetails
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $Group,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

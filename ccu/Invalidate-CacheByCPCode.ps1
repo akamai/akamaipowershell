@@ -3,6 +3,7 @@ function Invalidate-CacheByCPCode
     Param(
         [Parameter(Mandatory=$true)]  [string] $CPCode,
         [Parameter(Mandatory=$false)] [string] $Network = 'production',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'ccu',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

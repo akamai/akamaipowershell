@@ -4,6 +4,7 @@ function Get-TestExecutionDifference
         [Parameter(Mandatory=$true)] [string] $TestDefinitionExecutionID,
         [Parameter(Mandatory=$true)] [string] $DifferenceID,
         [Parameter(Mandatory=$false)] [switch] $Raw,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

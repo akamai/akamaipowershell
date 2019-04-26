@@ -3,6 +3,7 @@ function Get-ReportType
     Param(
         [Parameter(Mandatory=$true)] [String] $ReportType,
         [Parameter(Mandatory=$true)] [String] $Version,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

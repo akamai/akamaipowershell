@@ -4,6 +4,7 @@ function Get-NetworkList
         [Parameter(Mandatory=$true)] [string] $NetworkListID,
         [Parameter(Mandatory=$false)] [switch] $Extended,
         [Parameter(Mandatory=$false)] [switch] $IncludeElements,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

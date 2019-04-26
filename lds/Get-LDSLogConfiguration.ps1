@@ -2,6 +2,7 @@ function Get-LDSLogConfiguration
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $logConfigurationId,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

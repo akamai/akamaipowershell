@@ -2,6 +2,7 @@ function List-Groups
 {
     Param(
         [Parameter(Mandatory=$false)] [switch] $Detail,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

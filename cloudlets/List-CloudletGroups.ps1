@@ -1,7 +1,8 @@
 function List-CloudletGroups
 {
     Param(
-        [Parameter(Mandatory=$false)] $Section = 'cloudlets',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
+        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     

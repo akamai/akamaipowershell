@@ -66,7 +66,7 @@ function Invoke-AkamaiOPEN
     }
 
     #ReqURL Verification
-    If (($ReqURL -as [System.URI]).AbsoluteURI -eq $null -or $ReqURL -notmatch "akamaiapis.net")
+    If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net")
     {
         throw "Error: Ivalid Request URI"
     }
@@ -148,7 +148,7 @@ function Invoke-AkamaiOPEN
 
 
     # Check for Proxy Env variable and use if present
-    if($ENV:https_proxy -ne $null)
+    if($null -ne $ENV:https_proxy)
     {
         $UseProxy = $true
     }

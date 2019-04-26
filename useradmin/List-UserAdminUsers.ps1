@@ -2,6 +2,7 @@ function List-UserAdminUsers
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $AccountID,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

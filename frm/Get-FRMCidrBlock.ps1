@@ -1,6 +1,7 @@
 function Get-FRMCidrBlock
 {
     Param(
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'firewall',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
