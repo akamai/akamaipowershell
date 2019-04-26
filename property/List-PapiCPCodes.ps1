@@ -1,4 +1,4 @@
-function List-PapiCPCodesForGroup
+function List-PapiCPCodes
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $ContractId,

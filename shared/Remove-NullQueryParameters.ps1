@@ -8,7 +8,6 @@ function Remove-NullQueryParameters
 
     if(!$ReqURL.Contains("?"))
     {
-        Write-Host "No query string"
         return $ReqURL
     }
 
@@ -39,6 +38,12 @@ function Remove-NullQueryParameters
         }
     }
 
-    $JoinedParameters = $ParsedParameters -join "&"
-    return "$URI`?$JoinedParameters"
+    if($ParsedParameters.Count -eq 0)
+    {
+        return $URI
+    }
+    else {
+        $JoinedParameters = $ParsedParameters -join "&"
+        return "$URI`?$JoinedParameters"
+    }
 }

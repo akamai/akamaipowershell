@@ -145,13 +145,32 @@ function Invoke-AkamaiOPEN
 
     #Check for valid Methods and required switches
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+
+
+    # Check for Proxy Env variable and use if present
+    if($ENV:https_proxy -ne $null)
+    {
+        $UseProxy = $true
+    }
+
     if ($Method -eq "PUT" -or $Method -eq "POST") {
         try {
             if ($Body) {
-                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json' #-Proxy http://localhost:8888
+                if($UseProxy){
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json' -Proxy $ENV:https_proxy
+                }
+                else {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json'
+                }
+                
             }
             else {
-                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' #-Proxy http://localhost:8888
+                if($UseProxy) {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Proxy $ENV:https_proxy
+                }
+                else {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json'
+                }
             }
         }
         catch {
@@ -160,7 +179,12 @@ function Invoke-AkamaiOPEN
     }
     else {
         try {
-            $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop #-Proxy http://localhost:8888
+            if($UseProxy) {
+                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
+            }
+            else {
+                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop
+            }
         }
         catch {
             #Redirects aren't well handled due to signatures needing regenerated
@@ -168,7 +192,12 @@ function Invoke-AkamaiOPEN
             {
                 try {
                     $NewReqURL = "https://" + $_.Exception.Response.Headers.Location.Host + $_.Exception.Response.Headers.Location.PathAndQuery
-                    Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL #-Proxy http://localhost:8888
+                    if($UseProxy) {
+                        Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL
+                    }
                 }
                 catch {
                     throw $_.ErrorDetails
