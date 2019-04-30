@@ -4,7 +4,6 @@ function Create-CloudletPolicy
         [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [string] $Name,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $Description,
         [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [int]    $GroupID,
-        [Parameter(Mandatory=$false)] [switch] $IncludeDeleted,
         [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [int]    $CloudletID,
         [Parameter(Mandatory=$false)] [int]    $ClonePolicyID,
         [Parameter(Mandatory=$false)] [string] $Version,

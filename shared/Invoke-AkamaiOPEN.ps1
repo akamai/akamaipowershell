@@ -36,6 +36,8 @@ Authentication password used in client auth. Available in Luna Portal.
 Full request URL complete with API location and parameters. Must be URL encoded.
 .PARAMETER Body
 Should contain the POST/PUT Body. The body should be structured like a JSON object. Example: $Body = '{ "name": "botlist2", "type": "IP", "list": ["201.22.44.12", "8.7.6.0/24"] }'
+.PARAMETER AdditionalHeaders
+Hash of additional request headers to add
 .EXAMPLE
 Invoke-AkamaiOPEN -Method GET -ClientToken "foo" -ClientAccessToken "foo" -ClientSecret "foo" -ReqURL "https://foo.luna.akamaiapis.net/diagnostic-tools/v1/locations"
 .LINK
@@ -50,7 +52,8 @@ function Invoke-AkamaiOPEN
         [Parameter(Mandatory=$true)] [string]$ClientSecret,
         [Parameter(Mandatory=$true)] [string]$ReqURL,
         [Parameter(Mandatory=$false)][string]$Body,
-        [Parameter(Mandatory=$false)][string]$MaxBody = 131072
+        [Parameter(Mandatory=$false)][string]$MaxBody = 131072,
+        [Parameter(Mandatory=$false)][hashtable]$AdditionalHeaders
         )
 
     #Function to generate HMAC SHA256 Base64
@@ -134,6 +137,12 @@ function Invoke-AkamaiOPEN
 
     #Add Auth header
     $Headers.Add('Authorization',$AuthorizationHeader)
+
+    #Add additional headers
+    if($AdditionalHeaders)
+    {
+        $Headers += $AdditionalHeaders
+    }
 
     #Add additional headers if POSTing or PUTing
     If ($Body)

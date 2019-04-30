@@ -12,7 +12,11 @@ function List-TestExecutions
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definition-executions?latestPerTestDefinition=$LatestPerTestDefinition&testDefinitionIds=$TestDefinitionIDs?accountSwitchKey=$AccountSwitchKey"
+    # Nullify false switches
+    $LatestPerTestDefinitionString = $LatestPerTestDefinition.IsPresent.ToString()
+    if(!$LatestPerTestDefinition){ $LatestPerTestDefinitionString = '' }
+
+    $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definition-executions?latestPerTestDefinition=$LatestPerTestDefinitionString&testDefinitionIds=$TestDefinitionIDs?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

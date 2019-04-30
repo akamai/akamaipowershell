@@ -14,7 +14,11 @@ function List-AppSecConfigurationVersions
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/appsec/v1/configs/$ConfigID/versions?detail=$Detail&page=$Page&pagSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
+    # nullify false switches
+    $DetailString = $Detail.IsPresent.ToString()
+    if(!$Detail){ $DetailString = '' }
+
+    $ReqURL = "https://" + $Credentials.host + "/appsec/v1/configs/$ConfigID/versions?detail=$DetailString&page=$Page&pagSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

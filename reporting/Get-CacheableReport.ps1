@@ -11,6 +11,7 @@ function Get-CacheableReport
         [Parameter(Mandatory=$false)] [String] $Filters,
         [Parameter(Mandatory=$false)] [String] $Metrics,
         [Parameter(Mandatory=$false)] [String] $ObjectIds,
+        [Parameter(Mandatory=$false)] [string] $Limit,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -20,7 +21,11 @@ function Get-CacheableReport
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $Params = "start=$Start&end=$End&interval=$Interval&objectType=$ObjectType&allObjectIds=$AllObjectIds&filters=$Filters&metrics=$Metrics&objectIds=$ObjectIds&accountSwitchKey=$AccountSwitchKey"
+    # Nullify false switches
+    $AllObjectIdsString = $AllObjectIds.IsPresent.ToString()
+    if(!$AllObjectIds){ $AllObjectIdsString = '' }
+
+    $Params = "start=$Start&end=$End&interval=$Interval&objectType=$ObjectType&allObjectIds=$AllObjectIdsString&filters=$Filters&metrics=$Metrics&objectIds=$ObjectIds&limit=$Limit&accountSwitchKey=$AccountSwitchKey"
     $EncodedParams = [System.Web.HttpUtility]::UrlEncode($Params)
     $EncodedParams = $EncodedParams.Replace("%3d","=") #Easier to read
     $EncodedParams = $EncodedParams.Replace("%26","&")

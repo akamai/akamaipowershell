@@ -24,7 +24,7 @@ function New-PropertyVersion
         {
             return "If specifying attributes you must provide at least one of: CreateFromVersion, CreateFromEtag"
         }
-        $PostObject = @{"createFromVersion"=$ProdVersionNo}
+        $PostObject = @{"createFromVersion"=$CreateFromVersion}
         $Body = $PostObject | Convertto-json
     }
     

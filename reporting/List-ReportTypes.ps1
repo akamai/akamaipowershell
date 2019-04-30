@@ -12,7 +12,13 @@ function List-ReportTypes
     $Credentials = Get-AKCredentialsFromRC -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/reporting-api/v1/reports?showDeprecated=$ShowDeprecated&showUnavailable=$ShowUnavailable&accountSwitchKey=$AccountSwitchKey"
+    # Nullify false switches
+    $ShowDeprecatedString = $ShowDeprecated.IsPresent.ToString()
+    if(!$ShowDeprecated){ $ShowDeprecatedString = '' }
+    $ShowUnavailableString = $ShowUnavailable.IsPresent.ToString()
+    if(!$ShowUnavailable){ $ShowUnavailableString = '' }
+
+    $ReqURL = "https://" + $Credentials.host + "/reporting-api/v1/reports?showDeprecated=$ShowDeprecatedString&showUnavailable=$ShowUnavailableString&accountSwitchKey=$AccountSwitchKey"
     
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
