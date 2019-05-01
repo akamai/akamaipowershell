@@ -11,7 +11,7 @@ function Get-PropertyRuleTree
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"

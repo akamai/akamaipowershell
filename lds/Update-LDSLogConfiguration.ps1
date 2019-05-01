@@ -9,7 +9,7 @@ function Update-LDSLogConfiguration
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/lds-api/v3/log-configurations/$logConfigurationId`?accountSwitchKey=$AccountSwitchKey"

@@ -9,7 +9,7 @@ function Invalidate-CacheByCPCode
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $PostBody = @{ objects = @("$CPCode") }

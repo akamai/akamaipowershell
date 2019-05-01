@@ -13,7 +13,7 @@ function Generate-Report
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $Params = "start=$Start&end=$End&interval=$Interval&accountSwitchKey=$AccountSwitchKey"

@@ -7,7 +7,7 @@ function List-TestDefinitions
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definitions?accountSwitchKey=$AccountSwitchKey"

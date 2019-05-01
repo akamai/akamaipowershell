@@ -8,7 +8,7 @@ function Get-SiteShieldMapByID
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/siteshield/v1/maps/$SiteShieldID`?accountSwitchKey=$AccountSwitchKey"

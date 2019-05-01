@@ -7,7 +7,7 @@ function Get-FRMCidrBlock
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
     
     $ReqURL = "https://" + $Credentials.host + "/firewall-rules-manager/v1/cidr-blocks?accountSwitchKey=$AccountSwitchKey"

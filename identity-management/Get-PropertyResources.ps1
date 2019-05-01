@@ -9,7 +9,7 @@ function Get-PropertyResources
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/properties/$PropertyID/resources?groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"

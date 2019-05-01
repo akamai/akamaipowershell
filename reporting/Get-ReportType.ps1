@@ -9,7 +9,7 @@ function Get-ReportType
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/reporting-api/v1/reports/$ReportType/versions/$Version`?accountSwitchKey=$AccountSwitchKey"

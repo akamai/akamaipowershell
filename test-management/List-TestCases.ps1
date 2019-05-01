@@ -8,7 +8,7 @@ function List-TestCases
     )
 
     # Check creds
-    $Credentials = Get-AKCredentialsFromRC -Section $Section
+    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
     $ReqURL = "https://" + $Credentials.host + "/test-management/v1/test-definitions/$TestDefinitionID/test-cases?accountSwitchKey=$AccountSwitchKey"
