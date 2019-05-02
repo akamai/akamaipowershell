@@ -21,7 +21,7 @@ function List-CloudletPolicies
     $IncludeDeletedString = $IncludeDeleted.IsPresent.ToString()
     if(!$IncludeDeleted){ $IncludeDeletedString = '' }
 
-    $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies?&gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&version=$Version&accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies?gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&version=$Version&accountSwitchKey=$AccountSwitchKey"
 
     if($Offset){ $ReqURL += "&offset=$Offset"}
     if($Pagesize){ $ReqURL += "&pageSize=$PageSize"}

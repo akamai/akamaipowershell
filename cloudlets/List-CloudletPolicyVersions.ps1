@@ -20,7 +20,7 @@ function List-CloudletPolicyVersions
     $IncludeRulesString = $IncludeRules.IsPresent.ToString()
     if(!$IncludeRules){ $IncludeRulesString = '' }
 
-    $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies/$PolicyID/versions?&cloneVersion=$CloneVersion&includeRules=$IncludeRulesString&matchRuleFormat=$MatchRuleFormat&accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies/$PolicyID/versions?cloneVersion=$CloneVersion&includeRules=$IncludeRulesString&matchRuleFormat=$MatchRuleFormat&accountSwitchKey=$AccountSwitchKey"
 
     if($Offset){ $ReqURL += "&offset=$Offset"}
     if($Pagesize){ $ReqURL += "&pageSize=$PageSize"}
