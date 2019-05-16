@@ -32,7 +32,7 @@ function New-ImageManagerPolicy
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method PUT -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -AdditionalHeaders $AdditionalHeaders
+        $Result = Invoke-AkamaiOPEN -Method PUT -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -AdditionalHeaders $AdditionalHeaders -Body $Body
         return $Result
     }
     catch {
