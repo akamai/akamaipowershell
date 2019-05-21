@@ -6,7 +6,7 @@ function List-IDMRoles
         [Parameter(Mandatory=$false)] [switch] $IgnoreContext,
         [Parameter(Mandatory=$false)] [switch] $Users,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

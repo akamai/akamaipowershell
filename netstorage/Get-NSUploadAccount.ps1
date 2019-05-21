@@ -1,8 +1,7 @@
-function Get-IDMGroup
+function Get-NSUploadAccount
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
-        [Parameter(Mandatory=$false)] [switch] $Actions,
+        [Parameter(Mandatory=$true)]  [string] $UploadAccountID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -12,15 +11,17 @@ function Get-IDMGroup
     $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
-    # nullify false switches
-    $ActionsString = $Actions.IsPresent.ToString().ToLower()
-    if(!$Actions){ $ActionsString = '' }
+    if($AccountSwitchKey)
+    {
+        Write-Host -ForegroundColor Yellow "NetStorage API currently does not support Account Switching. Sorry"
+        return
+    }
 
-    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/groups/$GroupID`?actions=$ActionsString&accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/storage/v1/upload-accounts/$UploadAccountID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
-        return $Result
+        return $Result.items
     }
     catch {
         throw $_.Exception

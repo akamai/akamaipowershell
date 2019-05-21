@@ -3,7 +3,7 @@ function List-IDMGroups
     Param(
         [Parameter(Mandatory=$false)] [switch] $Actions,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
