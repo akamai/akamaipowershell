@@ -1,7 +1,9 @@
-function List-IDMProperties
+function Get-IDMRole
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $GroupID,
+        [Parameter(Mandatory=$false)] [string] $RoleID,
+        [Parameter(Mandatory=$false)] [switch] $Actions,
+        [Parameter(Mandatory=$false)] [switch] $GrantedRoles,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -11,7 +13,13 @@ function List-IDMProperties
     $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/properties?groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    # nullify false switches
+    $ActionsString = $Actions.IsPresent.ToString().ToLower()
+    $GrantedRolesString = $GrantedRoles.IsPresent.ToString().ToLower()
+    if(!$Actions){ $ActionsString = '' }
+    if(!$GrantedRoles){ $GrantedRolesString = '' }
+
+    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/roles/$RoleID`?actions=$ActionsString&grantedRoles=$GrantedRolesString&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

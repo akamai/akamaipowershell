@@ -17,7 +17,7 @@ function List-CloudletPolicyVersions
     if(!$Credentials){ return $null }
 
     # Nullify false switches
-    $IncludeRulesString = $IncludeRules.IsPresent.ToString()
+    $IncludeRulesString = $IncludeRules.IsPresent.ToString().ToLower()
     if(!$IncludeRules){ $IncludeRulesString = '' }
 
     $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies/$PolicyID/versions?cloneVersion=$CloneVersion&includeRules=$IncludeRulesString&matchRuleFormat=$MatchRuleFormat&accountSwitchKey=$AccountSwitchKey"

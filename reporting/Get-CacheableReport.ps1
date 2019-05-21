@@ -22,7 +22,7 @@ function Get-CacheableReport
     if(!$Credentials){ return $null }
 
     # Nullify false switches
-    $AllObjectIdsString = $AllObjectIds.IsPresent.ToString()
+    $AllObjectIdsString = $AllObjectIds.IsPresent.ToString().ToLower()
     if(!$AllObjectIds){ $AllObjectIdsString = '' }
 
     $Params = "start=$Start&end=$End&interval=$Interval&objectType=$ObjectType&allObjectIds=$AllObjectIdsString&filters=$Filters&metrics=$Metrics&objectIds=$ObjectIds&limit=$Limit&accountSwitchKey=$AccountSwitchKey"

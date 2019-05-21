@@ -15,7 +15,7 @@ function List-AppSecConfigurationVersions
     if(!$Credentials){ return $null }
 
     # nullify false switches
-    $DetailString = $Detail.IsPresent.ToString()
+    $DetailString = $Detail.IsPresent.ToString().ToLower()
     if(!$Detail){ $DetailString = '' }
 
     $ReqURL = "https://" + $Credentials.host + "/appsec/v1/configs/$ConfigID/versions?detail=$DetailString&page=$Page&pagSize=$PageSize&accountSwitchKey=$AccountSwitchKey"

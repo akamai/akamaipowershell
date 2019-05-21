@@ -1,7 +1,7 @@
-function List-IDMProperties
+function Get-IDMProperty
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $GroupID,
+        [Parameter(Mandatory=$true)]  [string] $PropertyID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -11,7 +11,7 @@ function List-IDMProperties
     $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/properties?groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/properties/$PropertyID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL

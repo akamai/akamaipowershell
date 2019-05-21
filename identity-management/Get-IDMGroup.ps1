@@ -1,10 +1,10 @@
-function Get-PropertyResources
+function Get-IDMGroup
 {
     Param(
-        [Parameter(Mandatory=$true)] [string] $PropertyID,
-        [Parameter(Mandatory=$true)] [string] $GroupID,
+        [Parameter(Mandatory=$true)]  [string] $GroupID,
+        [Parameter(Mandatory=$false)] [switch] $Actions,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -12,14 +12,17 @@ function Get-PropertyResources
     $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
     if(!$Credentials){ return $null }
 
-    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/properties/$PropertyID/resources?groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
-    
+    # nullify false switches
+    $ActionsString = $Actions.IsPresent.ToString().ToLower()
+    if(!$Actions){ $ActionsString = '' }
+
+    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/groups/$GroupID`?actions=$ActionsString&accountSwitchKey=$AccountSwitchKey"
+
     try {
         $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_.Exception
     }
 }
-

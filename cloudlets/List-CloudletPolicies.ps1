@@ -18,7 +18,7 @@ function List-CloudletPolicies
     if(!$Credentials){ return $null }
 
     # Nullify false switches
-    $IncludeDeletedString = $IncludeDeleted.IsPresent.ToString()
+    $IncludeDeletedString = $IncludeDeleted.IsPresent.ToString().ToLower()
     if(!$IncludeDeleted){ $IncludeDeletedString = '' }
 
     $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies?gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&version=$Version&accountSwitchKey=$AccountSwitchKey"

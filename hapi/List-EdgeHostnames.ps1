@@ -22,8 +22,8 @@ function List-EdgeHostnames
     if(!$Credentials){ return $null }
 
     # nullify false switches
-    $ChinaCDNEnabledString = $ChinaCDNEnabled.IsPresent.ToString()
-    $IsEdgeIPBindingEnabledString = $IsEdgeIPBindingEnabled.IsPresent.ToString()
+    $ChinaCDNEnabledString = $ChinaCDNEnabled.IsPresent.ToString().ToLower()
+    $IsEdgeIPBindingEnabledString = $IsEdgeIPBindingEnabled.IsPresent.ToString().ToLower()
 
     if(!$ChinaCDNEnabled){ $ChinaCDNEnabledString = '' }
     if(!$IsEdgeIPBindingEnabled){ $IsEdgeIPBindingEnabledString = ''}

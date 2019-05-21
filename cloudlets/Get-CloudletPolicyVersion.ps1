@@ -15,7 +15,7 @@ function Get-CloudletPolicyVersion
     if(!$Credentials){ return $null }
 
     # Nullify false switches
-    $OmitRulesString = $OmitRules.IsPresent.ToString()
+    $OmitRulesString = $OmitRules.IsPresent.ToString().ToLower()
     if(!$OmitRules){ $OmitRulesString = '' }
 
     $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies/$PolicyID/versions/$Version`?matchRuleFormat=$MatchRuleFormat&omitRules=$OmitRulesString&accountSwitchKey=$AccountSwitchKey"

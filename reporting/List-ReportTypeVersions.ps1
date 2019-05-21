@@ -14,9 +14,9 @@ function List-ReportTypeVersions
     if(!$Credentials){ return $null }
 
     # Nullify false switches
-    $ShowDeprecatedString = $ShowDeprecated.IsPresent.ToString()
+    $ShowDeprecatedString = $ShowDeprecated.IsPresent.ToString().ToLower()
     if(!$ShowDeprecated){ $ShowDeprecatedString = '' }
-    $ShowUnavailableString = $ShowUnavailable.IsPresent.ToString()
+    $ShowUnavailableString = $ShowUnavailable.IsPresent.ToString().ToLower()
     if(!$ShowUnavailable){ $ShowUnavailableString = '' }
 
     $ReqURL = "https://" + $Credentials.host + "/reporting-api/v1/reports/$ReportType/versions?showDeprecated=$ShowDeprecatedString&showUnavailable=$ShowUnavailableString&accountSwitchKey=$AccountSwitchKey"

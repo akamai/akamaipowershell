@@ -15,9 +15,9 @@ function List-NetworkLists
     if(!$Credentials){ return $null }
 
     # Nullify false switches
-    $ExtendedString = $Extended.IsPresent.ToString()
+    $ExtendedString = $Extended.IsPresent.ToString().ToLower()
     if(!$Extended){ $ExtendedString = '' }
-    $IncludeElementsString = $IncludeElements.IsPresent.ToString()
+    $IncludeElementsString = $IncludeElements.IsPresent.ToString().ToLower()
     if(!$IncludeElements){ $IncludeElementsString = '' }
 
     $ReqURL = "https://" + $Credentials.host + "/network-list/v2/network-lists?extended=$ExtendedString&includeElements=$IncludeElementsString&listType=$ListType&search=$Search&accountSwitchKey=$AccountSwitchKey"

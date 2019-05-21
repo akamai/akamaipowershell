@@ -17,7 +17,7 @@ function Update-PropertyHostnames
     if(!$Credentials){ return $null }
 
     # Nullify false switches
-    $ValidateHostnamesString = $ValidateHostnames.IsPresent.ToString()
+    $ValidateHostnamesString = $ValidateHostnames.IsPresent.ToString().ToLower()
     if(!$ValidateHostnames){ $ValidateHostnamesString = '' }
 
     $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&accountSwitchKey=$AccountSwitchKey"
