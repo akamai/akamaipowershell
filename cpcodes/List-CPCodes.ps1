@@ -15,14 +15,8 @@ function List-CPCodes
         # Remove grp_ prefix from group id
         $GroupID = $GroupID.replace("grp_","")
     }
-
+    
     $Path = "/cprg/v1/cpcodes?contractId=$ContractID&groupId=$GroupID&productId=$ProductID&name=$Name&accountSwitchKey=$AccountSwitchKey"
-
-    $Path = "/cprg/v1/cpcodes?accountSwitchKey=$AccountSwitchKey"
-    if($ContractID){ $ReqURL += "&contractId=$ContractID"}
-    if($GroupID)   { $ReqURL += "&groupId=$GroupID"      }
-    if($ProductID) { $ReqURL += "&productId=$ProductID"  }
-    if($Name)      { $ReqURL += "&name=$Name"            }
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

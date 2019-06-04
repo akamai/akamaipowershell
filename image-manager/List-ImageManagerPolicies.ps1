@@ -16,14 +16,14 @@ function List-ImageManagerPolicies
     }
 
     $Path = "/imaging/v2/policies"
-    if($Network.ToLower() -eq "staging")
-    {
-        $ReqURL = "https://" + $Credentials.host.Replace(".imaging.",".imaging-staging.") + "/imaging/v2/policies/$PolicyID"
+    $Staging = $false
+    if($Network.ToLower() -eq "staging"){
+        $Staging = $true
     }
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders -Staging $Staging
         return $Result.items
     }
     catch {

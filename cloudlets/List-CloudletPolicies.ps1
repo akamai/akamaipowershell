@@ -17,10 +17,7 @@ function List-CloudletPolicies
     $IncludeDeletedString = $IncludeDeleted.IsPresent.ToString().ToLower()
     if(!$IncludeDeleted){ $IncludeDeletedString = '' }
 
-    $Path = "/cloudlets/api/v2/policies?gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&version=$Version&accountSwitchKey=$AccountSwitchKey"
-
-    if($Offset){ $ReqURL += "&offset=$Offset"}
-    if($Pagesize){ $ReqURL += "&pageSize=$PageSize"}
+    $Path = "/cloudlets/api/v2/policies?gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&version=$Version&offset=$Offset&pageSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

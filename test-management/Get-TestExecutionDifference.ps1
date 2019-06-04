@@ -12,12 +12,12 @@ function Get-TestExecutionDifference
     $Path = "/test-management/v1/test-definition-executions/$TestDefinitionExecutionID/differences/$DifferenceID"
     if($Raw)
     {
-        $ReqURL += "/raw-request-response"
+        $Path += "/raw-request-response"
     }
     
     if($AccountSwitchKey)
     {
-        $ReqURL += "`?accountSwitchKey=$AccountSwitchKey"
+        $Path += "`?accountSwitchKey=$AccountSwitchKey"
     }
 
     try {

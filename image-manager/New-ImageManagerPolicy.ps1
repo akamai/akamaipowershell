@@ -19,7 +19,7 @@ function New-ImageManagerPolicy
 
 
     try {
-        $ExistingPolicy = Get-ImageManagerPolicy -PolicySetAPIKey $PolicySetAPIKey -PolicyID $PolicyID -EdgeRCFile $EdgeRCFile -Section $Section #-AccountSwitchKey $AccountSwitchKey
+        $ExistingPolicy = Get-ImageManagerPolicy -PolicySetAPIKey $PolicySetAPIKey -PolicyID $PolicyID -EdgeRCFile $EdgeRCFile -Section $Section -Network $Network #-AccountSwitchKey $AccountSwitchKey
         if($ExistingPolicy)
         {
             Write-Host -ForegroundColor Yellow "Polcicy $PolicyID already exists in Policy Set $PolicySetAPIKey. Nothing to do"
@@ -31,14 +31,14 @@ function New-ImageManagerPolicy
     }
 
     $Path = "/imaging/v2/policies/$PolicyID"
-    if($Network.ToLower() -eq "staging")
-    {
-        $ReqURL = "https://" + $Credentials.host.Replace(".imaging.",".imaging-staging.") + "/imaging/v2/policies/$PolicyID"
+    $Staging = $false
+    if($Network.ToLower() -eq "staging"){
+        $Staging = $true
     }
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders -Body $Body -Staging $Staging
         return $Result
     }
     catch {

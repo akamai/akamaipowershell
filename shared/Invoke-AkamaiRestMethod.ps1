@@ -41,8 +41,12 @@ File-based Auth - Authorization file to read credentials from. Defaults to ~/.ed
 File-based Auth - Section in EdgeRC file to read credentials from. Defaults to [default]
 .PARAMETER Body
 Should contain the POST/PUT Body. The body should be structured like a JSON object. Example: $Body = '{ "name": "botlist2", "type": "IP", "list": ["201.22.44.12", "8.7.6.0/24"] }'
+.PARAMETER AcceptHeader
+Value to set Accept request header to. Defaults to 'application/json'. Required by certain APIs
 .PARAMETER AdditionalHeaders
 Hashtable of additional request headers to add
+.PARAMETER Staging
+Image Manager requests only. Changes IM host from production to staging. For non-IM requests does nothing.
 .EXAMPLE
 Invoke-AkamaiRestMethod -Method GET -Path '/path/to/api?withParams=true' -EdgeRCFile ~/my.edgerc -Section 'papi'
 .LINK
@@ -58,6 +62,7 @@ function Invoke-AkamaiRestMethod
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AcceptHeader = 'application/json',
         [Parameter(Mandatory=$false)] [hashtable] $AdditionalHeaders,
+        [Parameter(Mandatory=$false)] [boolean] $Staging,
         [Parameter(Mandatory=$false)] [string] $MaxBody = 131072
         )
 
@@ -82,6 +87,11 @@ function Invoke-AkamaiRestMethod
 
     if(!$ClientToken -or !$ClientAccessToken -or !$OpenHost -or !$ClientSecret){
         throw "Error: Some necessary auth elements missing. Please check your EdgeRC file"
+    }
+
+    # Set IM staging host if switch present
+    if($OpenHost.Contains('.imaging.') -and $Staging) {
+        $OpenHost = $OpenHost.Replace(".imaging.",".imaging-staging.")
     }
 
     # Set ReqURL from host and provided path

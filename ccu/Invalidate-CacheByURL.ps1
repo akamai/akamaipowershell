@@ -12,9 +12,6 @@ function Invalidate-CacheByURL
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
     $Path = "/ccu/v3/invalidate/url/$Network`?accountSwitchKey=$AccountSwitchKey"
 
-    Write-host $PostJson
-    Write-Host $ReqURL
-
     try
     {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $PostJson
