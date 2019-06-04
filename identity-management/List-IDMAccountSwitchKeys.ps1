@@ -6,7 +6,7 @@
         [Parameter(Mandatory=$true)]  [string] $SearchString
     )
 
-    $Client = Get-IDMClientByAccessToken -Section $Section
+    $Client = Get-IDMClientByAccessToken -EdgeRCFile $EdgeRCFile -Section $Section
     $OpenIdentityID = $Client.openIdentityId
 
     $EncodedSearchString = [System.Web.HttpUtility]::UrlEncode($SearchString)

@@ -56,6 +56,7 @@ function Invoke-AkamaiRestMethod
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $AcceptHeader = 'application/json',
         [Parameter(Mandatory=$false)] [hashtable] $AdditionalHeaders,
         [Parameter(Mandatory=$false)] [string] $MaxBody = 131072
         )
@@ -165,8 +166,9 @@ function Invoke-AkamaiRestMethod
     #Create IDictionary to hold request headers
     $Headers = @{}
 
-    #Add Auth header
+    #Add Auth & Accept headers
     $Headers.Add('Authorization',$AuthorizationHeader)
+    $Headers.Add('Accept',$AcceptHeader)
 
     #Add additional headers
     if($AdditionalHeaders)
