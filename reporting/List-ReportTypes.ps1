@@ -8,20 +8,16 @@ function List-ReportTypes
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # Nullify false switches
     $ShowDeprecatedString = $ShowDeprecated.IsPresent.ToString().ToLower()
     if(!$ShowDeprecated){ $ShowDeprecatedString = '' }
     $ShowUnavailableString = $ShowUnavailable.IsPresent.ToString().ToLower()
     if(!$ShowUnavailable){ $ShowUnavailableString = '' }
 
-    $ReqURL = "https://" + $Credentials.host + "/reporting-api/v1/reports?showDeprecated=$ShowDeprecatedString&showUnavailable=$ShowUnavailableString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/reporting-api/v1/reports?showDeprecated=$ShowDeprecatedString&showUnavailable=$ShowUnavailableString&accountSwitchKey=$AccountSwitchKey"
     
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

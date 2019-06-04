@@ -10,13 +10,9 @@ function Get-PropertyRuleTree
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
-    $PropertyRuleTree = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+    $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
     #$returnVersions = $PropertyVersions.versions.items 
     return $PropertyRuleTree     
 }

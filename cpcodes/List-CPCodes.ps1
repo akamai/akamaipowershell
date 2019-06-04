@@ -10,26 +10,22 @@ function List-CPCodes
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     if($GroupID)
     { 
         # Remove grp_ prefix from group id
         $GroupID = $GroupID.replace("grp_","")
     }
 
-    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes?contractId=$ContractID&groupId=$GroupID&productId=$ProductID&name=$Name&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/cpcodes?contractId=$ContractID&groupId=$GroupID&productId=$ProductID&name=$Name&accountSwitchKey=$AccountSwitchKey"
 
-    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/cpcodes?accountSwitchKey=$AccountSwitchKey"
     if($ContractID){ $ReqURL += "&contractId=$ContractID"}
     if($GroupID)   { $ReqURL += "&groupId=$GroupID"      }
     if($ProductID) { $ReqURL += "&productId=$ProductID"  }
     if($Name)      { $ReqURL += "&name=$Name"            }
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result.cpcodes
     }
     catch {

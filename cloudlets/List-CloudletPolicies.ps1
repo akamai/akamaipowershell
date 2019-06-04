@@ -13,21 +13,17 @@ function List-CloudletPolicies
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # Nullify false switches
     $IncludeDeletedString = $IncludeDeleted.IsPresent.ToString().ToLower()
     if(!$IncludeDeleted){ $IncludeDeletedString = '' }
 
-    $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies?gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&version=$Version&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies?gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&version=$Version&accountSwitchKey=$AccountSwitchKey"
 
     if($Offset){ $ReqURL += "&offset=$Offset"}
     if($Pagesize){ $ReqURL += "&pageSize=$PageSize"}
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

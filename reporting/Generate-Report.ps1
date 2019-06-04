@@ -12,19 +12,15 @@ function Generate-Report
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     $Params = "start=$Start&end=$End&interval=$Interval&accountSwitchKey=$AccountSwitchKey"
     $EncodedParams = [System.Web.HttpUtility]::UrlEncode($Params)
     $EncodedParams = $EncodedParams.Replace("%3d","=") #Easier to read
     $EncodedParams = $EncodedParams.Replace("%26","&")
 
-    $ReqURL = "https://" + $Credentials.host + "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?$EncodedParams"
+    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?$EncodedParams"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
         return $Result
     }
     catch {

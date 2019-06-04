@@ -5,15 +5,11 @@ function Get-FRMCidrBlock
         [Parameter(Mandatory=$false)] [string] $Section = 'firewall',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
-
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
     
-    $ReqURL = "https://" + $Credentials.host + "/firewall-rules-manager/v1/cidr-blocks?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/firewall-rules-manager/v1/cidr-blocks?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

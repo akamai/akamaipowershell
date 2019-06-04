@@ -9,20 +9,16 @@ function Get-NetworkList
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # Nullify false switches
     $ExtendedString = $Extended.IsPresent.ToString().ToLower()
     if(!$Extended){ $ExtendedString = '' }
     $IncludeElementsString = $IncludeElements.IsPresent.ToString().ToLower()
     if(!$IncludeElements){ $IncludeElementsString = '' }
 
-    $ReqURL = "https://" + $Credentials.host + "/network-list/v2/network-lists/$NetworkListID`?extended=$ExtendedString&includeElements=$IncludeElementsString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/network-list/v2/network-lists/$NetworkListID`?extended=$ExtendedString&includeElements=$IncludeElementsString&accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

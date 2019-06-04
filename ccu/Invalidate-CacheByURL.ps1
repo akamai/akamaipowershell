@@ -8,20 +8,16 @@ function Invalidate-CacheByURL
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     $PostBody = @{ objects = @("$URL") }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
-    $ReqURL = "https://" + $Credentials.host + "/ccu/v3/invalidate/url/$Network`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/ccu/v3/invalidate/url/$Network`?accountSwitchKey=$AccountSwitchKey"
 
     Write-host $PostJson
     Write-Host $ReqURL
 
     try
     {
-        $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $PostJson
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $PostJson
         return $Result
     }
     catch

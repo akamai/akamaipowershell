@@ -12,10 +12,6 @@ function Remove-PropertyHostnames
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # Input validation
     if($HostnamesToRemove.Count -eq 1 -and $HostnamesToRemove[0].Contains(","))
     {

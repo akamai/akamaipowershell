@@ -7,14 +7,10 @@ function Remove-CloudletPolicy
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies/$PolicyID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method DELETE -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

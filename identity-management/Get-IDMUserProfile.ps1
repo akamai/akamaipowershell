@@ -8,10 +8,6 @@
         [Parameter(Mandatory=$false)] [string] $Section = 'default'
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # nullify false switches
     $ActionsString = $Actions.IsPresent.ToString().ToLower()
     $AuthGrantsString = $AuthGrants.IsPresent.ToString().ToLower()
@@ -20,10 +16,10 @@
     if(!$AuthGrants){ $AuthGrantsString = '' }
     if(!$Notifications){ $NotificationsString = '' }
 
-    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-profile?actions=$ActionsString&authGrants=$AuthGrantsString&notifications=$NotificationsString"
+    $Path = "/identity-management/v2/user-profile?actions=$ActionsString&authGrants=$AuthGrantsString&notifications=$NotificationsString"
     
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

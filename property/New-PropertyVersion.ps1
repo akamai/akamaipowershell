@@ -12,11 +12,7 @@ function New-PropertyVersion
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/versions/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyId/versions/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
@@ -30,7 +26,7 @@ function New-PropertyVersion
     
     
     try {
-        $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
         write-host "New Version Created"
         return $Result
     }

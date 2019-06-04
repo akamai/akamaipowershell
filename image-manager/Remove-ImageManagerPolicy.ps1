@@ -9,10 +9,6 @@ function Remove-ImageManagerPolicy
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     if($AccountSwitchKey)
     {
         Write-Host -ForegroundColor Yellow "Image Manager API currently does not support Account Switching. Sorry"
@@ -20,7 +16,7 @@ function Remove-ImageManagerPolicy
         #?accountSwitchKey=$AccountSwitchKey
     }
 
-    $ReqURL = "https://" + $Credentials.host + "/imaging/v2/policies/$PolicyID"
+    $Path = "/imaging/v2/policies/$PolicyID"
     if($Network.ToLower() -eq "staging")
     {
         $ReqURL = "https://" + $Credentials.host.Replace(".imaging.",".imaging-staging.") + "/imaging/v2/policies/$PolicyID"
@@ -28,7 +24,7 @@ function Remove-ImageManagerPolicy
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method DELETE -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -AdditionalHeaders $AdditionalHeaders
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders
         return $Result
     }
     catch {

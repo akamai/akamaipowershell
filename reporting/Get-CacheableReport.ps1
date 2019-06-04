@@ -17,10 +17,6 @@ function Get-CacheableReport
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # Nullify false switches
     $AllObjectIdsString = $AllObjectIds.IsPresent.ToString().ToLower()
     if(!$AllObjectIds){ $AllObjectIdsString = '' }
@@ -29,10 +25,10 @@ function Get-CacheableReport
     $EncodedParams = [System.Web.HttpUtility]::UrlEncode($Params)
     $EncodedParams = $EncodedParams.Replace("%3d","=") #Easier to read
     $EncodedParams = $EncodedParams.Replace("%26","&")
-    $ReqURL = "https://" + $Credentials.host + "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?$EncodedParams"
+    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?$EncodedParams"
     
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

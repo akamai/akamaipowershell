@@ -10,18 +10,14 @@ function Get-CloudletPolicyVersion
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # Nullify false switches
     $OmitRulesString = $OmitRules.IsPresent.ToString().ToLower()
     if(!$OmitRules){ $OmitRulesString = '' }
 
-    $ReqURL = "https://" + $Credentials.host + "/cloudlets/api/v2/policies/$PolicyID/versions/$Version`?matchRuleFormat=$MatchRuleFormat&omitRules=$OmitRulesString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version`?matchRuleFormat=$MatchRuleFormat&omitRules=$OmitRulesString&accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

@@ -7,14 +7,10 @@ function List-Groups
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/groups?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/groups?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $groups = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $groups = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         $returnGroup = $groups.groups.items
 
         if($Detail)

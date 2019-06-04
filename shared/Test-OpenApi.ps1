@@ -9,29 +9,23 @@ function Test-OpenAPI
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + $Path
     if($AccountSwitchKey)
     {
-        if($ReqURL.Contains("?"))
+        if($Path.Contains("?"))
         {
-            $ReqURL += "&accountSwitchKey=$AccountSwitchKey"
+            $Path += "&accountSwitchKey=$AccountSwitchKey"
         }
         else {
-            $ReqURL += "?accountSwitchKey=$AccountSwitchKey"
+            $Path += "?accountSwitchKey=$AccountSwitchKey"
         }
     }
 
     try {
         if($Body) {
-            $Result = Invoke-AkamaiOPEN -Method $Method -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $Body
+            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRcFile $EdgeRCFile -Section $Section
         }
         else {
-            $Result = Invoke-AkamaiOPEN -Method $Method -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+            $Result = Invoke-AkamaiRestMethod -Method $Method -EdgeRcFile $EdgeRCFile -Section $Section
         }
     }
     catch {

@@ -6,15 +6,11 @@ function List-LDSLogFormatsByType
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
-
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
     
-    $ReqURL = "https://" + $Credentials.host + "/lds-api/v3/log-sources/$logSourceType/log-formats?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-sources/$logSourceType/log-formats?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

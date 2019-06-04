@@ -7,18 +7,14 @@ function List-IDMGroups
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # nullify false switches
     $ActionsString = $Actions.IsPresent.ToString().ToLower()
     if(!$Actions){ $ActionsString = '' }
 
-    $ReqURL = "https://" + $Credentials.host + "/identity-management/v2/user-admin/groups?actions=$ActionsString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/groups?actions=$ActionsString&accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

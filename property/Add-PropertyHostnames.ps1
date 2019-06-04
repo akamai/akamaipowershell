@@ -13,10 +13,6 @@ function Add-PropertyHostnames
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # Input validation
     if($NewHostnames.Count -eq 1 -and $NewHostnames[0].Contains(","))
     {

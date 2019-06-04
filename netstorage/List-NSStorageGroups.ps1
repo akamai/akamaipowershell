@@ -8,14 +8,10 @@ function List-NSStorageGroups
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + "/storage/v1/storage-groups?cpcodeId=$CPCodeID&storageGroupPurpose=$StorageGroupPurpose&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/storage/v1/storage-groups?cpcodeId=$CPCodeID&storageGroupPurpose=$StorageGroupPurpose&accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result.items
     }
     catch {

@@ -9,14 +9,10 @@ function List-PapiEdgeHostnames
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/edgehostnames?contractId=$ContractId&groupId=$GroupID&options=$Options&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/edgehostnames?contractId=$ContractId&groupId=$GroupID&options=$Options&accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result.edgeHostnames.items
     }
     catch {

@@ -22,10 +22,6 @@ function Activate-Property
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
         $BodyObj = [PSCustomObject]@{
@@ -69,11 +65,11 @@ function Activate-Property
     }
     #>
 
-    $ReqURL = "https://" + $Credentials.host + "/papi/v1/properties/$PropertyId/activations/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyId/activations/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
     try
     {
-        $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
         return $Result
     }
     catch
@@ -91,7 +87,7 @@ function Activate-Property
 
             $acknowledgedBody = $BodyObj | ConvertTo-Json -Depth 100
             try {
-                $Result = Invoke-AkamaiOPEN -Method POST -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $acknowledgedBody
+                $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $acknowledgedBody
                 return $Result
             }
             catch {

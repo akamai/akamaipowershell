@@ -5,14 +5,10 @@ function Get-IDMClientByAccessToken
         [Parameter(Mandatory=$false)] [string] $Section = 'default'
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + "/identity-management/v1/open-identities/tokens/$($Credentials.access_token)"
+    $Path = "/identity-management/v1/open-identities/tokens/$($Credentials.access_token)"
     
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result.identity
     }
     catch {

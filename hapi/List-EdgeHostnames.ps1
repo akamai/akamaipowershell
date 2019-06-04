@@ -17,10 +17,6 @@ function List-EdgeHostnames
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # nullify false switches
     $ChinaCDNEnabledString = $ChinaCDNEnabled.IsPresent.ToString().ToLower()
     $IsEdgeIPBindingEnabledString = $IsEdgeIPBindingEnabled.IsPresent.ToString().ToLower()
@@ -28,10 +24,10 @@ function List-EdgeHostnames
     if(!$ChinaCDNEnabled){ $ChinaCDNEnabledString = '' }
     if(!$IsEdgeIPBindingEnabled){ $IsEdgeIPBindingEnabledString = ''}
 
-    $ReqURL = "https://" + $Credentials.host + "/hapi/v1/edge-hostnames?chinaCdnEnabled=$ChinaCDNEnabledString&comments=$Comments&customTarget=$CustomTarget&dnsZone=$DNSZone&isEdgeIPBindingEnabled=$IsEdgeIPBindingEnabledString&map=$Map&mapAlias=$MapAlias&recordNameSubstring=$RecordNameSubstring&securityType=$SecurityType&slotNumber=$SlotNumber&ttl=$TTL&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/hapi/v1/edge-hostnames?chinaCdnEnabled=$ChinaCDNEnabledString&comments=$Comments&customTarget=$CustomTarget&dnsZone=$DNSZone&isEdgeIPBindingEnabled=$IsEdgeIPBindingEnabledString&map=$Map&mapAlias=$MapAlias&recordNameSubstring=$RecordNameSubstring&securityType=$SecurityType&slotNumber=$SlotNumber&ttl=$TTL&accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method GET -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result.edgeHostnames
     }
     catch {

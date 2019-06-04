@@ -8,14 +8,10 @@ function Update-LDSLogConfiguration
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
-    $ReqURL = "https://" + $Credentials.host + "/lds-api/v3/log-configurations/$logConfigurationId`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-configurations/$logConfigurationId`?accountSwitchKey=$AccountSwitchKey"
     
     try {
-        $Result = Invoke-AkamaiOPEN -Method PUT -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $NewConfigJSON
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $NewConfigJSON
         return $Result 
     }
     catch {

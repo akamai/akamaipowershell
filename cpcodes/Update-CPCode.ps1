@@ -8,10 +8,6 @@ function Update-CPCode
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -EdgeRCFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     # Test JSON if PS 6 or higher
     if($PSVersionTable.PSVersion.Major -ge 6)
     {
@@ -21,10 +17,10 @@ function Update-CPCode
         }
     }
 
-    $ReqURL = "https://" + $Credentials.host + "/cprg/v1/cpcodes/$CPCode`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/cpcodes/$CPCode`?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiOPEN -Method PUT -ClientToken $Credentials.client_token -ClientAccessToken $Credentials.access_token -ClientSecret $Credentials.client_secret -ReqURL $ReqURL -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
         return $Result
     }
     catch {
