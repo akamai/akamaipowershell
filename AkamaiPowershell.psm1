@@ -8,8 +8,8 @@
 #
 #************************************************************************
 
-Get-ChildItem $PSScriptRoot\*.ps1 -Recurse | foreach { . $_.FullName }
-Get-ChildItem $PSScriptRoot\*.ps1 -Recurse | foreach { Export-ModuleMember $_.BaseName }
+Get-ChildItem $PSScriptRoot\*.ps1 -Recurse -exclude "*.tests.ps1" | foreach { . $_.FullName }
+Get-ChildItem $PSScriptRoot\*.ps1 -Recurse -exclude "*.tests.ps1" | foreach { Export-ModuleMember $_.BaseName }
 
 # Alias all List- cmdlets to Get- also for ease of use
 Get-ChildItem $PSScriptRoot\List-*.ps1 -Recurse | foreach {

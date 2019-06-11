@@ -1,10 +1,10 @@
 Function Update-PropertyRuleTree
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
-        [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$true)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
+        [Parameter(Mandatory=$false)] [string] $GroupID,
+        [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
