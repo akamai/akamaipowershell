@@ -7,7 +7,7 @@ function Get-PropertyVersion
       [Parameter(Mandatory=$false)] [string] $ContractId,
       [Parameter(Mandatory=$false)] [switch] $XML,
       [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+      [Parameter(Mandatory=$false)] [string] $Section = 'papi',
       [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -22,7 +22,7 @@ function Get-PropertyVersion
         {
             $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         }
-        return $Result  
+        return $Result.versions.items
     }
     catch {
         throw $_.Exception

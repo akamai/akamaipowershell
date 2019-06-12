@@ -1,4 +1,4 @@
-function Get-GroupDetails
+function Get-GroupByName
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $GroupName,

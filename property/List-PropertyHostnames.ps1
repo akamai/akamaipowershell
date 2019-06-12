@@ -15,6 +15,11 @@ function List-PropertyHostnames
     $ValidateHostnamesString = $ValidateHostnames.IsPresent.ToString().ToLower()
     if(!$ValidateHostnames){ $ValidateHostnamesString = '' }
 
+    if($PropertyVersion -eq "latest")
+    {
+        $PropertyVersion = (Get-Property -PropertyId $PropertyId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).latestVersion
+    }
+
     $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&accountSwitchKey=$AccountSwitchKey"
 
     try {

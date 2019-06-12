@@ -8,10 +8,6 @@ function Get-AppSecConfigurationVersionDetails
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Check creds
-    $Credentials = Get-AKCredentialsFromRC -ConfigFile $EdgeRCFile -Section $Section
-    if(!$Credentials){ return $null }
-
     $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber`?accountSwitchKey=$AccountSwitchKey"
 
     try {

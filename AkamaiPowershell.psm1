@@ -8,11 +8,12 @@
 #
 #************************************************************************
 
-Get-ChildItem $PSScriptRoot\*.ps1 -Recurse -exclude "*.tests.ps1" | foreach { . $_.FullName }
-Get-ChildItem $PSScriptRoot\*.ps1 -Recurse -exclude "*.tests.ps1" | foreach { Export-ModuleMember $_.BaseName }
+$PS1Files = Get-ChildItem -Exclude examples,pester | Get-ChildItem -Recurse -Include *.ps1
+$PS1Files | foreach { . $_.FullName }
+$PS1Files | foreach { Export-ModuleMember $_.BaseName }
 
 # Alias all List- cmdlets to Get- also for ease of use
-Get-ChildItem $PSScriptRoot\List-*.ps1 -Recurse | foreach {
+$PS1Files | Where {$_.Name.StartsWith('List-')} | foreach {
     $CmdletName = $_.BaseName
     $GetAlias = $CmdletName.Replace("List-", "Get-")
     Set-Alias -Name $GetAlias -Value $CmdletName

@@ -18,7 +18,7 @@ function List-AppSecConfigurationVersions
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.versionList
     }
     catch {
         throw $_.Exception 
