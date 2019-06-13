@@ -8,7 +8,7 @@
 #
 #************************************************************************
 
-$PS1Files = Get-ChildItem -Exclude examples,pester | Get-ChildItem -Recurse -Include *.ps1
+$PS1Files = Get-ChildItem $PSScriptRoot -Exclude examples,pester | Get-ChildItem -Recurse -Include *.ps1
 $PS1Files | foreach { . $_.FullName }
 $PS1Files | foreach { Export-ModuleMember $_.BaseName }
 
