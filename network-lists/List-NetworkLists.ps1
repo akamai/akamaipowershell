@@ -20,7 +20,7 @@ function List-NetworkLists
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.networkLists
     }
     catch {
         throw $_.Exception

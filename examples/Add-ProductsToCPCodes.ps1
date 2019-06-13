@@ -26,11 +26,11 @@ foreach($CPCode in $CPCodes)
 {
     if($AccountSwitchKey)
     {
-        $Detail = Get-CPCodeDetail -Section $Section -AccountSwitchKey $AccountSwitchKey -CPCode $CPCode
+        $Detail = Get-CPCode -Section $Section -AccountSwitchKey $AccountSwitchKey -CPCode $CPCode
     }
     else
     {
-        $Detail = Get-CPCodeDetail -Section $Section -CPCode $CPCode
+        $Detail = Get-CPCode -Section $Section -CPCode $CPCode
     }
 
     if($Detail.products[0].productId -ne $ProductIDToAdd)
