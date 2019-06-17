@@ -1,9 +1,9 @@
 ﻿function List-IDMAccountSwitchKeys
 {
     Param(
+        [Parameter(Mandatory=$true)]  [string] $SearchString,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
-        [Parameter(Mandatory=$true)]  [string] $SearchString
+        [Parameter(Mandatory=$false)] [string] $Section = 'default'
     )
 
     $Client = Get-IDMClientByAccessToken -EdgeRCFile $EdgeRCFile -Section $Section

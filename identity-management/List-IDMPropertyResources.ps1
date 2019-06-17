@@ -1,4 +1,4 @@
-function Get-IDMPropertyResources
+function List-IDMPropertyResources
 {
     Param(
         [Parameter(Mandatory=$true)] [string] $PropertyID,
