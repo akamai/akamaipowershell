@@ -26,3 +26,19 @@ If you find there are functions missing (and there are many, many missing) pleas
 4. Please use approved Powershell verbs where applicable. The use of List is fine, as are others when the approved verb would be confusion (like deleting or invalidating from cache. 'removing' isn't really a thing)
 5. Please arrange functions into folders based on the name of the API as Akamai have stated it (see the existing folder structure for examples)
 6. Update functions (POST/PUT) should have a $Body param for the user to specify the JSON body for the request. If you also wish to allow users to specify individual params and construct the request in the function, that is fine, but make sure the JSON body and individual params are in different Parameter Sets to avoid confusion. Check New-PropertyVersion for an example
+
+### Licensing
+
+Copyright 2019 Akamai Technologies 
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+    http://www.apache.org/licenses/LICENSE-2.0
+ 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
