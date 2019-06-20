@@ -8,8 +8,8 @@ function Get-PropertyByName
     )
 
     try {
-        $Properties = Get-AllProperties -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Properties | where {$_.propertyName -eq $PropertyName}
+        $Property = Find-Property -PropertyName $PropertyName -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+        return $Property
     }
     catch {
         throw $_.Exception

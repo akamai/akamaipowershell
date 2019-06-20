@@ -8,7 +8,9 @@
 #
 #************************************************************************
 
-$PS1Files = Get-ChildItem $PSScriptRoot -Exclude examples,pester | Get-ChildItem -Recurse -Include *.ps1
+$Directories = Get-ChildItem $PSScriptRoot -exclude examples,pester | Where { $_.PSIsContainer }
+$PS1Files = @()
+$Directories | foreach { $PS1Files += Get-ChildItem "$_\*.ps1" }
 $PS1Files | foreach { . $_.FullName }
 $PS1Files | foreach { Export-ModuleMember $_.BaseName }
 
