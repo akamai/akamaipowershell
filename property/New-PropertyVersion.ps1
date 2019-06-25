@@ -12,7 +12,7 @@ function New-PropertyVersion
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/properties/$PropertyId/versions/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyId/versions?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {

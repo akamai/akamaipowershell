@@ -65,7 +65,7 @@ function Activate-Property
     }
     #>
 
-    $Path = "/papi/v1/properties/$PropertyId/activations/?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyId/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
     try
     {

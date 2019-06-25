@@ -7,7 +7,7 @@ function List-Products
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/products/?contractId=$ContractId&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/products?contractId=$ContractId&accountSwitchKey=$AccountSwitchKey"
     
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
