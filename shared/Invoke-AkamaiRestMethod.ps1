@@ -97,18 +97,6 @@ function Invoke-AkamaiRestMethod
     # Set ReqURL from host and provided path
     $ReqURL = "https://" + $OpenHost + $Path
 
-    #Function to generate HMAC SHA256 Base64
-    Function Crypto ($secret, $message)
-    {
-        [byte[]] $keyByte = [System.Text.Encoding]::ASCII.GetBytes($secret)
-        [byte[]] $messageBytes = [System.Text.Encoding]::ASCII.GetBytes($message)
-        $hmac = new-object System.Security.Cryptography.HMACSHA256((,$keyByte))
-        [byte[]] $hashmessage = $hmac.ComputeHash($messageBytes)
-        $Crypt = [System.Convert]::ToBase64String($hashmessage)
-
-        return $Crypt
-    }
-
     #ReqURL Verification
     If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net")
     {
@@ -242,11 +230,11 @@ function Invoke-AkamaiRestMethod
             if($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302)
             {
                 try {
-                    $NewReqURL = "https://" + $_.Exception.Response.Headers.Location.Host + $_.Exception.Response.Headers.Location.PathAndQuery
-                    Invoke-AkamaiOPEN -Method $Method -ClientToken $ClientToken -ClientAccessToken $ClientAccessToken -ClientSecret $ClientSecret -ReqURL $NewReqURL
+                    $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
+                    Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -EdgeRCFile $EdgeRCFile -Section $Section
                 }
                 catch {
-                    throw $_.ErrorDetails
+                    throw $_
                 }
             }
             else {
