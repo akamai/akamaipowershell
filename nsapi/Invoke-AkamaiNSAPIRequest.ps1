@@ -1,12 +1,38 @@
 function Invoke-AkamaiNSAPIRequest {
     Param(
-        [Parameter(Mandatory=$true)] [string] $StorageGroupID,
         [Parameter(Mandatory=$true)] [string] $Path,
         [Parameter(Mandatory=$true)] [string] [ValidateSet('delete', 'dir', 'download', 'du', 'list', 'mkdir', 'ntime', 'quick-delete', 'rename', 'rmdir', 'stat', 'symlink', 'upload')] $Action,
-        [Parameter(Mandatory=$true)] [string] $KeyName,
-        [Parameter(Mandatory=$true)] [string] $Key,
-        [Parameter(Mandatory=$false)] [string] $Body
+        [Parameter(Mandatory=$true)] [Hashtable] $AdditionalOptions,
+        [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
+        [Parameter(Mandatory=$false)] [string] $Section = "default"
     )
+
+    # Get credentials from Auth File
+    if(!(Test-Path $AuthFile)){
+        throw "Error: Auth File $AuthFile not found"
+    }
+
+    $Config = Get-Content $AuthFile
+    if("[$Section]" -notin $Config){
+        throw "Error: Config section [$Section] not found in $EdgeRCFile"
+    }
+
+    $ConfigIndex = [array]::indexof($Config,"[$Section]")
+    $SectionArray = $Config[$ConfigIndex..($ConfigIndex + 5)]
+    $SectionArray | ForEach-Object {
+        if($_.ToLower().StartsWith("key")) { $Key = $_.Replace(" ","").SubString($_.IndexOf("=")) }
+        if($_.ToLower().StartsWith("id")) { $ID = $_.Replace(" ","").SubString($_.IndexOf("=")) }
+        if($_.ToLower().StartsWith("group")) { $Group = $_.Replace(" ","").SubString($_.IndexOf("=")) }
+        if($_.ToLower().StartsWith("host")){ $NSHost = $_.Replace(" ","").SubString($_.IndexOf("=")) }
+        if($_.ToLower().StartsWith("cpcode")){ $CPCode = $_.Replace(" ","").SubString($_.IndexOf("=")) }
+    }
+
+    $NSHost = "https://$NSHost"
+
+    if(!$key -or !$ID -or !$Group -or !$NSHost -or !$CPCode){
+        throw "Error: Some necessary auth elements missing. Please check your auth file"
+    }
 
     # Check for Proxy Env variable and use if present
     if($null -ne $ENV:https_proxy)
@@ -14,19 +40,34 @@ function Invoke-AkamaiNSAPIRequest {
         $UseProxy = $true
     }
 
-    #Prepend path for later use
+    #Prepend path with / and add CP Code
     if(!($Path.StartsWith("/"))) {
         $Path = "/$Path"
     }
-
-    $NSHost = "https://$StorageGroupID-nsu.akamaihd.net"
+    if(!($Path.StartsWith("/$CPCode/"))) {
+        $Path = "/$CPCode$Path"
+    }
 
     $Headers = @{}
 
     $EncodedPath = [System.Web.HttpUtility]::UrlEncode($Path)
 
     # Action Header
-    $ActionHeader = "version=1&action=$Action&format=xml"
+    $Options = @{
+        'version' = '1'
+        'action' = $Action
+    }
+    if($AdditionalOptions){
+        $Options += $AdditionalOptions
+    }
+
+    $Options.Keys | foreach {
+        $ActionHeader += "$_=$($Options[$_])&"
+    }
+
+    if($ActionHeader.EndsWith("&")){
+        $ActionHeader = $ActionHeader.Substring(0,$ActionHeader.LastIndexOf("&"))
+    }
     $Headers['X-Akamai-ACS-Action'] = $ActionHeader
 
     #GUID for request signing
@@ -35,14 +76,12 @@ function Invoke-AkamaiNSAPIRequest {
     # Generate X-Akamai-ACS-Auth-Data variable
     $Version = 5
     $EpochTime = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
-    $AuthDataHeader = "$Version, 0.0.0.0, 0.0.0.0, $EpochTime, $Nonce, $KeyName"
+    $AuthDataHeader = "$Version, 0.0.0.0, 0.0.0.0, $EpochTime, $Nonce, $ID"
     $Headers['X-Akamai-ACS-Auth-Data'] = $AuthDataHeader
 
     # Create sign-string for encrypting, reuse shared Crypto
-    $SignString = "$Path\nx-akamai-acs-action:$ActionHeader\n"
-    Write-Host "Sign-String: $SignString"
+    $SignString = "$Path`nx-akamai-acs-action:$ActionHeader`n"
     $EncryptMessage = $AuthDataHeader + $SignString
-    Write-Host "EncryptMessage: $EncryptMessage"
     $Signature = Crypto -secret $Key -message $EncryptMessage
     $Headers['X-Akamai-ACS-Auth-Sign'] = $Signature
 
@@ -65,8 +104,6 @@ function Invoke-AkamaiNSAPIRequest {
 
     # Set ReqURL from NSAPI hostname and supplied path
     $ReqURL = $NSHost + $Path
-
-    $Headers
 
     # Do it.
     if ($Method -eq "PUT" -or $Method -eq "POST") {
@@ -103,21 +140,9 @@ function Invoke-AkamaiNSAPIRequest {
             }
         }
         catch {
-            #Redirects aren't well handled due to signatures needing regenerated
-            if($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302)
-            {
-                try {
-                    $NewReqURL = "https://" + $_.Exception.Response.Headers.Location.Host + $_.Exception.Response.Headers.Location.PathAndQuery
-                    Invoke-RestMethod -Method $Method -Uri $NewReqURL -Headers $Headers -ContentType 'application/json' -MaximumRedirection 0 -ErrorAction Stop
-                }
-                catch {
-                    throw $_
-                }
-            }
-            else {
-                throw $_
-            }
+            throw $_
         }
     }
     
+    return $Response
 }
