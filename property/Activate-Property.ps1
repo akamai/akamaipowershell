@@ -49,22 +49,6 @@ function Activate-Property
         $Body = $BodyObj | ConvertTo-Json -Depth 100
     }
 
-    <#
-    {
-        "propertyVersion": 1,
-        "network": "STAGING",
-        "note": "Sample activation",
-        "useFastFallback": false,
-        "notifyEmails": [
-            "you@example.com",
-            "them@example.com"
-        ],
-        "acknowledgeWarnings": [
-            "msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"
-        ]
-    }
-    #>
-
     $Path = "/papi/v1/properties/$PropertyId/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
     try

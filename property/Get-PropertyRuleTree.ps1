@@ -11,8 +11,12 @@ function Get-PropertyRuleTree
     )
 
     $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
-    
-    $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-    #$returnVersions = $PropertyVersions.versions.items 
-    return $PropertyRuleTree     
+
+    try {
+        $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        return $PropertyRuleTree
+    }
+    catch {
+        throw $_.Exception
+    }
 }

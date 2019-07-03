@@ -1,20 +1,29 @@
 function New-CPCode
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $CPCodeName,
-        [Parameter(Mandatory=$true)]  [string] $ProductID,
-        [Parameter(Mandatory=$true)]  [string] $ContractID,
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [string] $CPCodeName,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [string] $ProductID,
+        [Parameter(ParameterSetName='postbody', Mandatory=$true)] [string] $Body,
+        [Parameter(Mandatory=$true)]  [string] $GroupId,
+        [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $PostObj = @{"productId" = $ProductID; "cpcodeName" = $CPCodeName}
-    $Body = $PostObj | ConvertTo-Json -Dept 10
+    if($PSCmdlet.ParameterSetName -eq 'attributes')
+    {
+        $PostObj = @{"productId" = $ProductID; "cpcodeName" = $CPCodeName}
+        $Body = $PostObj | ConvertTo-Json -Dept 10
+    }
 
     $Path = "/papi/v1/cpcodes?contractId=$ContractID&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
-    $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
-    return $Result
+    try {
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        return $Result
+    }
+    catch {
+        throw $_.Exception
+    }
 }
