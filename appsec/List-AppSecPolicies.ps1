@@ -1,4 +1,4 @@
-function List-AppSecSecurityPolicies
+function List-AppSecPolicies
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $ConfigID,
@@ -20,7 +20,7 @@ function List-AppSecSecurityPolicies
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.policies
     }
     catch {
         throw $_.Exception 

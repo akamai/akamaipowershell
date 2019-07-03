@@ -25,7 +25,7 @@ function Test-OpenAPI
             $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRcFile $EdgeRCFile -Section $Section
         }
         else {
-            $Result = Invoke-AkamaiRestMethod -Method $Method -EdgeRcFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -EdgeRcFile $EdgeRCFile -Section $Section
         }
     }
     catch {

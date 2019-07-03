@@ -18,7 +18,7 @@ function List-AppSecMatchTargets
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.matchTargets
     }
     catch {
         throw $_.Exception 

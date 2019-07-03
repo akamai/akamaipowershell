@@ -1,4 +1,4 @@
-function Get-AppSecConfigurationVersionDetails
+function Activate-AppSecConfigurationVersion
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $Body,
