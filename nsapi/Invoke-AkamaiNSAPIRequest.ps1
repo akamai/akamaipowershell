@@ -1,9 +1,10 @@
 function Invoke-AkamaiNSAPIRequest {
     Param(
         [Parameter(Mandatory=$true)] [string] $Path,
-        [Parameter(Mandatory=$true)] [string] [ValidateSet('delete', 'dir', 'download', 'du', 'list', 'mkdir', 'ntime', 'quick-delete', 'rename', 'rmdir', 'stat', 'symlink', 'upload')] $Action,
-        [Parameter(Mandatory=$true)] [Hashtable] $AdditionalOptions,
+        [Parameter(Mandatory=$true)] [string] [ValidateSet('delete', 'dir', 'download', 'du', 'list', 'mkdir', 'mtime', 'quick-delete', 'rename', 'rmdir', 'stat', 'symlink', 'upload')] $Action,
+        [Parameter(Mandatory=$false)] [Hashtable] $AdditionalOptions,
         [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $OutputFile,
         [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
         [Parameter(Mandatory=$false)] [string] $Section = "default"
     )
@@ -46,6 +47,10 @@ function Invoke-AkamaiNSAPIRequest {
     }
     if(!($Path.StartsWith("/$CPCode/"))) {
         $Path = "/$CPCode$Path"
+    }
+    # Do the same for 'destination' additional option
+    if($AdditionalOptions -and $AdditionalOptions['destination'] -and !($AdditionalOptions['destination'].StartsWith("/$CPCode"))){
+        $AdditionalOptions['destination'] = "/$CPCode$($AdditionalOptions['destination'])"
     }
 
     $Headers = @{}
@@ -132,11 +137,21 @@ function Invoke-AkamaiNSAPIRequest {
     }
     else {
         try {
-            if($UseProxy) {
-                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
+            if($OutputFile){
+                if($UseProxy) {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -OutFile $OutputFile -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
+                }
+                else {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -OutFile $OutputFile -MaximumRedirection 0 -ErrorAction Stop
+                }
             }
-            else {
-                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -MaximumRedirection 0 -ErrorAction Stop
+            else{
+                if($UseProxy) {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
+                }
+                else {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -MaximumRedirection 0 -ErrorAction Stop
+                }
             }
         }
         catch {
