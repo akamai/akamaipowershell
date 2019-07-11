@@ -8,15 +8,6 @@ function Update-CPCode
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Test JSON if PS 6 or higher
-    if($PSVersionTable.PSVersion.Major -ge 6)
-    {
-        if(!(Test-JSON $Body))
-        {
-            return "ERROR: Body is not valid JSON"
-        }
-    }
-
     $Path = "/cprg/v1/cpcodes/$CPCode`?accountSwitchKey=$AccountSwitchKey"
 
     try {

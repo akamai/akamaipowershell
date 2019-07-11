@@ -48,10 +48,17 @@ function Invoke-AkamaiNSAPIRequest {
     if(!($Path.StartsWith("/$CPCode/"))) {
         $Path = "/$CPCode$Path"
     }
-    # Do the same for 'destination' additional option
-    if($AdditionalOptions -and $AdditionalOptions['destination'] -and !($AdditionalOptions['destination'].StartsWith("/$CPCode"))){
-        $AdditionalOptions['destination'] = "/$CPCode$($AdditionalOptions['destination'])"
+    # Do the same for any additional options that might be missing the CP Code prefix
+    $PathFixAttributes = @( 
+        'destination'
+        'target'
+    )
+    $PathFixAttributes | foreach {
+        if($AdditionalOptions -and $AdditionalOptions[$_] -and !($AdditionalOptions[$_].StartsWith("%2F$CPCode"))){
+            $AdditionalOptions[$_] = "%2F$CPCode$($AdditionalOptions[$_])"
+        }
     }
+    
 
     $Headers = @{}
 
