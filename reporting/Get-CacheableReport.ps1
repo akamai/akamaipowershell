@@ -17,6 +17,11 @@ function Get-CacheableReport
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    $DateTimeMatch = '[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
+    if($Start -notmatch $DateTimeMatch -or $End -notmatch $DateTimeMatch){
+        throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
+    }
+
     # Nullify false switches
     $AllObjectIdsString = $AllObjectIds.IsPresent.ToString().ToLower()
     if(!$AllObjectIds){ $AllObjectIdsString = '' }
