@@ -4,6 +4,7 @@ function Invoke-AkamaiNSAPIRequest {
         [Parameter(Mandatory=$true)] [string] [ValidateSet('delete', 'dir', 'download', 'du', 'list', 'mkdir', 'mtime', 'quick-delete', 'rename', 'rmdir', 'stat', 'symlink', 'upload')] $Action,
         [Parameter(Mandatory=$false)] [Hashtable] $AdditionalOptions,
         [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $InputFile,
         [Parameter(Mandatory=$false)] [string] $OutputFile,
         [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
         [Parameter(Mandatory=$false)] [string] $Section = "default"
@@ -121,20 +122,40 @@ function Invoke-AkamaiNSAPIRequest {
     if ($Method -eq "PUT" -or $Method -eq "POST") {
         try {
             if ($Body) {
-                if($UseProxy){
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Body $Body -Proxy $ENV:https_proxy
+                if($InputFile){
+                    if($UseProxy){
+                        Write-Host "Using method $Method on file $InputFile"
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Body $Body -InFile $InputFile -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Body $Body -InFile $InputFile
+                    }
                 }
-                else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Body $Body
+                else{
+                    if($UseProxy){
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Body $Body -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Body $Body
+                    }
                 }
-                
             }
             else {
-                if($UseProxy) {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Proxy $ENV:https_proxy
+                if($InputFile){
+                    if($UseProxy) {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -InFile $InputFile -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -InFile $InputFile
+                    }
                 }
                 else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json'
+                    if($UseProxy) {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json'
+                    }
                 }
             }
         }

@@ -1,12 +1,12 @@
 function List-NetstorageDirectory {
     Param(
         [Parameter(Mandatory=$true)] [string] $Path,
-        [Parameter(Mandatory=$true)] [string] $SubPath,
+        [Parameter(Mandatory=$false)] [string] $SubPath,
         [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
         [Parameter(Mandatory=$false)] [string] $Section = "default"
     )
     
-    $Action = "list"
+    $Action = 'list'
 
     $AdditionalOptions = @{
         'format' = 'sql'
