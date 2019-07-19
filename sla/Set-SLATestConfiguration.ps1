@@ -1,4 +1,4 @@
-function Update-SLATestConfiguration
+function Set-SLATestConfiguration
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $SLATestID,

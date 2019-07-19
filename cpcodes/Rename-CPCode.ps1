@@ -13,7 +13,7 @@ function Rename-CPCode
     $Body = $Code | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Update-CPCode -CPCode $CPCode -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+        $Result = Set-CPCode -CPCode $CPCode -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

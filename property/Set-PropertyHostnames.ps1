@@ -1,4 +1,4 @@
-function Update-PropertyHostnames
+function Set-PropertyHostnames
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $PropertyId,

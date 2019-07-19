@@ -1,4 +1,4 @@
-function Update-AppSecCustomRuleActions
+function Set-AppSecCustomRuleActions
 {
     Param(
         [Parameter(Mandatory=$true)]  [int] $ConfigID,

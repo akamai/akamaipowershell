@@ -1,4 +1,4 @@
-function Update-CPReportingGroup
+function Set-CPReportingGroup
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $ReportingGroupID,

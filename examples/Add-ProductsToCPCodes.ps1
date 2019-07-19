@@ -50,11 +50,11 @@ foreach($CPCode in $CPCodes)
             $Json = $Detail | ConvertTo-Json -Depth 10
             if($AccountSwitchKey)
             {
-                $Result = Update-CPCode -Section $Section -AccountSwitchKey $AccountSwitchKey -CPCode $CPCode -Body $Json
+                $Result = Set-CPCode -Section $Section -AccountSwitchKey $AccountSwitchKey -CPCode $CPCode -Body $Json
             }
             else
             {
-                $Result = Update-CPCode -Section $Section -CPCode $CPCode -Body $Json
+                $Result = Set-CPCode -Section $Section -CPCode $CPCode -Body $Json
             }
             return $Result
         }

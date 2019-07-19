@@ -1,4 +1,4 @@
-Function Update-PropertyRuleTree
+Function Set-PropertyRuleTree
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $PropertyId,

@@ -33,11 +33,11 @@ function Remove-PropertyHostnames
     try {
         if($ValidateHostnames)
         {
-            $Result = Update-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -Body $Body -GroupID $GroupID -ContractId $ContractId -ValidateHostnames -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $Result = Set-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -Body $Body -GroupID $GroupID -ContractId $ContractId -ValidateHostnames -Section $Section -AccountSwitchKey $AccountSwitchKey
         }
         else
         {
-            $Result = Update-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -Body $Body -GroupID $GroupID -ContractId $ContractId -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $Result = Set-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -Body $Body -GroupID $GroupID -ContractId $ContractId -Section $Section -AccountSwitchKey $AccountSwitchKey
         }
        
         return $Result

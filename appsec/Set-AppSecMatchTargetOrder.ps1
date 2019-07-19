@@ -1,4 +1,4 @@
-function Update-AppSecMatchTargetOrder
+function Set-AppSecMatchTargetOrder
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $ConfigID,
