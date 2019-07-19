@@ -59,10 +59,8 @@ function Invoke-AkamaiNSAPIRequest {
             $AdditionalOptions[$_] = "%2F$CPCode$($AdditionalOptions[$_])"
         }
     }
-    
 
     $Headers = @{}
-
     $EncodedPath = [System.Web.HttpUtility]::UrlEncode($Path)
 
     # Action Header
@@ -81,6 +79,8 @@ function Invoke-AkamaiNSAPIRequest {
     if($ActionHeader.EndsWith("&")){
         $ActionHeader = $ActionHeader.Substring(0,$ActionHeader.LastIndexOf("&"))
     }
+    # Remove null options
+    $ActionHeader = Remove-NullQueryParameters -ReqURL $ActionHeader
     $Headers['X-Akamai-ACS-Action'] = $ActionHeader
 
     #GUID for request signing

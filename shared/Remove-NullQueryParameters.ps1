@@ -2,18 +2,25 @@ function Remove-NullQueryParameters
 {
     param(
         [Parameter(Mandatory=$true)] [string] $ReqURL
-        )
+    )
     
     $ParsedParameters = @()
+    # Add support for just the query string being passed, not the whole URL
+    if($ReqURL.Contains("/")){
+        if(!$ReqURL.Contains("?"))
+        {
+            return $ReqURL
+        }
 
-    if(!$ReqURL.Contains("?"))
-    {
-        return $ReqURL
+        $URI = $ReqURL.Substring(0,$ReqURL.IndexOf("?"))
+        $QueryString = $ReqURL.Substring($ReqURL.IndexOf("?")+1)
+        $JustQueryString = $false
     }
-
-    $URI = $ReqURL.Substring(0,$ReqURL.IndexOf("?"))
-    $QueryString = $ReqURL.Substring($ReqURL.IndexOf("?")+1)
-
+    else{
+        $QueryString = $ReqURL
+        $JustQueryString = $true
+    }
+    
     if($QueryString.Contains("&"))
     {
         $Parameters = $QueryString.Split("&")
@@ -44,6 +51,11 @@ function Remove-NullQueryParameters
     }
     else {
         $JoinedParameters = $ParsedParameters -join "&"
-        return "$URI`?$JoinedParameters"
+        if($JustQueryString){
+            return $JoinedParameters
+        }
+        else{
+            return "$URI`?$JoinedParameters"
+        }
     }
 }

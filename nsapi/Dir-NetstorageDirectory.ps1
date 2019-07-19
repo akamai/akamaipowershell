@@ -1,7 +1,12 @@
 function Dir-NetstorageDirectory {
     Param(
         [Parameter(Mandatory=$true)] [string] $Path,
-        [Parameter(Mandatory=$true)] [string] $SubPath,
+        [Parameter(Mandatory=$false)] [string] $Prefix,
+        [Parameter(Mandatory=$false)] [string] $StartPath,
+        [Parameter(Mandatory=$false)] [string] $EndPath,
+        [Parameter(Mandatory=$false)] [int] $MaxEntries,
+        [Parameter(Mandatory=$false)] [string] $Encoding,
+        [Parameter(Mandatory=$false)] [switch] $SlashBoth,
         [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
         [Parameter(Mandatory=$false)] [string] $Section = "default"
     )
@@ -10,7 +15,15 @@ function Dir-NetstorageDirectory {
 
     $AdditionalOptions = @{
         'format' = 'sql'
-        'path' = $SubPath
+        'prefix' = $Prefix
+        'start' = $StartPath
+        'end' = $EndPath
+        'max_entries' = $MaxEntries
+        'encoding' = $Encoding
+    }
+
+    if($SlashBoth){
+        $AdditionalOptions['slash'] = 'both'
     }
 
     try {
