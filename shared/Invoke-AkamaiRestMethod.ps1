@@ -41,8 +41,6 @@ File-based Auth - Authorization file to read credentials from. Defaults to ~/.ed
 File-based Auth - Section in EdgeRC file to read credentials from. Defaults to [default]
 .PARAMETER Body
 Should contain the POST/PUT Body. The body should be structured like a JSON object. Example: $Body = '{ "name": "botlist2", "type": "IP", "list": ["201.22.44.12", "8.7.6.0/24"] }'
-.PARAMETER AcceptHeader
-Value to set Accept request header to. Defaults to 'application/json'. Required by certain APIs
 .PARAMETER AdditionalHeaders
 Hashtable of additional request headers to add
 .PARAMETER Staging
@@ -60,7 +58,6 @@ function Invoke-AkamaiRestMethod
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
-        [Parameter(Mandatory=$false)] [string] $AcceptHeader = 'application/json',
         [Parameter(Mandatory=$false)] [hashtable] $AdditionalHeaders,
         [Parameter(Mandatory=$false)] [boolean] $Staging,
         [Parameter(Mandatory=$false)] [string] $MaxBody = 131072
@@ -175,12 +172,15 @@ function Invoke-AkamaiRestMethod
 
     #Add Auth & Accept headers
     $Headers.Add('Authorization',$AuthorizationHeader)
-    $Headers.Add('Accept',$AcceptHeader)
+    $Headers.Add('Accept','application/json')
+    $Headers.Add('Content-Type', 'application/json')
 
     #Add additional headers
     if($AdditionalHeaders)
     {
-        $Headers += $AdditionalHeaders
+        $AdditionalHeaders.Keys | foreach {
+            $Headers[$_] = $AdditionalHeaders[$_]
+        }
     }
 
     #Add additional headers if POSTing or PUTing
@@ -205,19 +205,19 @@ function Invoke-AkamaiRestMethod
         try {
             if ($Body) {
                 if($UseProxy){
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json' -Proxy $ENV:https_proxy
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -Proxy $ENV:https_proxy
                 }
                 else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ContentType 'application/json'
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body
                 }
                 
             }
             else {
                 if($UseProxy) {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Proxy $ENV:https_proxy
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Proxy $ENV:https_proxy
                 }
                 else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json'
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
                 }
             }
         }
