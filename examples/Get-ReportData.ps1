@@ -10,18 +10,16 @@
 
 Param(
     [Parameter(Mandatory=$true)]  [string] $ReportType,
-    [Parameter(Mandatory=$false)]  [int] $Version = 1,
-    [Parameter(Mandatory=$true)]  [string] $CpCodes,
+    [Parameter(Mandatory=$false)] [int] $Version = 1,
+    [Parameter(Mandatory=$false)] [string] $CpCodes,
     [Parameter(Mandatory=$false)] [switch] $LastWeek,
     [Parameter(Mandatory=$false)] [switch] $LastMonth,
     [Parameter(Mandatory=$false)] [switch] $Last90Days,
     [Parameter(Mandatory=$false)] [int] $LastXDays,
-    [Parameter(Mandatory=$false)] [int] $Limit = 500,
+    [Parameter(Mandatory=$false)] [string] $Limit,
     [Parameter(Mandatory=$false)] [string] $Section = 'default',
     [Parameter(Mandatory=$true)]  [string] $AccountSwitchKey
     )
-
-Import-Module ImportExcel
 
 if(!(Get-Module AkamaiPowershell))
 {
