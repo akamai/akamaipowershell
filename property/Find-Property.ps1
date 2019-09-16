@@ -4,6 +4,9 @@ function Find-Property
         [Parameter(ParameterSetName='Name', Mandatory=$false)] [string] $PropertyName,
         [Parameter(ParameterSetName='Host', Mandatory=$false)] [string] $PropertyHostname,
         [Parameter(ParameterSetName='Edge', Mandatory=$false)] [string] $EdgeHostname,
+        [Parameter(Mandatory=$false)] [switch] $Latest,
+        [Parameter(Mandatory=$false)] [switch] $JustProductionActive,
+        [Parameter(Mandatory=$false)] [switch] $JustStagingActive,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -26,12 +29,23 @@ function Find-Property
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
-        $Result = $Result.versions.items | Sort-Object -Property propertyVersion -Descending
-        if($null -ne $Result -and $Result.GetType().Name -eq "Object[]") {
-            return $Result[0]
+        if($Latest){
+            $SortedResult = $Result.versions.items | Sort-Object -Property propertyVersion -Descending
+            if($null -ne $SortedResult -and $SortedResult.GetType().Name -eq "Object[]") {
+                return $SortedResult[0]
+            }
+            else {
+                return $SortedResult
+            }
         }
-        else {
-            return $Result
+        elseif($JustProductionActive){
+            return $Result.versions.items | Where {$_.productionStatus -eq "ACTIVE"}
+        }
+        elseif($JustStagingActive){
+            return $Result.versions.items | Where {$_.stagingStatus -eq "ACTIVE"}
+        }
+        else{
+            return $Result.versions.items
         }
     }
     catch {

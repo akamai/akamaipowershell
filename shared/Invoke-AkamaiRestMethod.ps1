@@ -100,15 +100,6 @@ function Invoke-AkamaiRestMethod
         throw "Error: Ivalid Request URI"
     }
 
-    # Test JSON if PS 6 or higher
-    if($Body){
-        if($PSVersionTable.PSVersion.Major -ge 6) {
-            if(!(Test-JSON $Body)) {
-                throw "ERROR: Body is not valid JSON"
-            }
-        }
-    }
-
     #Sanitize ReqURL (Certain {OPEN} APIs don't handle empty query parameters well)
     $ReqURL = Remove-NullQueryParameters -ReqURL $ReqURL
 

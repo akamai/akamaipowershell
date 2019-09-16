@@ -12,7 +12,7 @@ function List-AppSecSelectedHostnames
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.hostnameList
+        return $Result
     }
     catch {
         throw $_.Exception 

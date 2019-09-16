@@ -1,4 +1,4 @@
-function List-Contracts
+function List-CustomBehaviors
 {
     Param(
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -6,13 +6,13 @@ function List-Contracts
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/contracts?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/custom-behaviors?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.contracts.items
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        return $Result
     }
     catch {
         throw $_.Exception
-    }  
+    }
 }

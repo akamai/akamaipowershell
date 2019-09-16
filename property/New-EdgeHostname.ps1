@@ -1,7 +1,6 @@
 function New-EdgeHostname
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $EdgeHostnameID,
         [Parameter(Mandatory=$true)]  [string] $GroupID,
         [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$true)]  [string] $Body,
@@ -11,7 +10,7 @@ function New-EdgeHostname
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/edgehostnames/$EdgeHostnameID`?contractId=$ContractId&groupId=$GroupID&options=$Options&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/edgehostnames?contractId=$ContractId&groupId=$GroupID&options=$Options&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body

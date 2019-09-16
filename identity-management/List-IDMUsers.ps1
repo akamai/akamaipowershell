@@ -3,7 +3,7 @@ function List-IDMUsers
     Param(
         [Parameter(Mandatory=$false)] [switch] $Actions,
         [Parameter(Mandatory=$false)] [switch] $AuthGrants,
-        [Parameter(Mandatory=$false)] [int] $GroupID,
+        [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
