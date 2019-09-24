@@ -20,15 +20,6 @@ Function Set-PropertyRuleTree
     }
     catch
     {
-        $returnobject = $_
-        if($returnobject.Exception -Match "The operation has timed out")
-        {
-            write-host "The operation to push changes timed out but changes were pushed. Ignoring"
-        }
-        else
-        {
-            write-host "Error on pushing changes:"
-            write-host "$_"
-        }
+        throw $_.Exception
     }
 }
