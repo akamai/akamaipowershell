@@ -4,7 +4,7 @@ This module is designed to abstract the sometimes complex Akamai API commands, a
 
 The central function of the module is Invoke-AkamaiRestMethod, which is a heavily modified version of the deprecated Invoke-AkamaiOpen you can find [here](https://github.com/akamai/AkamaiOPEN-edgegrid-powershell).
 
-*Note: NO WARRANTY of any kind is offered, or should be inferred. If you use this module and break your stuff, that's your own issue. These APIs are super-powerful and this is nothing beyond some syntax checking to ensure you don't burn your own setup down.*
+*Note: NO WARRANTY of any kind is offered, or should be inferred. These APIs are very powerful and this module will do little beyond basic syntax checking and will not prevent you doing unspeakable things to your infrastructure if you instruct it to do so.*
 
 ### Usage
 
@@ -18,11 +18,11 @@ If you wish to use an https proxy with your commands, simply set the *https_prox
 
 ### Contribution
 
-If you find there are functions missing (and there are many, many missing) please contribute to the module, following these recommendations
+If you find there are functions missing (and there are many missing) please contribute to the module, following these recommendations
 
 1. All functions must be (where practical) single-use functions, not multi-function scripts. If you wish to write complex scripts, great, but keep this module to just building blocks.
-2. All functions take option parameters for your .edgerc file and the section to read from. The default is always ~/.edgerc, though the default section varies from API to API. Entering the credential attributes as individual params is currently not supported, and would be a hassle to implement.
-3. All functions must support AccountSwitchKey params. This is an internal Akamai feature, but keeps the function universally usable.
+2. All functions take optional parameters for your .edgerc file and the section to read from. The default is always ~/.edgerc, though the default section varies from API to API. Entering the credential attributes as individual params is currently not supported, and would be a hassle to implement.
+3. All functions must support AccountSwitchKey params. This is a feature only used by Partners and Akamai internal users, but keeps the function universally usable.
 4. Please use approved Powershell verbs where applicable. The use of List is fine, as are others when the approved verb would be confusion (like deleting or invalidating from cache. 'removing' isn't really a thing)
 5. Please arrange functions into folders based on the name of the API as Akamai have stated it (see the existing folder structure for examples)
 6. Update functions (POST/PUT) should have a $Body param for the user to specify the JSON body for the request. If you also wish to allow users to specify individual params and construct the request in the function, that is fine, but make sure the JSON body and individual params are in different Parameter Sets to avoid confusion. Check New-PropertyVersion for an example
