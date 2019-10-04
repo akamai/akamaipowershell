@@ -5,7 +5,16 @@ function Get-IDMClientByAccessToken
         [Parameter(Mandatory=$false)] [string] $Section = 'default'
     )
 
+    # Get credentials from EdgeRC
+    if(!(Test-Path $EdgeRCFile)){
+        throw "Error: EdgeRCFile $EdgeRCFile not found"
+    }
+
     $Config = Get-Content $EdgeRCFile
+    if("[$Section]" -notin $Config){
+        throw "Error: Config section [$Section] not found in $EdgeRCFile"
+    }
+
     $ConfigIndex = [array]::indexof($Config,"[$Section]")
     $SectionArray = $Config[$ConfigIndex..($ConfigIndex + 4)]
     $SectionArray | ForEach-Object {
