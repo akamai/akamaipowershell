@@ -55,7 +55,7 @@ function Invalidate-CachedObjects
     $PostBody = @{ 'objects' = $Objects }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
 
-    $Path = "/ccu/v3/invalidate/$($PSCmdlet.ParameterSetName)/$Network`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/ccu/v3/invalidate/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())`?accountSwitchKey=$AccountSwitchKey"
 
     try
     {

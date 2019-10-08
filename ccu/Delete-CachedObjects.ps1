@@ -4,7 +4,7 @@ function Delete-CachedObjects
         [Parameter(ParameterSetName='url', Mandatory=$true)]    [string] $URLs,
         [Parameter(ParameterSetName='cpcode', Mandatory=$true)] [string] $CPCodes,
         [Parameter(ParameterSetName='tag', Mandatory=$true)]    [string] $Tags,
-        [Parameter(Mandatory=$false)] [string] [ValidateSet('Staging', 'Production')] $Network = 'production',
+        [Parameter(Mandatory=$false)] [string] [ValidateSet('staging', 'production')] $Network = 'production',
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'ccu',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -35,7 +35,7 @@ function Delete-CachedObjects
     $PostBody = @{ 'objects' = $Objects }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
 
-    $Path = "/ccu/v3/delete/$($PSCmdlet.ParameterSetName)/$Network`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/ccu/v3/delete/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())`?accountSwitchKey=$AccountSwitchKey"
 
     try
     {
