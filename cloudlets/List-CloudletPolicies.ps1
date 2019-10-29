@@ -4,8 +4,6 @@ function List-CloudletPolicies
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [switch] $IncludeDeleted,
         [Parameter(Mandatory=$false)] [string] $CloudletID,
-        [Parameter(Mandatory=$false)] [string] $ClonePolicyID,
-        [Parameter(Mandatory=$false)] [string] $Version,
         [Parameter(Mandatory=$false)] [int]    $Offset,
         [Parameter(Mandatory=$false)] [int]    $Pagesize = 10,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
