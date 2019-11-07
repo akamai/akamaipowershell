@@ -1,3 +1,13 @@
+function Export-PropertyTreeBranch
+{
+    Param(
+        [Parameter(Mandatory=$true)]  [object] $Rules,
+        [Parameter(Mandatory=$false)] [string] $Path
+    )
+
+
+}
+
 function Export-PropertyRuleTree
 {
     Param(
@@ -25,5 +35,25 @@ function Export-PropertyRuleTree
         throw $_.Exception
     }
 
-    return $PropertyRuleTree
+    $Rules = $PropertyRuleTree.rules
+    $InitialPath = "$OutputFolder\$($PropertyRuleTree.propertyName)"
+    
+    if(Test-Path $InitialPath -and (Get-ChildItem $InitialPath)){
+        throw "Output directory $InitialPath already exists and is not empty. Please delete its contents or choose another directory"
+    }
+    elseif(Test-Path $InitialPath -and !(Get-ChildItem $InitialPath)){
+        New-Item -ItemType Directory -Path $InitialPath | Out-Null
+    }
+
+    # Export default behaviours, variables & options
+    $Rules.variables | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\variables.json"
+    $Rules.options | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\options.json"
+    $Rules.behaviors | foreach {
+        $_ | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\$($_.Name).json"
+    }
+
+    # Recurse through children
+    $Rules.children | foreach {
+        Export-PropertyTreeBranch -Path "$InitialPath\$($_.Name)" -Rules $_
+    }
 }
