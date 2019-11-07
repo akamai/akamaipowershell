@@ -21,8 +21,6 @@ function Get-PropertyRuleTree
 
     $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
-    return $Path
-
     if($RuleFormat){
         $AdditionalHeaders = @{
             Accept = "application/vnd.akamai.papirules.$RuleFormat+json"
