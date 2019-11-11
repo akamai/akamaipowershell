@@ -5,7 +5,29 @@ function Export-PropertyTreeBranch
         [Parameter(Mandatory=$false)] [string] $Path
     )
 
+    # Create directory
+    New-Item -ItemType Directory -Path $Path | Out-Null
 
+    # Export data
+    if($Rules.criteria.Count -gt 0){
+        $Rules.criteria | ConvertTo-Json -Depth 100 | Out-File "$Path\criteria.json"
+
+        # Only export criteriaMustSatisfy if you actually have criteria
+        if($Rules.criteriaMustSatisfy){
+            $Rules.criteriaMustSatisfy | ConvertTo-Json -Depth 100 | Out-File "$Path\criteriaMustSatisfy.json"
+        }
+    }
+
+    $Rules.behaviors | foreach {
+        $_ | ConvertTo-Json -Depth 100 | Out-File "$Path\$($_.Name).json"
+    }
+    if($Rules.comments){
+        $Rules.comments | ConvertTo-Json -Depth 100 | Out-File "$Path\comments.json"
+    }
+
+    $Rules.Children | foreach {
+        Export-PropertyTreeBranch -Path "$Path\$($_.Name)" -Rules $_
+    }
 }
 
 function Export-PropertyRuleTree
@@ -38,20 +60,29 @@ function Export-PropertyRuleTree
     $Rules = $PropertyRuleTree.rules
     $InitialPath = "$OutputFolder\$($PropertyRuleTree.propertyName)"
     
-    if(Test-Path $InitialPath -and (Get-ChildItem $InitialPath)){
+    if( (Test-Path $InitialPath) -and (Get-ChildItem $InitialPath)){
         throw "Output directory $InitialPath already exists and is not empty. Please delete its contents or choose another directory"
     }
-    elseif(Test-Path $InitialPath -and !(Get-ChildItem $InitialPath)){
+    elseif( !(Test-Path $InitialPath) ) {
         New-Item -ItemType Directory -Path $InitialPath | Out-Null
     }
 
     # Export default behaviours, variables & options
-    $Rules.variables | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\variables.json"
-    $Rules.options | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\options.json"
+    if($Rules.variables.count -gt 0){
+        $Rules.variables | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\variables.json"
+    }
+    
+    if($Rules.options){
+        $Rules.options | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\options.json"
+    }
+    
     $Rules.behaviors | foreach {
         $_ | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\$($_.Name).json"
     }
-
+    if($Rules.comments){
+        $Rules.comments | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\comments.json"
+    }
+    
     # Recurse through children
     $Rules.children | foreach {
         Export-PropertyTreeBranch -Path "$InitialPath\$($_.Name)" -Rules $_
