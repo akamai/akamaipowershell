@@ -10,10 +10,17 @@ function Get-Property
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    # Find property if user has specified PropertyName
     if($PropertyName){
-        $PropertyID = (Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).propertyId
-        if($PropertyID -eq ''){
-            throw "Property '$PropertyName' not found"
+        try{
+            $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $PropertyID = $Property.propertyId
+            if($PropertyID -eq ''){
+                throw "Property '$PropertyName' not found"
+            }
+        }
+        catch{
+            throw $_.Exception
         }
     }
 

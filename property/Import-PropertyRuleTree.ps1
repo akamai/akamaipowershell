@@ -1,8 +1,8 @@
-function Export-PropertyTreeBranch
+function Import-PropertyTreeBranch
 {
     Param(
         [Parameter(Mandatory=$true)]  [object] $Rules,
-        [Parameter(Mandatory=$false)] [string] $Path
+        [Parameter(Mandatory=$true)] [string] $Path
     )
 
     # Create directory
@@ -30,7 +30,7 @@ function Export-PropertyTreeBranch
     }
 }
 
-function Export-PropertyRuleTree
+function Import-PropertyRuleTree
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
@@ -85,6 +85,6 @@ function Export-PropertyRuleTree
     
     # Recurse through children
     $Rules.children | foreach {
-        Export-PropertyTreeBranch -Path "$InitialPath\$($_.Name)" -Rules $_
+        Import-PropertyTreeBranch -Path "$InitialPath\$($_.Name)" -Rules $_
     }
 }
