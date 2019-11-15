@@ -10,7 +10,7 @@ function List-CustomBehaviors
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.custombehaviors.items
     }
     catch {
         throw $_.Exception

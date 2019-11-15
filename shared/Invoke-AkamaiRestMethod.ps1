@@ -217,28 +217,49 @@ function Invoke-AkamaiRestMethod
         }
     }
     else {
-        try {
-            if($UseProxy) {
-                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
+        # Differentiate on PS 5 and later as PS 5's Invoke-RestMethod doesn't behave the same as the later versions
+        if($PSVersionTable.PSVersion.Major -le 5){
+            try{
+                if($UseProxy) {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction SilentlyContinue -Proxy $ENV:https_proxy
+                }
+                else {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction SilentlyContinue
+                }
+    
+                #Redirects aren't well handled due to signatures needing regenerated
+                if($Response.redirectLink){
+                    $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+                }
             }
-            else {
-                $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop
+            catch{
+                throw $_.ErrorDetails
             }
         }
-        catch {
-            #Redirects aren't well handled due to signatures needing regenerated
-            if($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302)
-            {
-                try {
-                    $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
-                    Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -EdgeRCFile $EdgeRCFile -Section $Section
+        else{
+            try {
+                if($UseProxy) {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
                 }
-                catch {
-                    throw $_
+                else {
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop
                 }
             }
-            else {
-                throw $_.ErrorDetails
+            catch {
+                #Redirects aren't well handled due to signatures needing regenerated
+                if($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302)
+                {
+                    try {
+                        $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
+                        $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+                    }
+                    catch {
+                        throw $_
+                    }
+                }
+                else {
+                    throw $_.ErrorDetails
+                }
             }
         }
     }

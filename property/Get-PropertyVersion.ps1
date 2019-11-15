@@ -12,8 +12,33 @@ function Get-PropertyVersion
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    # Find property if user has specified PropertyName or version = "latest"
     if($PropertyName){
-        $PropertyID = (Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).propertyId
+        try{
+            $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $PropertyID = $Property.propertyId
+            if($PropertyID -eq ''){
+                throw "Property '$PropertyName' not found"
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
+
+    if($PropertyVersion.ToLower() -eq "latest"){
+        try{
+            if($PropertyName){
+                $PropertyVersion = $Property.propertyVersion
+            }
+            else{
+                $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                $PropertyVersion = $Property.latestVersion
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
     }
 
     $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion`?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"

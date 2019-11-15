@@ -19,7 +19,7 @@ function Get-CacheableReport
 
     $DateTimeMatch = '[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
     if($Start -notmatch $DateTimeMatch -or $End -notmatch $DateTimeMatch){
-        throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
+        #throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
     # Nullify false switches
