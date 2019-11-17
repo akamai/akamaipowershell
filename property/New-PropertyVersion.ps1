@@ -27,7 +27,6 @@ function New-PropertyVersion
     
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
-        write-host "New Version Created"
         return $Result
     }
     catch {

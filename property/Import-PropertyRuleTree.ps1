@@ -1,14 +1,29 @@
-function Import-PropertyTreeBranch
+function Import-RuleTree
 {
     Param(
-        [Parameter(Mandatory=$true)]  [object] $Rules,
+        [Parameter(Mandatory=$true)] [object] $Rules,
         [Parameter(Mandatory=$true)] [string] $Path
     )
 
     # Create directory
     New-Item -ItemType Directory -Path $Path | Out-Null
 
-    # Export data
+    # Create Index Object
+    $Index = New-Object -TypeName PSCustomObject
+    $Index | Add-Member -MemberType NoteProperty -Name "children" -Value @()
+    $Index | Add-Member -MemberType NoteProperty -Name "behaviors" -Value @()
+
+    # Variables
+    if($Rules.variables.count -gt 0){
+        $Rules.variables | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\variables.json"
+    }
+    
+    # Options
+    if($Rules.options){
+        $Rules.options | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\options.json"
+    }
+
+    # Criteria & cirteriaMustSatisfy
     if($Rules.criteria.Count -gt 0){
         $Rules.criteria | ConvertTo-Json -Depth 100 | Out-File "$Path\criteria.json"
 
@@ -18,16 +33,39 @@ function Import-PropertyTreeBranch
         }
     }
 
-    $Rules.behaviors | foreach {
-        $_ | ConvertTo-Json -Depth 100 | Out-File "$Path\$($_.Name).json"
+    # Behaviors
+    foreach($Behavior in $Rules.behaviors){
+        $MatchingBehaviors = $Rules.behaviors | where {$_.Name -eq $Behavior.Name}
+        # Look for multiple behaviors of the same name and append numerical value to its name
+        if($MatchingBehaviors.count -gt 1){
+            for($i = 0; $i -lt $MatchingBehaviors.count; $i++){
+                if($Behavior -eq $MatchingBehaviors[$i]){
+                    $NamingIndex = $i + 1 # Start at 1, rather than 0
+                }
+            }
+            $Behavior | ConvertTo-Json -Depth 100 | Out-File "$Path\$($Behavior.Name)-$NamingIndex.json"
+            $Index.behaviors += $Behavior.Name + "-$NamingIndex"
+        }
+        else{
+            $Behavior | ConvertTo-Json -Depth 100 | Out-File "$Path\$($Behavior.Name).json"
+            $Index.behaviors += $Behavior.Name
+        }
     }
+
+    # Comments
     if($Rules.comments){
         $Rules.comments | ConvertTo-Json -Depth 100 | Out-File "$Path\comments.json"
     }
 
+    # Recurse through children
     $Rules.Children | foreach {
-        Export-PropertyTreeBranch -Path "$Path\$($_.Name)" -Rules $_
+        Import-RuleTree -Path "$Path\$($_.Name)" -Rules $_
+        $Index.children += $_.Name
     }
+
+    # Save Index
+    $Index | ConvertTo-Json -Depth 100 | Out-File "$Path\index.json"
+
 }
 
 function Import-PropertyRuleTree
@@ -36,7 +74,7 @@ function Import-PropertyRuleTree
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
-        [Parameter(Mandatory=$false)]  [string] $OutputFolder = ".",
+        [Parameter(Mandatory=$false)] [string] $OutputFolder = ".",
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $RuleFormat,
@@ -45,6 +83,7 @@ function Import-PropertyRuleTree
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    # Get Property from PAPI
     try {
         if($PropertyName){
             $PropertyRuleTree = Get-PropertyRuleTree -PropertyName $PropertyName -PropertyVersion $PropertyVersion -GroupID $GroupID -ContractId $ContractId -RuleFormat $RuleFormat -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
@@ -58,33 +97,16 @@ function Import-PropertyRuleTree
     }
 
     $Rules = $PropertyRuleTree.rules
-    $InitialPath = "$OutputFolder\$($PropertyRuleTree.propertyName)"
+    $FullOutputFolder = (Get-Item $OutputFolder).FullName
+    $InitialPath = "$FullOutputFolder\$($PropertyRuleTree.propertyName)"
     
-    if( (Test-Path $InitialPath) -and (Get-ChildItem $InitialPath)){
-        throw "Output directory $InitialPath already exists and is not empty. Please delete its contents or choose another directory"
-    }
-    elseif( !(Test-Path $InitialPath) ) {
-        New-Item -ItemType Directory -Path $InitialPath | Out-Null
+    if(Test-Path $InitialPath){
+        $FullInitialPath = (Get-Item $InitialPath).FullName
+        throw "Output directory $FullInitialPath already exists. Please delete it or choose another directory"
     }
 
-    # Export default behaviours, variables & options
-    if($Rules.variables.count -gt 0){
-        $Rules.variables | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\variables.json"
-    }
-    
-    if($Rules.options){
-        $Rules.options | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\options.json"
-    }
-    
-    $Rules.behaviors | foreach {
-        $_ | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\$($_.Name).json"
-    }
-    if($Rules.comments){
-        $Rules.comments | ConvertTo-Json -Depth 100 | Out-File "$InitialPath\comments.json"
-    }
-    
-    # Recurse through children
-    $Rules.children | foreach {
-        Import-PropertyTreeBranch -Path "$InitialPath\$($_.Name)" -Rules $_
-    }
+    # Run recursive sub-function
+    Import-RuleTree -Path "$InitialPath" -Rules $Rules
+
+    Write-Host -ForegroundColor Green "Saved property '$($PropertyRuleTree.propertyName):$($PropertyRuleTree.propertyVersion)' to $InitialPath"
 }

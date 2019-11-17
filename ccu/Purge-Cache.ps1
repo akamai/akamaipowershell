@@ -1,6 +1,7 @@
-function Invalidate-CachedObjects
+function Purge-Cache
 {
     Param(
+        [Parameter(Mandatory=$false)] [string] [ValidateSet('invalidate', 'delete')] $Method = 'Invalidate',
         [Parameter(ParameterSetName='url', Mandatory=$true)]    [string] $URLs,
         [Parameter(ParameterSetName='cpcode', Mandatory=$true)] [string] $CPCodes,
         [Parameter(ParameterSetName='tag', Mandatory=$true)]    [string] $Tags,
@@ -55,7 +56,7 @@ function Invalidate-CachedObjects
     $PostBody = @{ 'objects' = $Objects }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
 
-    $Path = "/ccu/v3/invalidate/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/ccu/v3/$Method/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())`?accountSwitchKey=$AccountSwitchKey"
 
     try
     {

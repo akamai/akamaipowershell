@@ -1,26 +1,45 @@
 function Activate-Property
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PropertyId,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)] [int] $PropertyVersion,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)] [string] [ValidateSet('Staging', 'Production')]$Network,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $Note,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch] $UseFastFallback,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)] [string[]] $NotifyEmails,
-        [Parameter(ParameterSetName='postbody', Mandatory=$true)] [string] $Body,
-        [Parameter(Mandatory=$false)] [switch] $AutoAcknowledgeWarnings,
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
-        [Parameter(Mandatory=$true)]  [string] $ContractId,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] [ValidateSet('None', 'Other', 'No_Production_Traffic', 'Emergency')] $NoncomplianceReason,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $OtherNoncomplianceReason,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $CustomerEmail,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $PeerReviewdBy,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch] $UnitTested,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $TicketID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory=$false)]                                [string]   $PropertyName,
+        [Parameter(Mandatory=$false)]                                [string]   $PropertyId,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [int]      $PropertyVersion,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')]$Network,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $Note,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch]   $UseFastFallback,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string[]] $NotifyEmails,
+        [Parameter(ParameterSetName='postbody', Mandatory=$true)]    [string]   $Body,
+        [Parameter(Mandatory=$false)]                                [switch]   $AutoAcknowledgeWarnings,
+        [Parameter(Mandatory=$false)]                                [string]   $GroupID,
+        [Parameter(Mandatory=$false)]                                [string]   $ContractId,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   [ValidateSet('None', 'Other', 'No_Production_Traffic', 'Emergency')] $NoncomplianceReason,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $OtherNoncomplianceReason,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $CustomerEmail,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $PeerReviewdBy,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch]   $UnitTested,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $TicketID,
+        [Parameter(Mandatory=$false)]                                [string]   $EdgeRCFile = '~\.edgerc',
+        [Parameter(Mandatory=$false)]                                [string]   $Section = 'papi',
+        [Parameter(Mandatory=$false)]                                [string]   $AccountSwitchKey
     )
+
+    if($PropertyName -eq '' -and $PropertyID -eq ''){
+        throw 'Either $PropertyName or $PropertyID must be specified'
+    }
+
+    # Find property if user has specified PropertyName
+    if($PropertyName){
+        try{
+            $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $PropertyID = $Property.propertyId
+            if($PropertyID -eq ''){
+                throw "Property '$PropertyName' not found"
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
