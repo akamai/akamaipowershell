@@ -3,15 +3,19 @@ function Activate-CloudletPolicyVersion
     Param(
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $Version,
+        [Parameter(Mandatory=$false)] [string] $AdditionalPropertyNames,
         [Parameter(Mandatory=$false)] [string] $Network = 'production',
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/activations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/activations?additionalPropertyNames=$AdditionalPropertyNames&accountSwitchKey=$AccountSwitchKey"
 
     $Body = @{ network = $Network }
+    if($AdditionalPropertyNames){
+        #$Body['additionalPropertyNames'] = $AdditionalPropertyNames
+    }
     $JsonBody = $Body | ConvertTo-Json -Depth 100
 
     try {

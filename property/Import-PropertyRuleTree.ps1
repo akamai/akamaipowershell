@@ -80,7 +80,8 @@ function Import-PropertyRuleTree
         [Parameter(Mandatory=$false)] [string] $RuleFormat,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey,
+        [Parameter(Mandatory=$false)] [switch] $Clobber
     )
 
     # Get Property from PAPI
@@ -102,11 +103,17 @@ function Import-PropertyRuleTree
     
     if(Test-Path $InitialPath){
         $FullInitialPath = (Get-Item $InitialPath).FullName
-        throw "Output directory $FullInitialPath already exists. Please delete it or choose another directory"
+        if($Clobber){
+            Remove-Item -Recurse $FullInitialPath -Force | Out-Null
+        }
+        else{
+            throw "Output directory $FullInitialPath already exists. Use -Clobber to remove the directory and replace it with content from PAPI"
+        }
     }
 
     # Run recursive sub-function
     Import-RuleTree -Path "$InitialPath" -Rules $Rules
+    Set-Content -Value $PropertyRuleTree.etag -Path "$InitialPath\etag.txt" -NoNewline
 
     Write-Host -ForegroundColor Green "Saved property '$($PropertyRuleTree.propertyName):$($PropertyRuleTree.propertyVersion)' to $InitialPath"
 }
