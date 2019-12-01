@@ -1,7 +1,7 @@
 function Get-CPSCertificateHistory
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $EnrollmentID,
+        [Parameter(Mandatory=$true)]  [string] $EnrollmentID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

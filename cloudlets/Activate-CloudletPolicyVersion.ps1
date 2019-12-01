@@ -10,11 +10,14 @@ function Activate-CloudletPolicyVersion
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/activations?additionalPropertyNames=$AdditionalPropertyNames&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/activations?accountSwitchKey=$AccountSwitchKey"
 
     $Body = @{ network = $Network }
     if($AdditionalPropertyNames){
-        #$Body['additionalPropertyNames'] = $AdditionalPropertyNames
+        $Body['additionalPropertyNames'] = @()
+        $AdditionalPropertyNames.split(",") | foreach {
+            $Body['additionalPropertyNames'] += $_
+        }
     }
     $JsonBody = $Body | ConvertTo-Json -Depth 100
 

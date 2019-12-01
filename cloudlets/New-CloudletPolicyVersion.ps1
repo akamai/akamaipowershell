@@ -2,7 +2,7 @@ function New-CloudletPolicyVersion
 {
     Param(
         [Parameter(Mandatory=$true) ] [string] $PolicyID,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $Description,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $Description,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [object[]] $MatchRules,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $MatchRuleFormat,
         [Parameter(ParameterSetName='postbody', Mandatory=$false)]   [string] $Body,
@@ -18,8 +18,9 @@ function New-CloudletPolicyVersion
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
-        ## Remove unneeded members
+        $Post = @{}
         if($MatchRules){
+            ## Remove unneeded members
             $MatchRules | foreach {
                 if($_.matchURL){
                     $_.PsObject.Members.Remove('matchURL')
@@ -28,9 +29,17 @@ function New-CloudletPolicyVersion
                     $_.PsObject.Members.Remove('location')
                 }
             }
+            $Post['matchRules'] = $MatchRules
+        }
+
+        if($MatchRuleFormat){
+            $Post['matchRuleFormat'] = $MatchRuleFormat
+        }
+
+        if($Description){
+            $Post['description'] = $Description
         }
         
-        $Post = @{ description = $Description; matchRuleFormat = $MatchRuleFormat; matchRules = $MatchRules }
         $Body = ConvertTo-Json $Post -Depth 10
     }
 

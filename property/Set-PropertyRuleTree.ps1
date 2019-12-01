@@ -6,12 +6,21 @@ Function Set-PropertyRuleTree
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $SetRuleFormat,
+        [Parameter(Mandatory=$false)] [switch] $DryRun,
+        [Parameter(Mandatory=$false)] [string] [ValidateSet('fast','full')]  $ValidateMode,
+        [Parameter(Mandatory=$false)] [switch] $ValidateRules,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    # nullify false switches
+    $DryRunString = $DryRun.IsPresent.ToString().ToLower()
+    if(!$DryRun){ $DryRunString = '' }
+    $ValidateRulesString = $ValidateRules.IsPresent.ToString().ToLower()
+    if(!$ValidateRules){ $ValidateRulesString = '' }
 
     # Find property if user has specified PropertyName or version = "latest"
     if($PropertyName){
@@ -42,7 +51,7 @@ Function Set-PropertyRuleTree
         }
     }
 
-    $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules?validateRules=$ValidateRulesString&validateMode=$ValidateMode&dryRun=$DryRunString&contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
     if($SetRuleFormat){
         $AdditionalHeaders = @{
