@@ -7,6 +7,7 @@ function Get-PropertyRuleTree
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $RuleFormat,
+        [Parameter(Mandatory=$false)] [switch] $JSON,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -51,7 +52,12 @@ function Get-PropertyRuleTree
 
     try {
         $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
-        return $PropertyRuleTree
+        if($JSON){
+            return $PropertyRuleTree | ConvertTo-Json -Depth 100
+        }
+        else{
+            return $PropertyRuleTree
+        } 
     }
     catch {
         throw $_.Exception
