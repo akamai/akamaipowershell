@@ -5,6 +5,7 @@ Function Set-PropertyRuleTree
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$true)]  [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $VersionNotes,
         [Parameter(Mandatory=$false)] [string] $SetRuleFormat,
         [Parameter(Mandatory=$false)] [switch] $DryRun,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('fast','full')]  $ValidateMode,
@@ -57,6 +58,19 @@ Function Set-PropertyRuleTree
         $AdditionalHeaders = @{
             'Content-Type' = "application/vnd.akamai.papirules.$RuleFormat+json"
         }
+    }
+
+    # Add notes if required
+    if($VersionNotes){
+        $BodyObj = $Body | ConvertFrom-Json
+        if($BodyObj.comments){
+            $BodyObj.comments = $VersionNotes
+        }
+        else{
+            $BodyObj | Add-Member -MemberType NoteProperty -Name 'comments' -Value $VersionNotes
+        }
+
+        $Body = $BodyObj | ConvertTo-Json -Depth 100
     }
 
     try

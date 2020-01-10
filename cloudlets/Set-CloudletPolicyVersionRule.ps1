@@ -1,0 +1,22 @@
+function Set-CloudletPolicyVersionRule
+{
+    Param(
+        [Parameter(Mandatory=$true)]  [string] $PolicyID,
+        [Parameter(Mandatory=$true)]  [string] $Version,
+        [Parameter(Mandatory=$true)]  [string] $AkaRuleID,
+        [Parameter(Mandatory=$true)]  [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
+        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+    )
+
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/rules/$AkaRuleID`?accountSwitchKey=$AccountSwitchKey"
+
+    try {
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        return $Result
+    }
+    catch {
+        throw $_.Exception
+    }
+}
