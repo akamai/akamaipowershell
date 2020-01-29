@@ -1,8 +1,8 @@
-function Set-PAPIClient
+function Set-PAPIClientSettings
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $RuleFormat,
-        [Parameter(Mandatory=$false)] [switch] $UsePrefixes,
+        [Parameter(Mandatory=$true)]  [bool]  $UsePrefixes,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -15,7 +15,7 @@ function Set-PAPIClient
 
     $BodyObj = @{ 
         ruleFormat = $RuleFormat
-        usePrefixes = $UsePrefixes.IsPresent.ToString().ToLower()
+        usePrefixes = $UsePrefixes
     }
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
