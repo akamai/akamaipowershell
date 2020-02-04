@@ -9,7 +9,7 @@ function Get-CPSEnrollment
 
     $Path = "/cps/v2/enrollments/$EnrollmentID`?accountSwitchKey=$AccountSwitchKey"
     $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.enrollments.v7+json'
+        'accept' = 'application/vnd.akamai.cps.enrollment.v7+json'
     }
 
     try {
