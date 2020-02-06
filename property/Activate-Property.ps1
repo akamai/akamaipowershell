@@ -3,7 +3,7 @@ function Activate-Property
     Param(
         [Parameter(Mandatory=$false)]                                [string]   $PropertyName,
         [Parameter(Mandatory=$false)]                                [string]   $PropertyId,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [int]      $PropertyVersion,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string]   $PropertyVersion,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')]$Network,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $Note,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch]   $UseFastFallback,
@@ -34,6 +34,21 @@ function Activate-Property
             $PropertyID = $Property.propertyId
             if($PropertyID -eq ''){
                 throw "Property '$PropertyName' not found"
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
+
+    if($PropertyVersion.ToLower() -eq "latest"){
+        try{
+            if($PropertyName){
+                $PropertyVersion = $Property.propertyVersion
+            }
+            else{
+                $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                $PropertyVersion = $Property.latestVersion
             }
         }
         catch{

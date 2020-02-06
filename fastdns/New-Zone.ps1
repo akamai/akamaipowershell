@@ -2,7 +2,7 @@ function New-Zone
 {
     Param(
         [Parameter(ParameterSetName='attributes', Mandatory=$true)] [string] $Zone,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)] [string] $Type,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] [ValidateSet('PRIMARY','SECONDARY','ALIAS')] $Type,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $Comment,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $Masters,
         [Parameter(ParameterSetName='postbody', Mandatory=$true)] [string] $Body,
