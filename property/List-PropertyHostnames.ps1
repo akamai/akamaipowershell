@@ -1,7 +1,8 @@
 function List-PropertyHostnames
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
@@ -10,6 +11,20 @@ function List-PropertyHostnames
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    # Find property if user has specified PropertyName
+    if($PropertyName){
+        try{
+            $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $PropertyID = $Property.propertyId
+            if($PropertyID -eq ''){
+                throw "Property '$PropertyName' not found"
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
 
     # Nullify false switches
     $ValidateHostnamesString = $ValidateHostnames.IsPresent.ToString().ToLower()
