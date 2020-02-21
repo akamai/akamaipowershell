@@ -67,7 +67,7 @@ function Get-PropertyRuleTree
             $OutputFileName += ".json"
         }
 
-        if(Test-Path $OutputFileName -and !$Force){
+        if( (Test-Path $OutputFileName) -and !$Force){
             Write-Host -ForegroundColor Yellow "Failed to write file. $OutputFileName exists and -Force not specified"
         }
         else{
