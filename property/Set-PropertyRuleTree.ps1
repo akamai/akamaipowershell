@@ -4,7 +4,8 @@ Function Set-PropertyRuleTree
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
-        [Parameter(Mandatory=$true)]  [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$false)] [string] $InputFile,
         [Parameter(Mandatory=$false)] [string] $VersionNotes,
         [Parameter(Mandatory=$false)] [string] $SetRuleFormat,
         [Parameter(Mandatory=$false)] [switch] $DryRun,
@@ -16,6 +17,11 @@ Function Set-PropertyRuleTree
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    # Check vars
+    if(!$Body -and !$InputFile){
+        throw "You must specific either a POST body or input file name"
+    }
 
     # nullify false switches
     $DryRunString = $DryRun.IsPresent.ToString().ToLower()
@@ -58,6 +64,10 @@ Function Set-PropertyRuleTree
         $AdditionalHeaders = @{
             'Content-Type' = "application/vnd.akamai.papirules.$RuleFormat+json"
         }
+    }
+
+    if($InputFile){
+        $Body = Get-Content $InputFile -Raw
     }
 
     # Add notes if required

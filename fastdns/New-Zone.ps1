@@ -7,13 +7,13 @@ function New-Zone
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $Masters,
         [Parameter(ParameterSetName='postbody', Mandatory=$true)] [string] $Body,
         [Parameter(Mandatory=$true)]  [string] $ContractID,
-        [Parameter(Mandatory=$false)] [string] $GID,
+        [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-dns/v2/zones?contractId=$ContractID&gid=$GID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones?contractId=$ContractID&gid=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
