@@ -67,6 +67,9 @@ Function Set-PropertyRuleTree
     }
 
     if($InputFile){
+        if(!(Test-Path $InputFile)){
+            throw "Input file $Inputfile does not exist"
+        }
         $Body = Get-Content $InputFile -Raw
     }
 
