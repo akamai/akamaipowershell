@@ -62,7 +62,7 @@ Function Set-PropertyRuleTree
 
     if($SetRuleFormat){
         $AdditionalHeaders = @{
-            'Content-Type' = "application/vnd.akamai.papirules.$RuleFormat+json"
+            'Content-Type' = "application/vnd.akamai.papirules.$SetRuleFormat+json"
         }
     }
 
