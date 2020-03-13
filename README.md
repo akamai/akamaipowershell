@@ -1,6 +1,6 @@
 # Akamai Powershell
 
-This module is designed to abstract the sometimes complex Akamai API commands, and its auth in particular. It can be used in Powershell 5.x or later (possibly earlier versions, though these are entirely untested), and there is no reason it won't work on MacOS or Linux, though these are also currently outside the scope of testing. It is in no way complete, but rather is meant to be a collaborative effort to provide Powershell implementation of most (if not all) Akamai APIs. Pull requests are welcome, and encouraged!
+This module is designed to abstract the sometimes complex Akamai {OPEN} API commands, and their auth in particular. It can be used in Powershell 5.x or later (6+ is recommended), and there is no reason it won't work on MacOS or Linux, though these are also currently outside the scope of testing. It is in no way complete, but rather is meant to be a collaborative effort to provide Powershell implementation of most (if not all) Akamai APIs. Pull requests are welcome, and encouraged!
 
 The central function of the module is Invoke-AkamaiRestMethod, which is a heavily modified version of the deprecated Invoke-AkamaiOpen you can find [here](https://github.com/akamai/AkamaiOPEN-edgegrid-powershell).
 
@@ -25,7 +25,7 @@ If you find there are functions missing (and there are many missing) please cont
 3. All functions must support AccountSwitchKey params. This is a feature only used by Partners and Akamai internal users, but keeps the function universally usable.
 4. Please use approved Powershell verbs where applicable. The use of List is fine, as are others when the approved verb would be confusion (like deleting or invalidating from cache. 'removing' isn't really a thing)
 5. Please arrange functions into folders based on the name of the API as Akamai have stated it (see the existing folder structure for examples)
-6. Update functions (POST/PUT) should have a $Body param for the user to specify the JSON body for the request. If you also wish to allow users to specify individual params and construct the request in the function, that is fine, but make sure the JSON body and individual params are in different Parameter Sets to avoid confusion. Check New-PropertyVersion for an example
+6. Update functions (POST/PUT) should have a $Body param for the user to specify the JSON body for the request or an -InputFile param to specify body from a file. If you also wish to allow users to specify individual params and construct the request in the function, that is fine, but make sure the JSON body and individual params are in different Parameter Sets to avoid confusion. Check New-PropertyVersion for an example
 
 ### Licensing
 
