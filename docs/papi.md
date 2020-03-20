@@ -13,20 +13,30 @@ This is an extremely common practice for PM users, and while most of these opera
 
 1. We start with getting your property. You can do this by ID, but -PropertyName is included in the module for ease of use
 
+```Powershell
 Get-Property -PropertyName myproperty.com
+```
 
 2. You can see from the response the ID, version status etc. Assuming the current version is either Active or has been Deactivated it is not editable, so we need to create a new one.
 
+```Powershell
 New-PropertyVersion -PropertyName myproperty.com -CreateFromVersion latest
+```
 
 3. Now that we have a new version we can pull the current rule tree down as a Json file. The _-OutputToFile_ param will automatically name the file _<PropertyName>\_<PropertyVersion>.json_ . You can also use the _-OutputFileName_ param if you wish to name the file something different
 
+```Powershell
 Get-PropertyRuleTree -PropertyName myproperty.com -PropertyVersion latest -OutputToFile
+```
 
 4. Now that you have your Json you can edit the file in whichever way you wish. Remember the RuleTree does not contain any hostname info, so this method is often used to copy the rules from one property to another, either specifically or in their entirety. Once your edits are complete, you can push the changes back. For this you can either pass the rule tree as a string variable (using _-Body_), or reference the file from disk (using _-InputFile_)
 
+```Powershell
 $Update = Set-PropertyRuleTree -PropertyName myproperty.com -PropertyVersion latest -InputFile myproperty.com_2.json
+```
 
 5. Look for anything in the $Update response object's _errors_ member, as any errors will prevent you from activating. Assuming there are none, or you have corrected them, you can now activate the property. Note, the Property API forces you to acknowledge all warnings in your property inividually. This is a pain so we have added an -AutoAcknowledgeWarnings switch to do this for you.
 
+```Powershell
 Activate-Property -PropertyName mypropert.com -PropertyVersion latest -Network Staging -Note "Activated via PAPI" -NotifyEmails "bob@email.com" -AutoAcknowledgeWarnings
+```
