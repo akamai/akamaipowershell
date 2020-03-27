@@ -53,7 +53,7 @@ developer.akamai.com
 function Invoke-AkamaiRestMethod
 {
     param(
-        [Parameter(Mandatory=$false)] [ValidateSet("GET", "PUT", "POST", "DELETE")] [string] $Method = "GET",
+        [Parameter(Mandatory=$false)] [ValidateSet("GET", "PUT", "POST", "DELETE","PATCH")] [string] $Method = "GET",
         [Parameter(Mandatory=$true)]  [string] $Path,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -125,13 +125,13 @@ function Invoke-AkamaiRestMethod
     {
         $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
         if($Body.Length -gt $MaxBody){
-            $Post_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body.Substring(0,$MaxBody))))
+            $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body.Substring(0,$MaxBody))))
         }
         else{
-            $Post_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body)))
+            $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body)))
         }
 
-        $SignatureData += "`t`t" + $Post_Hash + "`t"
+        $SignatureData += "`t`t" + $Body_Hash + "`t"
     }
     else
     {
@@ -192,7 +192,7 @@ function Invoke-AkamaiRestMethod
         $UseProxy = $true
     }
 
-    if ($Method -eq "PUT" -or $Method -eq "POST") {
+    if ($Method -eq "PUT" -or $Method -eq "POST" -or $Method -eq "PATCH") {
         try {
             if ($Body) {
                 if($UseProxy){

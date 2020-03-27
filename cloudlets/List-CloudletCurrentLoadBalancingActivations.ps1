@@ -1,15 +1,13 @@
-function Get-EdgeHostnameByDNS
+function List-CloudletCurrentLoadBalancingActivations
 {
     Param(
-        [Parameter(Mandatory=$true)] [string] $RecordName,
-        [Parameter(Mandatory=$true)] [string] $DNSZone,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName`?accountSwitchKey=$AccountSwitchKey"
-
+    $Path = "/cloudlets/api/v2/origins/currentActivations?accountSwitchKey=$AccountSwitchKey"
+    
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
@@ -18,4 +16,3 @@ function Get-EdgeHostnameByDNS
         throw $_.Exception
     }
 }
-
