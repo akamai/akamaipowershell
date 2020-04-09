@@ -22,12 +22,43 @@ Function Set-PropertyRuleTree
     if(!$Body -and !$InputFile){
         throw "You must specific either a POST body or input file name"
     }
-
     # nullify false switches
     $DryRunString = $DryRun.IsPresent.ToString().ToLower()
     if(!$DryRun){ $DryRunString = '' }
     $ValidateRulesString = $ValidateRules.IsPresent.ToString().ToLower()
     if(!$ValidateRules){ $ValidateRulesString = '' }
+
+    if($SetRuleFormat){
+        $AdditionalHeaders = @{
+            'Content-Type' = "application/vnd.akamai.papirules.$SetRuleFormat+json"
+        }
+    }
+
+    if($InputFile){
+        if(!(Test-Path $InputFile)){
+            throw "Input file $Inputfile does not exist"
+        }
+        $Body = Get-Content $InputFile -Raw
+    }
+
+    # Check body length
+    if($Body.length -eq 0 -or $Body -eq 'null'){
+        # if ConvertTo-Json gets a $null object, it converts it to a string that is literally 'null'
+        throw 'Request body is invalid. Please check'
+    }
+
+    # Add notes if required
+    if($VersionNotes){
+        $BodyObj = $Body | ConvertFrom-Json -Depth 100
+        if($BodyObj.comments){
+            $BodyObj.comments = $VersionNotes
+        }
+        else{
+            $BodyObj | Add-Member -MemberType NoteProperty -Name 'comments' -Value $VersionNotes
+        }
+
+        $Body = $BodyObj | ConvertTo-Json -Depth 100
+    }
 
     # Find property if user has specified PropertyName or version = "latest"
     if($PropertyName){
@@ -59,32 +90,6 @@ Function Set-PropertyRuleTree
     }
 
     $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules?validateRules=$ValidateRulesString&validateMode=$ValidateMode&dryRun=$DryRunString&contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
-
-    if($SetRuleFormat){
-        $AdditionalHeaders = @{
-            'Content-Type' = "application/vnd.akamai.papirules.$SetRuleFormat+json"
-        }
-    }
-
-    if($InputFile){
-        if(!(Test-Path $InputFile)){
-            throw "Input file $Inputfile does not exist"
-        }
-        $Body = Get-Content $InputFile -Raw
-    }
-
-    # Add notes if required
-    if($VersionNotes){
-        $BodyObj = $Body | ConvertFrom-Json
-        if($BodyObj.comments){
-            $BodyObj.comments = $VersionNotes
-        }
-        else{
-            $BodyObj | Add-Member -MemberType NoteProperty -Name 'comments' -Value $VersionNotes
-        }
-
-        $Body = $BodyObj | ConvertTo-Json -Depth 100
-    }
 
     try
     {
