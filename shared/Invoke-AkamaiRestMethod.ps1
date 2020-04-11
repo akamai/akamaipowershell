@@ -201,7 +201,7 @@ function Invoke-AkamaiRestMethod
                 else {
                     $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body
                 }
-
+                
             }
             else {
                 if($UseProxy) {
@@ -226,7 +226,7 @@ function Invoke-AkamaiRestMethod
                 else {
                     $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction SilentlyContinue
                 }
-
+    
                 #Redirects aren't well handled due to signatures needing regenerated
                 if($Response.redirectLink){
                     $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
