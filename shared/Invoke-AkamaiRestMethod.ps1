@@ -45,8 +45,6 @@ Should contain the POST/PUT Body. The body should be structured like a JSON obje
 Hashtable of additional request headers to add
 .PARAMETER Staging
 Image Manager requests only. Changes IM host from production to staging. For non-IM requests does nothing.
-.PARAMETER AcceptHeader
-The 'Accept' HTTP header that should be sent with this request. Defaults to 'application/json'.
 .EXAMPLE
 Invoke-AkamaiRestMethod -Method GET -Path '/path/to/api?withParams=true' -EdgeRCFile ~/my.edgerc -Section 'papi'
 .LINK
@@ -62,8 +60,7 @@ function Invoke-AkamaiRestMethod
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [hashtable] $AdditionalHeaders,
         [Parameter(Mandatory=$false)] [boolean] $Staging,
-        [Parameter(Mandatory=$false)] [string] $MaxBody = 131072,
-        [Parameter(Mandatory=$false)] [string] $AcceptHeader = 'application/json'
+        [Parameter(Mandatory=$false)] [string] $MaxBody = 131072
         )
 
     # Get credentials from EdgeRC
@@ -166,7 +163,7 @@ function Invoke-AkamaiRestMethod
 
     #Add Auth & Accept headers
     $Headers.Add('Authorization',$AuthorizationHeader)
-    $Headers.Add('Accept',$AcceptHeader)
+    $Headers.Add('Accept','application/json')
     $Headers.Add('Content-Type', 'application/json')
 
     #Add additional headers
@@ -204,7 +201,7 @@ function Invoke-AkamaiRestMethod
                 else {
                     $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body
                 }
-                
+
             }
             else {
                 if($UseProxy) {
@@ -229,7 +226,7 @@ function Invoke-AkamaiRestMethod
                 else {
                     $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction SilentlyContinue
                 }
-    
+
                 #Redirects aren't well handled due to signatures needing regenerated
                 if($Response.redirectLink){
                     $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
