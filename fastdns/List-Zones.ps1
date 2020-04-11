@@ -17,7 +17,7 @@ function List-Zones
     $ShowAllString = $ShowAll.IsPresent.ToString().ToLower()
     if(!$ShowAll){ $ShowAllString = '' }
 
-    $Path = "/config-dns/v2/zones?contractIds=$ContractIDs&page=$Page&pageSize=$PageSize&search=$Search&showAll=$ShowAllString&sortBy=$SortBy&type=$Types&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones?contractIds=$ContractIDs&page=$Page&pageSize=$PageSize&search=$Search&showAll=$ShowAllString&sortBy=$SortBy&types=$Types&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
