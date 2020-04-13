@@ -40,6 +40,6 @@ function Get-BulkZoneDeleteStatus
         Get the status of the specified delete request.
 
     .LINK
-        Submit-BulkZoneDeleteRequest
+        New-BulkZoneDeleteRequest
     #>
 }

@@ -1,4 +1,4 @@
-function Submit-BulkZoneDeleteRequest
+function New-BulkZoneDeleteRequest
 {
     [CmdletBinding(DefaultParameterSetName='attributes', SupportsShouldProcess, ConfirmImpact='High')]
     Param(
@@ -77,17 +77,17 @@ function Submit-BulkZoneDeleteRequest
         This is a feature only used by Partners and Akamai internal users.
 
     .EXAMPLE
-        Submit-BulkZoneDeleteRequest -Zone example.com
+        New-BulkZoneDeleteRequest -Zone example.com
 
         Delete the specified zone.
 
     .EXAMPLE
-        Submit-BulkZoneDeleteRequest -Zone example.com,example.net -BypassSafetyChecks
+        New-BulkZoneDeleteRequest -Zone example.com,example.net -BypassSafetyChecks
 
         Delete the specified zones and skip the Akamai delegation checks.
 
     .EXAMPLE
-        'example.com','example.net' | Submit-BulkZoneDeleteRequest -Confirm:$false
+        'example.com','example.net' | New-BulkZoneDeleteRequest -Confirm:$false
 
         Delete the specified zones by passing them via the pipeline and bypass confirmation prompts.
 
