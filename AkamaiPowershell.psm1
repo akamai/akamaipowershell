@@ -21,3 +21,8 @@ $PS1Files | Where {$_.Name.StartsWith('List-')} | foreach {
     Set-Alias -Name $GetAlias -Value $CmdletName
     Export-ModuleMember -Function $CmdletName -Alias $GetAlias
 }
+
+# Alias Remove-Zone to Submit-BulkZoneDeleteRequest until such time as there is
+# an actual non-bulk zone delete endpoint
+Set-Alias -Name 'Remove-Zone' -Value 'Submit-BulkZoneDeleteRequest'
+Export-ModuleMember -Function 'Submit-BulkZoneDeleteRequest' -Alias 'Remove-Zone'

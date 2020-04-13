@@ -38,5 +38,8 @@ function Get-BulkZoneDeleteResult
         Get-BulkZoneDeleteResult -RequestID xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
         Get the result of the specified delete request.
+
+    .LINK
+        Submit-BulkZoneDeleteRequest
     #>
 }

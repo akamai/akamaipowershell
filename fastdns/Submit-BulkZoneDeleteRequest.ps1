@@ -90,5 +90,11 @@ function Submit-BulkZoneDeleteRequest
         'example.com','example.net' | Submit-BulkZoneDeleteRequest -Confirm:$false
 
         Delete the specified zones by passing them via the pipeline and bypass confirmation prompts.
+
+    .LINK
+        Get-BulkZoneDeleteStatus
+
+    .LINK
+        Get-BulkZoneDeleteResult
     #>
 }

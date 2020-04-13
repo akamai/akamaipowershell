@@ -38,5 +38,8 @@ function Get-BulkZoneDeleteStatus
         Get-BulkZoneDeleteStatus -RequestID xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
         Get the status of the specified delete request.
+
+    .LINK
+        Submit-BulkZoneDeleteRequest
     #>
 }
