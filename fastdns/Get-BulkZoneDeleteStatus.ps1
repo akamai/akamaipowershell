@@ -1,4 +1,4 @@
-function Get-ZoneDeleteStatus
+function Get-BulkZoneDeleteStatus
 {
     [CmdletBinding()]
     Param(
@@ -35,7 +35,7 @@ function Get-ZoneDeleteStatus
         This is a feature only used by Partners and Akamai internal users.
 
     .EXAMPLE
-        Get-ZoneDeleteStatus -RequestID xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        Get-BulkZoneDeleteStatus -RequestID xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
         Get the status of the specified delete request.
     #>

@@ -1,4 +1,4 @@
-function Get-ZoneDeleteResult
+function Get-BulkZoneDeleteResult
 {
     [CmdletBinding()]
     Param(
@@ -35,7 +35,7 @@ function Get-ZoneDeleteResult
         This is a feature only used by Partners and Akamai internal users.
 
     .EXAMPLE
-        Get-ZoneDeleteResult -RequestID xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        Get-BulkZoneDeleteResult -RequestID xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
         Get the result of the specified delete request.
     #>
