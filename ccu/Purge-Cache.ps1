@@ -11,6 +11,13 @@ function Purge-Cache
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    if($AccountSwitchKey)
+    {
+        Write-Host -ForegroundColor Yellow "The FastPurge API currently does not support Account Switching. Sorry"
+        return
+        #?accountSwitchKey=$AccountSwitchKey
+    }
+
     $Objects = @()
     if($URLs){
         if($URLs.Contains(",")) {
@@ -56,7 +63,7 @@ function Purge-Cache
     $PostBody = @{ 'objects' = $Objects }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
 
-    $Path = "/ccu/v3/$Method/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/ccu/v3/$Method/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())"
 
     try
     {

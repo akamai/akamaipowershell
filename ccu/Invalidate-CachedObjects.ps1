@@ -10,6 +10,15 @@ function Invalidate-CachedObjects
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    Write-Host -ForegroundColor Yellow "Warning: This cmdlet is deprecated and will be removed in a future release"
+
+    if($AccountSwitchKey)
+    {
+        Write-Host -ForegroundColor Yellow "The FastPurge API currently does not support Account Switching. Sorry"
+        return
+        #?accountSwitchKey=$AccountSwitchKey
+    }
+
     $Objects = @()
     if($URLs){
         if($URLs.Contains(",")) {
@@ -55,7 +64,7 @@ function Invalidate-CachedObjects
     $PostBody = @{ 'objects' = $Objects }
     $PostJson = $PostBody | ConvertTo-Json -Depth 100
 
-    $Path = "/ccu/v3/invalidate/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/ccu/v3/invalidate/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())"
 
     try
     {
