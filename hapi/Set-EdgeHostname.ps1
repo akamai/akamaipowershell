@@ -3,7 +3,7 @@ function Set-EdgeHostname
     Param(
         [Parameter(Mandatory=$true)] [string] $RecordName,
         [Parameter(Mandatory=$true)] [string] $DNSZone,
-        [Parameter(Mandatory=$true, ParameterSetName='attributes')] [string] $Path,
+        [Parameter(Mandatory=$true, ParameterSetName='attributes')] [string] [ValidateSet('ttl','ipVersionBehavior')] $Path,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')] [string] $Value,
         [Parameter(Mandatory=$true, ParameterSetName='postbody')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $Comments,
