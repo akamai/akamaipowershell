@@ -10,6 +10,8 @@ function Delete-CachedObjects
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    Write-Host -ForegroundColor Yellow "Warning: This cmdlet is deprecated and will be removed in a future release"
+
     if($AccountSwitchKey)
     {
         Write-Host -ForegroundColor Yellow "The FastPurge API currently does not support Account Switching. Sorry"

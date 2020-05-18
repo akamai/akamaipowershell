@@ -68,31 +68,37 @@ function Invoke-AkamaiRestMethod
         throw "Error: EdgeRCFile $EdgeRCFile not found"
     }
 
-    $Config = Get-Content $EdgeRCFile
-    if("[$Section]" -notin $Config){
+    $EdgeRCContent = Get-Content $EdgeRCFile
+    $Auth = @{}
+    for($i = 0; $i -lt $EdgeRCContent.length; $i++){
+        $line = $EdgeRCContent[$i]
+        if($line.contains("[") -and $line.contains("]")){
+            $SectionHeader = $Line.replace("[","").replace("]","")
+            $Auth[$SectionHeader] = @{}
+            $CurrentSection = $SectionHeader
+        }
+    
+        if($line.ToLower().StartsWith("client_token")) { $Auth[$CurrentSection]['ClientToken'] = $line.Replace(" ","").SubString($line.IndexOf("=")) }
+        if($line.ToLower().StartsWith("access_token")) { $Auth[$CurrentSection]['ClientAccessToken'] = $line.Replace(" ","").SubString($line.IndexOf("=")) }
+        if($line.ToLower().StartsWith("host"))         { $Auth[$CurrentSection]['Host'] = $line.Replace(" ","").SubString($line.IndexOf("=")) }
+        if($line.ToLower().StartsWith("client_secret")){ $Auth[$CurrentSection]['ClientSecret'] = $line.Replace(" ","").SubString($line.IndexOf("=")) }
+    }
+
+    # Validate auth contents
+    if($null -eq $Auth.$Section){
         throw "Error: Config section [$Section] not found in $EdgeRCFile"
     }
-
-    $ConfigIndex = [array]::indexof($Config,"[$Section]")
-    $SectionArray = $Config[$ConfigIndex..($ConfigIndex + 4)]
-    $SectionArray | ForEach-Object {
-        if($_.ToLower().StartsWith("client_token")) { $ClientToken = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-        if($_.ToLower().StartsWith("access_token")) { $ClientAccessToken = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-        if($_.ToLower().StartsWith("host"))         { $OpenHost = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-        if($_.ToLower().StartsWith("client_secret")){ $ClientSecret = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-    }
-
-    if(!$ClientToken -or !$ClientAccessToken -or !$OpenHost -or !$ClientSecret){
-        throw "Error: Some necessary auth elements missing. Please check your EdgeRC file"
+    if($null -eq $Auth.$Section.ClientToken -or $null -eq $Auth.$Section.ClientAccessToken -or $null -eq $Auth.$Section.ClientSecret -or $null -eq $Auth.$Section.Host){
+        throw "Error: Some necessary auth elements missing from section $Section. Please check your EdgeRC file"
     }
 
     # Set IM staging host if switch present
-    if($OpenHost.Contains('.imaging.') -and $Staging) {
-        $OpenHost = $OpenHost.Replace(".imaging.",".imaging-staging.")
+    if($Auth.$Section.Host.Contains('.imaging.') -and $Staging) {
+        $Auth.$Section.Host = $Auth.$Section.Host.Replace(".imaging.",".imaging-staging.")
     }
 
     # Set ReqURL from host and provided path
-    $ReqURL = "https://" + $OpenHost + $Path
+    $ReqURL = "https://" + $Auth.$Section.Host + $Path
 
     #ReqURL Verification
     If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net")
@@ -139,21 +145,21 @@ function Invoke-AkamaiRestMethod
     }
 
     $SignatureData += "EG1-HMAC-SHA256 "
-    $SignatureData += "client_token=" + $ClientToken + ";"
-    $SignatureData += "access_token=" + $ClientAccessToken + ";"
+    $SignatureData += "client_token=" + $Auth.$Section.ClientToken + ";"
+    $SignatureData += "access_token=" + $Auth.$Section.ClientAccessToken + ";"
     $SignatureData += "timestamp=" + $TimeStamp  + ";"
     $SignatureData += "nonce=" + $Nonce + ";"
 
     #Generate SigningKey
-    $SigningKey = Crypto -secret $ClientSecret -message $TimeStamp
+    $SigningKey = Crypto -secret $Auth.$Section.ClientSecret -message $TimeStamp
 
     #Generate Auth Signature
     $Signature = Crypto -secret $SigningKey -message $SignatureData
 
     #Create AuthHeader
     $AuthorizationHeader = "EG1-HMAC-SHA256 "
-    $AuthorizationHeader += "client_token=" + $ClientToken + ";"
-    $AuthorizationHeader += "access_token=" + $ClientAccessToken + ";"
+    $AuthorizationHeader += "client_token=" + $Auth.$Section.ClientToken + ";"
+    $AuthorizationHeader += "access_token=" + $Auth.$Section.ClientAccessToken + ";"
     $AuthorizationHeader += "timestamp=" + $TimeStamp + ";"
     $AuthorizationHeader += "nonce=" + $Nonce + ";"
     $AuthorizationHeader += "signature=" + $Signature
