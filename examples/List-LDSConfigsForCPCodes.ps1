@@ -21,7 +21,7 @@ for($i = 0; $i -lt $LogSources.count; $i++)
 {
     $PercentComplete = ($i / $LogSources.Count * 100)
     $PercentComplete = [math]::Round($PercentComplete)
-    Write-Progress -Activity "Listing properties..." -Status "$PercentComplete% Complete:" -PercentComplete $PercentComplete;
+    Write-Progress -Activity "Listing LDS config..." -Status "$PercentComplete% Complete:" -PercentComplete $PercentComplete;
 
     $Config = List-LDSLogConfigurationsForID -Section $Section -logSourceID $LogSources[$i].id
     if($null -ne $Config)

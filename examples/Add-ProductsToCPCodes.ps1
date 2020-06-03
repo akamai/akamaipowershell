@@ -18,8 +18,13 @@ Param(
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-foreach($CPCode in $CPCodes)
+for($i = 0; $i -lt $CPCodes.count; $i++)
 {
+    $PercentComplete = ($i / $CPCodes.Count * 100)
+    $PercentComplete = [math]::Round($PercentComplete)
+    Write-Progress -Activity "Updating CP Codes..." -Status "$PercentComplete% Complete:" -PercentComplete $PercentComplete;
+
+    $CPCode = $CPCodes[$i]
     $Detail = Get-CPCode -CPCode $CPCode.cpcodeId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 
     if($ProductIDToAdd -notin $Detail.products.productId)
