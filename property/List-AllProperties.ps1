@@ -1,4 +1,4 @@
-function Get-AllProperties
+function List-AllProperties
 {
     Param(
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',

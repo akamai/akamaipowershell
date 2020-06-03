@@ -9,7 +9,7 @@
 #************************************************************************
 
 Param(
-    [Parameter(Mandatory=$true)] [string] $GroupID,
+    [Parameter(Mandatory=$true)]  [string] $GroupID,
     [Parameter(Mandatory=$false)] [string] $EdgeRCFile = "~\.edgerc",
     [Parameter(Mandatory=$false)] [string] $Section = 'papi',
     [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -21,7 +21,7 @@ if(!(Get-Module AkamaiPowershell))
     return
 }
 
-$Results = @()
+$Results = New-Object -TypeName System.Collections.ArrayList
 $Group = Get-Group -GroupID $GroupID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 $Properties = Get-Properties -GroupID $Group.groupId -ContractId $Group.contractIds[0] -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 Write-Host -ForegroundColor yellow "Found $($Properties.Count) properties"
@@ -34,7 +34,7 @@ foreach($Property in $Properties)
         $Result = New-Object -TypeName PSObject
         $Result | Add-Member -MemberType NoteProperty -Name "Property" -Value $Property.propertyName
         $Result | Add-Member -MemberType NoteProperty -Name "Hostname" -Value $_.cnameFrom
-        $Results += $Result
+        $Results.Add($Result) | Out-Null
     }
 }
 
