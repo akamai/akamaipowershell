@@ -9,9 +9,9 @@
 #************************************************************************
 
 Param(
-    [Parameter(Mandatory=$false)] [string] $AccountSwitchKey,
     [Parameter(Mandatory=$false)] [string] $EdgeRCFile = "~\.edgerc",
-    [Parameter(Mandatory=$false)] [string] $Section = 'papi'
+    [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+    [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
 )
 
 if(!(Get-Module AkamaiPowershell))
