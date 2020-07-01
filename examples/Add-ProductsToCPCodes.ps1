@@ -27,26 +27,29 @@ for($i = 0; $i -lt $CPCodes.count; $i++)
     $CPCode = $CPCodes[$i]
     $Detail = Get-CPCode -CPCode $CPCode.cpcodeId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 
-    if($ProductIDToAdd -notin $Detail.products.productId)
-    {
+    if($ProductIDToAdd -notin $Detail.products.productId){
         $Detail.products += @{productId = $ProductIDToAdd}
+    }
+    else{
+        Write-Host -ForegroundColor Yellow "Warning: CP Code $($CPCode.cpcodeId) already contains product $ProductIDToAdd. Nothing to do"
+        continue
     }
 
     if($JustTesting)
     {
-        Write-Host -ForegroundColor Green "JUST TESTING: Adding product $ProductIDToAdd to CP Code $CPCode"
+        Write-Host -ForegroundColor Green "JUST TESTING: Adding product $ProductIDToAdd to CP Code $($CPCode.cpcodeId)"
     }
     else
     {
         try
         {
-            Write-Host "Adding product $ProductIDToAdd to CP Code $CPCode"
+            Write-Host -ForegroundColor Yellow "Adding product $ProductIDToAdd to CP Code $($CPCode.cpcodeId)"
             $Json = $Detail | ConvertTo-Json -Depth 10
-            Set-CPCode -CPCode $CPCode.cpcodeId -Body $Json -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $Result = Set-CPCode -CPCode $CPCode.cpcodeId -Body $Json -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         }
         catch
         {
-            Write-Host "ERROR: Failed to update CP Code $CPCode"
+            Write-Host "ERROR: Failed to update CP Code $($CPCode.cpcodeId)"
             Write-Host $_
         }
     }

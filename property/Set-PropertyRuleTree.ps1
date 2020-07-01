@@ -20,7 +20,7 @@ Function Set-PropertyRuleTree
     )
 
     # Must use Process block as using ValueFromPipeline
-    Process {
+    process {
         # Check vars
         if(!$Body -and !$InputFile -and !$Rules){
             throw "You must specific one of the following: Rules object, POST body or input filename"

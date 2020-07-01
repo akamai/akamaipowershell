@@ -7,7 +7,7 @@ function Activate-Property
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')]$Network,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $Note,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch]   $UseFastFallback,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string[]] $NotifyEmails,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]             $NotifyEmails,
         [Parameter(ParameterSetName='postbody', Mandatory=$true)]    [string]   $Body,
         [Parameter(Mandatory=$false)]                                [switch]   $AutoAcknowledgeWarnings,
         [Parameter(Mandatory=$false)]                                [string]   $GroupID,
@@ -58,6 +58,11 @@ function Activate-Property
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
+        # Convert NotifyEmails to array if required
+        if($NotifyEmails.GetType().Name -eq "String"){
+            $NotifyEmails = $NotifyEmails -split ","
+        }
+        
         $BodyObj = [PSCustomObject]@{
             propertyVersion = $PropertyVersion;
             network = $Network.ToUpper();
