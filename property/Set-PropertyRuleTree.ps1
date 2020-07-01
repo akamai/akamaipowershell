@@ -22,8 +22,8 @@ Function Set-PropertyRuleTree
     # Must use Process block as using ValueFromPipeline
     process {
         # Check vars
-        if(!$Body -and !$InputFile -and !$Rules){
-            throw "You must specific one of the following: Rules object, POST body or input filename"
+        if(!$Body -and !$InputFile -and !$RuleTree){
+            throw "You must specify one of the following: Rules object, POST body or input filename"
         }
         # nullify false switches
         $DryRunString = $DryRun.IsPresent.ToString().ToLower()
@@ -43,8 +43,8 @@ Function Set-PropertyRuleTree
             }
             $Body = Get-Content $InputFile -Raw
         }
-        elseif($Rules){
-            $Body = $Rules | ConvertTo-Json -Depth 100
+        elseif($RuleTree){
+            $Body = $RuleTree | ConvertTo-Json -Depth 100
         }
 
         # Check body length
