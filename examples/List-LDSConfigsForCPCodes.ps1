@@ -23,11 +23,20 @@ for($i = 0; $i -lt $LogSources.count; $i++)
     $PercentComplete = [math]::Round($PercentComplete)
     Write-Progress -Activity "Listing LDS config..." -Status "$PercentComplete% Complete:" -PercentComplete $PercentComplete;
 
-    $Config = List-LDSLogConfigurationsForID -Section $Section -logSourceID $LogSources[$i].id
-    if($null -ne $Config)
-    {
-        $Results.Add($Config) | Out-Null
+    $Source = $LogSources[$i]
+
+    try{
+        $Config = List-LDSLogConfigurationsForID -logSourceID $Source.id -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+        if($null -ne $Config)
+        {
+            $Results.Add($Config) | Out-Null
+        }
     }
+    catch{
+        Write-Host -ForegroundColor Yellow "Failed to get info for $($Source.cpcode)"
+        Write-Host $_
+    }
+    
 }
 
 return $Results
