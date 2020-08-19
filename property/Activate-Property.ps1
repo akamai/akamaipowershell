@@ -73,13 +73,26 @@ function Activate-Property
 
         if($NoncomplianceReason)
         {
-            $ComplianceRecord = [PSCustomObject]@{
-                noncomplianceReason = $NoncomplianceReason.ToUpper()
-                customerEmail = $CustomerEmail
-                peerReviewedBy = $PeerReviewdBy
-                unitTested = $UnitTested.ToBool()
-                ticketId = $TicketID
-                otherNoncomplianceReason = $OtherNoncomplianceReason
+            $ComplianceRecord = New-Object -TypeName PSCustomObject
+
+            # Only add optional fields if they are present
+            if($NoncomplianceReason){
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'noncomplianceReason' = $NoncomplianceReason.ToUpper()
+            }
+            if($CustomerEmail){
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'customerEmail' = $CustomerEmail
+            }
+            if($PeerReviewdBy){
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'peerReviewedBy' = $PeerReviewdBy
+            }
+            if($UnitTested){
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'unitTested' = $UnitTested.ToBool()
+            }
+            if($TicketID){
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'ticketId' = $TicketID
+            }
+            if($OtherNoncomplianceReason){
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'otherNoncomplianceReason' = $OtherNoncomplianceReason
             }
 
             $BodyObj | Add-Member -MemberType NoteProperty -Name 'complianceRecord' -Value $ComplianceRecord

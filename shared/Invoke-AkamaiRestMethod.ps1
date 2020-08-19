@@ -60,8 +60,9 @@ function Invoke-AkamaiRestMethod
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [hashtable] $AdditionalHeaders,
         [Parameter(Mandatory=$false)] [boolean] $Staging,
-        [Parameter(Mandatory=$false)] [string] $MaxBody = 131072
-        )
+        [Parameter(Mandatory=$false)] [string] $MaxBody = 131072,
+        [Parameter(Mandatory=$false)] [string] $ResponseHeadersVariable
+    )
 
     # Get credentials from EdgeRC
     if(!(Test-Path $EdgeRCFile)){
@@ -90,6 +91,18 @@ function Invoke-AkamaiRestMethod
     }
     if($null -eq $Auth.$Section.ClientToken -or $null -eq $Auth.$Section.ClientAccessToken -or $null -eq $Auth.$Section.ClientSecret -or $null -eq $Auth.$Section.Host){
         throw "Error: Some necessary auth elements missing from section $Section. Please check your EdgeRC file"
+    }
+
+    # Check actual edgerc entries if debug mode
+    $EdgeRCMatch = "^akab-[a-z0-9]{16}-[a-z0-9]{16}"
+    if($Auth.$Section.Host -notmatch $EdgeRCMatch){
+        Write-Debug "The 'host' attribute in the '$Section' section of your .edgerc file appears to be invalid"
+    }
+    if($Auth.$Section.ClientToken -notmatch $EdgeRCMatch){
+        Write-Debug "The 'client_token' attribute in the '$Section' section of your .edgerc file appears to be invalid"
+    }
+    if($Auth.$Section.ClientAccessToken -notmatch $EdgeRCMatch){
+        Write-Debug "The 'access_token' attribute in the '$Section' section of your .edgerc file appears to be invalid"
     }
 
     # Set IM staging host if switch present
@@ -199,27 +212,53 @@ function Invoke-AkamaiRestMethod
     }
 
     if ($Method -eq "PUT" -or $Method -eq "POST" -or $Method -eq "PATCH") {
-        try {
-            if ($Body) {
-                if($UseProxy){
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -Proxy $ENV:https_proxy
+        if($PSVersionTable.PSVersion.Major -le 5){
+            try {
+                if ($Body) {
+                    if($UseProxy){
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body
+                    }
+                    
                 }
                 else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body
+                    if($UseProxy) {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
+                    }
                 }
-                
             }
-            else {
-                if($UseProxy) {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Proxy $ENV:https_proxy
-                }
-                else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
-                }
+            catch {
+                throw $_.ErrorDetails
             }
         }
-        catch {
-            throw $_.ErrorDetails
+        else{
+            try {
+                if ($Body) {
+                    if($UseProxy){
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable
+                    }
+                    
+                }
+                else {
+                    if($UseProxy) {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable
+                    }
+                }
+            }
+            catch {
+                throw $_.ErrorDetails
+            }
         }
     }
     else {
@@ -245,10 +284,10 @@ function Invoke-AkamaiRestMethod
         else{
             try {
                 if($UseProxy) {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
                 }
                 else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction Stop
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop
                 }
             }
             catch {
@@ -257,7 +296,7 @@ function Invoke-AkamaiRestMethod
                 {
                     try {
                         $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
-                        $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+                        $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                     catch {
                         throw $_
@@ -270,5 +309,8 @@ function Invoke-AkamaiRestMethod
         }
     }
 
+    if($ResponseHeadersVariable){
+        Set-Variable -name $ResponseHeadersVariable -Value (Get-Variable -Name $ResponseHeadersVariable -ValueOnly) -Scope Script
+    }
     Return $Response
 }
