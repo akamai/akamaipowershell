@@ -80,6 +80,9 @@ Function Set-PropertyRuleTree
             }
         }
 
+        #Sanitize body to remove NO-BREAK SPACE Unicode character, which breaks PAPI
+        $Body = $Body -replace "[\u00a0]", ""
+
         if($PropertyVersion.ToLower() -eq "latest"){
             try{
                 if($PropertyName){

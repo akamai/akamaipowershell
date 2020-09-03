@@ -4,7 +4,7 @@ function Set-PropertyHostnames
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
-        [Parameter(Mandatory=$false, ValueFromPipeline)] [System.Object] $PropertyHostnames,
+        [Parameter(Mandatory=$true, ValueFromPipeline)] [System.Object] $PropertyHostnames,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
@@ -39,13 +39,10 @@ function Set-PropertyHostnames
         if(!$ValidateHostnames){ $ValidateHostnamesString = '' }
 
         $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&accountSwitchKey=$AccountSwitchKey"
-
-        if($PropertyHostnames){
-            $Body = $PropertyHostnames | ConvertTo-Json -Depth 100
-        }
+        $Body = $PropertyHostnames | ConvertTo-Json -Depth 100
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
             return $Result.hostnames.items
         }
         catch {
