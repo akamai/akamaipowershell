@@ -105,6 +105,8 @@ function Invoke-AkamaiRestMethod
         Write-Debug "The 'access_token' attribute in the '$Section' section of your .edgerc file appears to be invalid"
     }
 
+    Write-Debug "Obtained credentials from section '$Section' of EdgeRC file $EdgeRCFile"
+
     # Set IM staging host if switch present
     if($Auth.$Section.Host.Contains('.imaging.') -and $Staging) {
         $Auth.$Section.Host = $Auth.$Section.Host.Replace(".imaging.",".imaging-staging.")
@@ -121,6 +123,7 @@ function Invoke-AkamaiRestMethod
 
     #Sanitize ReqURL (Certain {OPEN} APIs don't handle empty query parameters well)
     $ReqURL = Remove-NullQueryParameters -ReqURL $ReqURL
+    Write-Debug "Request URL = $ReqURL"
 
     #Sanitize Method param
     $Method = $Method.ToUpper()
