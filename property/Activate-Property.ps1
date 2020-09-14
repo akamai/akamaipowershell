@@ -77,22 +77,22 @@ function Activate-Property
 
             # Only add optional fields if they are present
             if($NoncomplianceReason){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'noncomplianceReason' = $NoncomplianceReason.ToUpper()
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'noncomplianceReason' -Value $NoncomplianceReason.ToUpper()
             }
             if($CustomerEmail){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'customerEmail' = $CustomerEmail
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'customerEmail' -Value $CustomerEmail
             }
             if($PeerReviewdBy){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'peerReviewedBy' = $PeerReviewdBy
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'peerReviewedBy' -Value $PeerReviewdBy
             }
             if($UnitTested){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'unitTested' = $UnitTested.ToBool()
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'unitTested' -Value $UnitTested.ToBool()
             }
             if($TicketID){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'ticketId' = $TicketID
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'ticketId' -Value $TicketID
             }
             if($OtherNoncomplianceReason){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'otherNoncomplianceReason' = $OtherNoncomplianceReason
+                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'otherNoncomplianceReason' -Value $OtherNoncomplianceReason
             }
 
             $BodyObj | Add-Member -MemberType NoteProperty -Name 'complianceRecord' -Value $ComplianceRecord
