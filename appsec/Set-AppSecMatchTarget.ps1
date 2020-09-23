@@ -1,7 +1,8 @@
 function Set-AppSecMatchTarget
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $ConfigID,
+        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [int]    $VersionNumber,
         [Parameter(Mandatory=$true)]  [int]    $TargetID,
         [Parameter(Mandatory=$true)]  [string] $Body,
@@ -9,6 +10,11 @@ function Set-AppSecMatchTarget
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    if($ConfigName){
+        $Config = List-AppSecConfigurations -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.name -eq $ConfigName}
+        $ConfigID = $Config.id
+    }
 
     $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets/$TargetID`?accountSwitchKey=$AccountSwitchKey"
 

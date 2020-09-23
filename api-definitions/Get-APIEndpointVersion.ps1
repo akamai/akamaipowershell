@@ -1,12 +1,21 @@
 function Get-APIEndpointVersion
 {
     Param(
-        [Parameter(Mandatory=$true)]  [int] $APIEndpointID,
-        [Parameter(Mandatory=$true)]  [int] $VersionNumber,
+        [Parameter(Mandatory=$true, ParameterSetName="name")] [string] $APIEndpointName,
+        [Parameter(Mandatory=$true, ParameterSetName="id")]   [int] $APIEndpointID,
+        [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    if($APIEndpointName){
+        $APIEndpointID = (List-APIEndpoints -Contains $APIEndpointName -PageSize 1 -AccountSwitchKey $PS).apiEndPointId
+    }
+
+    if($VersionNumber.ToLower() -eq "latest"){
+        $VersionNumber = (List-APIEndpointVersions -APIEndpointID $APIEndpointID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | Sort-Object -Property versionNumber -Descending)[0].versionNumber
+    }
 
     $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/resources-detail?accountSwitchKey=$AccountSwitchKey"
 

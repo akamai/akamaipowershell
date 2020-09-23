@@ -1,8 +1,9 @@
 function Activate-APIEndpointVersion
 {
     Param(
-        [Parameter(Mandatory=$true)]  [int] $APIEndpointID,
-        [Parameter(Mandatory=$true)]  [int] $VersionNumber,
+        [Parameter(Mandatory=$true)] [string] $APIEndpointName,
+        [Parameter(Mandatory=$true)] [int]    $APIEndpointID,
+        [Parameter(Mandatory=$true)] [string] $VersionNumber,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [string] $Notes,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [string] [ValidateSet('Production', 'Staging', 'Both')] $Networks,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [string] $NotificationRecipients,
