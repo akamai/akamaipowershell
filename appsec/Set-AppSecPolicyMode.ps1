@@ -11,39 +11,32 @@ function Set-AppSecPolicyMode
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    begin{}
-
-    process{
-        if($ConfigName){
-            $Config = List-AppSecConfigurations -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.name -eq $ConfigName}
-            if($Config){
-                $ConfigID = $Config.id
-            }
-            else{
-                throw("Security config '$ConfigName' not found")
-            }
+    if($ConfigName){
+        $Config = List-AppSecConfigurations -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.name -eq $ConfigName}
+        if($Config){
+            $ConfigID = $Config.id
         }
-    
-        if($VersionNumber.ToLower() -eq 'latest'){
-            $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
-        }
-    
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/mode?accountSwitchKey=$AccountSwitchKey"
-    
-        $BodyObj = @{
-            mode = $Mode
-        }
-        $Body = $BodyObj | ConvertTo-Json
-
-        try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-            return $Result
-        }
-        catch {
-            throw $_.Exception 
+        else{
+            throw("Security config '$ConfigName' not found")
         }
     }
 
-    end{}
+    if($VersionNumber.ToLower() -eq 'latest'){
+        $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
+    }
 
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/mode?accountSwitchKey=$AccountSwitchKey"
+
+    $BodyObj = @{
+        mode = $Mode
+    }
+    $Body = $BodyObj | ConvertTo-Json
+
+    try {
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        return $Result
+    }
+    catch {
+        throw $_.Exception 
+    }
 }

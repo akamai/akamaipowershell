@@ -3,7 +3,7 @@ function Set-AppSecRatePolicy
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
-        [Parameter(Mandatory=$true)]  [int]    $VersionNumber,
+        [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [int]    $RatePolicyID,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true)]  [object] $RatePolicy,
         [Parameter(Mandatory=$false)] [string] $Body,
@@ -23,6 +23,10 @@ function Set-AppSecRatePolicy
             else{
                 throw("Security config '$ConfigName' not found")
             }
+        }
+
+        if($VersionNumber.ToLower() -eq 'latest'){
+            $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
         }
     
         if($RatePolicy){

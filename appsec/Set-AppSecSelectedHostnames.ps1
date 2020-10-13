@@ -3,7 +3,7 @@ function Set-AppSecSelectedHostnames
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
-        [Parameter(Mandatory=$true)]  [int]    $VersionNumber,
+        [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -18,6 +18,10 @@ function Set-AppSecSelectedHostnames
         else{
             throw("Security config '$ConfigName' not found")
         }
+    }
+
+    if($VersionNumber.ToLower() -eq 'latest'){
+        $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
     }
 
     $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/selected-hostnames?accountSwitchKey=$AccountSwitchKey"
