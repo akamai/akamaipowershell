@@ -13,6 +13,14 @@ function Activate-APIEndpointVersion
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    if($APIEndpointName){
+        $APIEndpointID = (List-APIEndpoints -Contains $APIEndpointName -PageSize 1 -AccountSwitchKey $PS).apiEndPointId
+    }
+
+    if($VersionNumber.ToLower() -eq "latest"){
+        $VersionNumber = (List-APIEndpointVersions -APIEndpointID $APIEndpointID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | Sort-Object -Property versionNumber -Descending)[0].versionNumber
+    }
+
     if($PSCmdlet.ParameterSetName -eq "attributes"){
         if($Networks -eq 'Production' -or $Networks -eq 'Staging'){
             $NetworksArray = @($Networks)

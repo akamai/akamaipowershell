@@ -124,7 +124,6 @@ function Invoke-AkamaiNSAPIRequest {
             if ($Body) {
                 if($InputFile){
                     if($UseProxy){
-                        Write-Host "Using method $Method on file $InputFile"
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType 'application/json' -Body $Body -InFile $InputFile -Proxy $ENV:https_proxy
                     }
                     else {

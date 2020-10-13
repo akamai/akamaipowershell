@@ -14,7 +14,12 @@ function Activate-AppSecConfiguration
 
     if($ConfigName){
         $Config = List-AppSecConfigurations -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.name -eq $ConfigName}
-        $ConfigID = $Config.id
+        if($Config){
+            $ConfigID = $Config.id
+        }
+        else{
+            throw("Security config '$ConfigName' not found")
+        }
     }
 
     $Path = "/appsec/v1/activations?accountSwitchKey=$AccountSwitchKey"

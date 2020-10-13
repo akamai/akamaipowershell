@@ -1,11 +1,11 @@
-function Set-AppSecPolicyPenaltyBox
+function Set-AppSecPolicyIPGeoFirewall
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
-        [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $PenaltyBoxSettings,
+        [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $IPGeoFirewallSettings,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -29,10 +29,10 @@ function Set-AppSecPolicyPenaltyBox
             $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/penalty-box?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/ip-geo-firewall?accountSwitchKey=$AccountSwitchKey"
 
-        if($PenaltyBoxSettings){
-            $Body = $PenaltyBoxSettings | ConvertTo-Json
+        if($IPGeoFirewallSettings){
+            $Body = $IPGeoFirewallSettings | ConvertTo-Json
         }
     
         try {
