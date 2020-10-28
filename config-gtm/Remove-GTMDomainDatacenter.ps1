@@ -1,8 +1,8 @@
 function Remove-GTMDomainDatacenter
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $DomainName,
-        [Parameter(Mandatory=$false)] [string] $DatacenterID,
+        [Parameter(Mandatory=$true)]  [string] $DomainName,
+        [Parameter(Mandatory=$true)]  [string] $DatacenterID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

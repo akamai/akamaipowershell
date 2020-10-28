@@ -1,21 +1,31 @@
 function Set-GTMDomainProperty
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $DomainName,
-        [Parameter(Mandatory=$false)] [string] $PropertyName,
-        [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$true)] [string] $DomainName,
+        [Parameter(Mandatory=$true)] [string] $PropertyName,
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true,ParameterSetName='pipeline')] [object] $Property,
+        [Parameter(Mandatory=$true,ParameterSetName='postbody')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-gtm/v1/domains/$DomainName/properties/$PropertyName`?accountSwitchKey=$AccountSwitchKey"
+    begin{}
+    
+    process{
+        $Path = "/config-gtm/v1/domains/$DomainName/properties/$PropertyName`?accountSwitchKey=$AccountSwitchKey"
+        if($Property){
+            $Body = $Property | ConvertTo-Json -Depth 100
+        }
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        try {
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            return $Result
+        }
+        catch {
+            throw $_.Exception
+        } 
     }
-    catch {
-        throw $_.Exception
-    }  
+
+    end{} 
 }
