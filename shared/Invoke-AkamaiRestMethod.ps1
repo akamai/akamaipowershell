@@ -288,6 +288,7 @@ function Invoke-AkamaiRestMethod
     
                 # Redirects aren't well handled due to signatures needing regenerated
                 if($Response.redirectLink){
+                    Write-Debug "Redirecting to $($Response.redirectLink)"
                     $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
                 }
             }
@@ -310,6 +311,7 @@ function Invoke-AkamaiRestMethod
                 {
                     try {
                         $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
+                        Write-Debug "Redirecting to $NewPath"
                         $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                     catch {
