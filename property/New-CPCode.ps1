@@ -4,7 +4,7 @@ function New-CPCode
         [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [string] $CPCodeName,
         [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [string] $ProductID,
         [Parameter(ParameterSetName='postbody', Mandatory=$true)] [string] $Body,
-        [Parameter(Mandatory=$false)]  [string] $GroupId,
+        [Parameter(Mandatory=$false)] [string] $GroupId,
         [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',

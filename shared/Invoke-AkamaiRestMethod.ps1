@@ -112,36 +112,47 @@ function Invoke-AkamaiRestMethod
         $Auth.$Section.Host = $Auth.$Section.Host.Replace(".imaging.",".imaging-staging.")
     }
 
+    # Sanitise query string
+    if($Path.Contains("?")){
+        $PathElements = $Path.Split("?")
+        $PathOnly = $PathElements[0]
+        $QueryString = $PathElements[1]
+        $SanitisedQuery = Sanitise-QueryString -QueryString $QueryString
+        Write-Debug "Original Query = $QueryString"
+        Write-Debug "Sanitised Query = $SanitisedQuery"
+        # Reconstruct Path
+        $Path = $PathOnly + "?" + $SanitisedQuery
+    }
+
     # Set ReqURL from host and provided path
     $ReqURL = "https://" + $Auth.$Section.Host + $Path
 
-    #ReqURL Verification
+    # ReqURL Verification
     If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net")
     {
-        throw "Error: Ivalid Request URI"
+        throw "Error: Invalid Request URI"
     }
 
-    #Sanitize ReqURL (Certain {OPEN} APIs don't handle empty query parameters well)
+    # Sanitize ReqURL (Certain {OPEN} APIs don't handle empty query parameters well)
     $ReqURL = Remove-NullQueryParameters -ReqURL $ReqURL
     Write-Debug "Request URL = $ReqURL"
 
-    #Sanitize Method param
+    # Sanitize Method param
     $Method = $Method.ToUpper()
 
-    #Split $ReqURL for inclusion in SignatureData
-    $ReqArray = $ReqURL -split "(.*\/{2})(.*?)(\/)(.*)"
-
-    #Timestamp for request signing
+    # Timestamp for request signing
     $TimeStamp = [DateTime]::UtcNow.ToString("yyyyMMddTHH:mm:sszz00")
 
-    #GUID for request signing
+    # GUID for request signing
     $Nonce = [GUID]::NewGuid()
 
-    #Build data string for signature generation
+    # Build data string for signature generation
     $SignatureData = $Method + "`thttps`t"
-    $SignatureData += $ReqArray[2] + "`t" + $ReqArray[3] + $ReqArray[4]
+    $SignatureData += $Auth.$Section.Host + "`t" + $Path
 
-    #Add body to signature. Truncate if body is greater than max-body (Akamai default is 131072). PUT Medthod does not require adding to signature.
+    Write-Debug "SignatureData = $SignatureData"
+
+    # Add body to signature. Truncate if body is greater than max-body (Akamai default is 131072). PUT Method does not require adding to signature.
 
     if ($Body -and $Method -eq "POST")
     {
@@ -166,13 +177,13 @@ function Invoke-AkamaiRestMethod
     $SignatureData += "timestamp=" + $TimeStamp  + ";"
     $SignatureData += "nonce=" + $Nonce + ";"
 
-    #Generate SigningKey
+    # Generate SigningKey
     $SigningKey = Crypto -secret $Auth.$Section.ClientSecret -message $TimeStamp
 
-    #Generate Auth Signature
+    # Generate Auth Signature
     $Signature = Crypto -secret $SigningKey -message $SignatureData
 
-    #Create AuthHeader
+    # Create AuthHeader
     $AuthorizationHeader = "EG1-HMAC-SHA256 "
     $AuthorizationHeader += "client_token=" + $Auth.$Section.ClientToken + ";"
     $AuthorizationHeader += "access_token=" + $Auth.$Section.ClientAccessToken + ";"
@@ -180,15 +191,15 @@ function Invoke-AkamaiRestMethod
     $AuthorizationHeader += "nonce=" + $Nonce + ";"
     $AuthorizationHeader += "signature=" + $Signature
 
-    #Create IDictionary to hold request headers
+    # Create IDictionary to hold request headers
     $Headers = @{}
 
-    #Add Auth & Accept headers
+    # Add Auth & Accept headers
     $Headers.Add('Authorization',$AuthorizationHeader)
     $Headers.Add('Accept','application/json')
     $Headers.Add('Content-Type', 'application/json')
 
-    #Add additional headers
+    # Add additional headers
     if($AdditionalHeaders)
     {
         $AdditionalHeaders.Keys | foreach {
@@ -196,7 +207,7 @@ function Invoke-AkamaiRestMethod
         }
     }
 
-    #Add additional headers if POSTing or PUTing
+    # Add additional headers if POSTing or PUTing
     If ($Body)
     {
       # turn off the "Expect: 100 Continue" header
@@ -204,7 +215,7 @@ function Invoke-AkamaiRestMethod
       [System.Net.ServicePointManager]::Expect100Continue = $false
     }
 
-    #Check for valid Methods and required switches
+    # Set TLS version to 1.2
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 
 
@@ -275,7 +286,7 @@ function Invoke-AkamaiRestMethod
                     $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction SilentlyContinue
                 }
     
-                #Redirects aren't well handled due to signatures needing regenerated
+                # Redirects aren't well handled due to signatures needing regenerated
                 if($Response.redirectLink){
                     $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
                 }
@@ -294,7 +305,7 @@ function Invoke-AkamaiRestMethod
                 }
             }
             catch {
-                #Redirects aren't well handled due to signatures needing regenerated
+                # Redirects aren't well handled due to signatures needing regenerated
                 if($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302)
                 {
                     try {

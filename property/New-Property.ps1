@@ -1,16 +1,16 @@
 function New-Property
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
-        [Parameter(Mandatory=$true)]  [string] $ContractId,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)] [string] $PropertyName,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)] [string] $ProductID,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $PropertyName,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $ProductID,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $RuleFormat,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $CloneFromVersionEtag,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch] $CopyHostnames,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $ClonePropertyID,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [int] $ClonePropertyVersion,
-        [Parameter(ParameterSetName='postbody', Mandatory=$true)]  [string] $Body,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [int]    $ClonePropertyVersion,
+        [Parameter(ParameterSetName='postbody', Mandatory=$true)]    [string] $Body,
+        [Parameter(Mandatory=$true)]  [string] $GroupID,
+        [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

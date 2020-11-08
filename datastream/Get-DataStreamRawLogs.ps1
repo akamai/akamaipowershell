@@ -7,7 +7,7 @@ function Get-DataStreamRawLogs
         [Parameter(Mandatory=$false)] [string] $Page,
         [Parameter(Mandatory=$false)] [string] $Size,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
