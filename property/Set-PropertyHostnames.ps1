@@ -1,11 +1,11 @@
 function Set-PropertyHostnames
 {
     Param(
-        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(Mandatory=$false)]  [string] $PropertyName,
+        [Parameter(Mandatory=$false)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
-        [Parameter(Mandatory=$true, ValueFromPipeline)] [array] $PropertyHostnames,
-        [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [array] $PropertyHostnames,
+        [Parameter(Mandatory=$true,ParameterSetName='postbody')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [switch] $ValidateHostnames,
@@ -20,6 +20,9 @@ function Set-PropertyHostnames
     #>
 
     begin{
+        if($PropertyName -eq '' -and $PropertyID -eq ''){
+            throw 'You must provide either $PropertyName or $PropertyID'
+        }
         # Find property if user has specified PropertyName
         if($PropertyName){
             try{
@@ -44,17 +47,23 @@ function Set-PropertyHostnames
         if(!$ValidateHostnames){ $ValidateHostnamesString = '' }
 
         $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&accountSwitchKey=$AccountSwitchKey"
-        $CombinedHostnameArray = New-Object -TypeName System.Collections.ArrayList
+        if($PSCmdlet.ParameterSetName -eq 'pipeline'){
+            $CombinedHostnameArray = New-Object -TypeName System.Collections.ArrayList
+        }
     }
 
     process{
-        foreach($PropertyHostname in $PropertyHostnames){
-            $CombinedHostnameArray.Add($PropertyHostname) | Out-Null
+        if($PSCmdlet.ParameterSetName -eq 'pipeline'){
+            foreach($PropertyHostname in $PropertyHostnames){
+                $CombinedHostnameArray.Add($PropertyHostname) | Out-Null
+            }
         }
     }
 
     end{
-        $Body = $CombinedHostnameArray | ConvertTo-Json -Depth 100
+        if($PSCmdlet.ParameterSetName -eq 'pipeline'){
+            $Body = $CombinedHostnameArray | ConvertTo-Json -Depth 100 -AsArray
+        }
         Write-Debug "Body = $Body"
 
         try {

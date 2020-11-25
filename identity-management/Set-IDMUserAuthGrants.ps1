@@ -2,19 +2,42 @@ function Set-IDMUserAuthGrants
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $UiIdentityID,
-        [Parameter(Mandatory=$true)]  [string] $Body,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [object[]] $AuthGrants,
+        [Parameter(Mandatory=$true,ParameterSetName='postbody')]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/identity-management/v2/user-admin/ui-identities/$UiIdentityID/auth-grants?accountSwitchKey=$AccountSwitchKey"
+    <#
+        Cmdlet broken down into begin, process and end in order to reconstruct pipelined array, which is split out by Powershell into multiple
+        single items with the Process section executing for each one.
+    #>
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+    begin{
+        $Path = "/identity-management/v2/user-admin/ui-identities/$UiIdentityID/auth-grants?accountSwitchKey=$AccountSwitchKey"
+        if($PSCmdlet.ParameterSetName -eq 'pipeline'){
+            $CombinedAuthGrantsArray = New-Object -TypeName System.Collections.ArrayList
+        }
     }
-    catch {
-        throw $_.Exception
+
+    process{
+        foreach($Grant in $AuthGrants){
+            $CombinedAuthGrantsArray.Add($Grant) | Out-Null
+        }
+    }
+
+    end{
+        if($PSCmdlet.ParameterSetName -eq 'pipeline'){
+            $Body = $CombinedAuthGrantsArray | ConvertTo-Json -Depth 100 -AsArray
+        }
+
+        try {
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            return $Result
+        }
+        catch {
+            throw $_.Exception
+        }
     }
 }
