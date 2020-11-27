@@ -4,15 +4,15 @@ function Activate-Property
         [Parameter(Mandatory=$false)]                                [string]   $PropertyName,
         [Parameter(Mandatory=$false)]                                [string]   $PropertyId,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string]   $PropertyVersion,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')]$Network,
+        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string]   [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $Note,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch]   $UseFastFallback,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]             $NotifyEmails,
         [Parameter(ParameterSetName='postbody', Mandatory=$true)]    [string]   $Body,
-        [Parameter(Mandatory=$false)]                                [switch]   $AutoAcknowledgeWarnings,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch]   $AcknowledgeAllWarnings,
         [Parameter(Mandatory=$false)]                                [string]   $GroupID,
         [Parameter(Mandatory=$false)]                                [string]   $ContractId,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   [ValidateSet('None', 'Other', 'No_Production_Traffic', 'Emergency')] $NoncomplianceReason,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   [ValidateSet('NONE', 'OTHER', 'NO_PRODUCTION_TRAFFIC', 'EMERGENCY')] $NoncomplianceReason = 'NONE',
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $OtherNoncomplianceReason,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $CustomerEmail,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $PeerReviewdBy,
@@ -62,8 +62,14 @@ function Activate-Property
         if($NotifyEmails.GetType().Name -eq "String"){
             $NotifyEmails = $NotifyEmails -split ","
         }
+
+        if($NoncomplianceReason -eq 'NONE'){
+            if($CustomerEmail -eq '' -or $PeerReviewdBy -eq '' -or $UnitTested -eq $false){
+                throw "You must supply the following when NonComplianceReason is 'NONE': CustomerEmail, PeerReviewedBy & UnitTested"
+            }
+        }
         
-        $BodyObj = [PSCustomObject]@{
+        $BodyObj = @{
             propertyVersion = $PropertyVersion;
             network = $Network.ToUpper();
             note = $Note;
@@ -71,32 +77,32 @@ function Activate-Property
             notifyEmails = $NotifyEmails;
         }
 
-        if($NoncomplianceReason)
-        {
-            $ComplianceRecord = New-Object -TypeName PSCustomObject
-
-            # Only add optional fields if they are present
-            if($NoncomplianceReason){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'noncomplianceReason' -Value $NoncomplianceReason.ToUpper()
-            }
-            if($CustomerEmail){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'customerEmail' -Value $CustomerEmail
-            }
-            if($PeerReviewdBy){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'peerReviewedBy' -Value $PeerReviewdBy
-            }
-            if($UnitTested){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'unitTested' -Value $UnitTested.ToBool()
-            }
-            if($TicketID){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'ticketId' -Value $TicketID
-            }
-            if($OtherNoncomplianceReason){
-                $ComplianceRecord | Add-Member -MemberType NoteProperty -Name 'otherNoncomplianceReason' -Value $OtherNoncomplianceReason
-            }
-
-            $BodyObj | Add-Member -MemberType NoteProperty -Name 'complianceRecord' -Value $ComplianceRecord
+        if($AcknowledgeAllWarnings){
+            $BodyObj['acknowledgeAllWarnings'] = $true
         }
+
+        $ComplianceRecord = @{
+            noncomplianceReason = $NoncomplianceReason
+        }
+
+        # Only add optional fields if they are present
+        if($CustomerEmail){
+            $ComplianceRecord['customerEmail'] = $CustomerEmail
+        }
+        if($PeerReviewdBy){
+            $ComplianceRecord['peerReviewedBy'] = $PeerReviewdBy
+        }
+        if($UnitTested){
+            $ComplianceRecord['unitTested'] = $UnitTested.ToBool()
+        }
+        if($TicketID){
+            $ComplianceRecord['ticketId'] = $TicketID
+        }
+        if($OtherNoncomplianceReason){
+            $ComplianceRecord['otherNoncomplianceReason'] = $OtherNoncomplianceReason
+        }
+
+        $BodyObj['complianceRecord'] =  $ComplianceRecord
 
         $Body = $BodyObj | ConvertTo-Json -Depth 100
     }
@@ -110,32 +116,7 @@ function Activate-Property
     }
     catch
     {
-        if($_.Exception.Message.Contains("The following activation warnings must be acknowledged.") -and $AutoAcknowledgeWarnings)
-        {
-            $acknowledgeWarnings = New-Object System.Collections.ArrayList
-            $Response = $_.Exception.Message | ConvertFrom-Json
-            $Response.Warnings | foreach {
-                $acknowledgeWarnings.Add($_.messageId) | Out-Null
-            }
-
-            $BodyObj = $Body | ConvertFrom-Json
-            $BodyObj | Add-Member -MemberType NoteProperty -Name "acknowledgeWarnings" -Value $acknowledgeWarnings
-
-            $acknowledgedBody = $BodyObj | ConvertTo-Json -Depth 100
-            try {
-                $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $acknowledgedBody
-                return $Result
-            }
-            catch {
-                throw $_.Exception
-            }
-
-        }
-        else
-        {
-            throw $_.Exception
-        }
-        return $_
+        throw $_.Exception
     }
 }
 
