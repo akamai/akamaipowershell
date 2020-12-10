@@ -10,7 +10,7 @@ function Clone-APIEndpointVersion
     )
 
     if($APIEndpointName){
-        $APIEndpointID = (List-APIEndpoints -Contains $APIEndpointName -PageSize 1 -AccountSwitchKey $PS).apiEndPointId
+        $APIEndpointID = (List-APIEndpoints -Contains $APIEndpointName -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).apiEndPointId
     }
 
     $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/cloneVersion?accountSwitchKey=$AccountSwitchKey"

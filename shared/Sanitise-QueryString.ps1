@@ -5,7 +5,7 @@ function Sanitise-QueryString
         [Parameter(Mandatory=$true)] [string] $QueryString
     )
     
-    $ParsedParameters = @()
+    $ValidParameters = New-Object -TypeName System.Collections.ArrayList
 
     # Remove invalid characters
     $QueryString = $QueryString.Replace(" ","%20")
@@ -29,17 +29,17 @@ function Sanitise-QueryString
         else {
             if($Parameter.Length -gt $Parameter.IndexOf("=") + 1)
             {
-                $ParsedParameters += $Parameter
+                $ValidParameters.Add($Parameter) | Out-Null
             }
         }
     }
 
-    if($ParsedParameters.Count -eq 0)
+    if($ValidParameters.Count -eq 0)
     {
-        return $QueryString
+        return $null
     }
     else {
-        $JoinedParameters = $ParsedParameters -join "&"
+        $JoinedParameters = $ValidParameters -join "&"
         return $JoinedParameters
     }
 }

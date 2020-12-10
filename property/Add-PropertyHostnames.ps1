@@ -1,65 +1,83 @@
 function Add-PropertyHostnames
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PropertyId,
-        [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
-        [Parameter(Mandatory=$true)]  [string[]] $NewHostnames,
-        [Parameter(Mandatory=$true)]  [string[]] $Edgekeynames,
+        [Parameter(Mandatory=$false,ParameterSetName='name')] [string]   $PropertyName,
+        [Parameter(Mandatory=$false,ParameterSetName='id')]   [string]   $PropertyId,
+        [Parameter(Mandatory=$true)]  [string]   $PropertyVersion,
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  [object[]] $NewHostnames,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
+        [Parameter(Mandatory=$false)] [switch] $IncludeCertStatus,
         [Parameter(Mandatory=$false)] [switch] $ValidateHostnames,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Input validation
-    if($NewHostnames.Count -eq 1 -and $NewHostnames[0].Contains(","))
-    {
-        $NewHostnames = $NewHostnames[0].Replace(" ", "").Split(",")
-    }
-    if($Edgekeynames.Count -eq 1 -and $Edgekeynames[0].Contains(","))
-    {
-        $Edgekeynames = $Edgekeynames[0].Replace(" ", "").Split(",")
-    }
+    <#
+        Cmdlet broken down into begin, process and end in order to reconstruct pipelined array, which is split out by Powershell into multiple
+        single items with the Process section executing for each one.
+    #>
 
-    $CurrentHostnames = Get-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -GroupID $GroupID -ContractId $ContractId -Section $Section -AccountSwitchKey $AccountSwitchKey
-    $CurrentHostnames = [System.Collections.ArrayList] $CurrentHostnames
+    begin{
+        # nullify false switches
+        $IncludeCertStatusString = $IncludeCertStatus.IsPresent.ToString().ToLower()
+        if(!$IncludeCertStatus){ $IncludeCertStatusString = '' }
+        $ValidateHostnamesString = $ValidateHostnames.IsPresent.ToString().ToLower()
+        if(!$ValidateHostnames){ $ValidateHostnamesString = '' }
 
-    for($i = 0; $i -lt $NewHostnames.Count; $i++)
-    {
-        if($NewHostnames.Count -eq $Edgekeynames.Count)
-        {
-            $RelativeEdge = $Edgekeynames[$i]
+        # Find property if user has specified PropertyName
+        if($PropertyName){
+            try{
+                $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                $PropertyID = $Property.propertyId
+                if($PropertyID -eq ''){
+                    throw "Property '$PropertyName' not found"
+                }
+            }
+            catch{
+                throw $_.Exception
+            }
         }
-        else
-        {
-            $RelativeEdge = $Edgekeynames[0]
+
+        if($PropertyVersion.ToLower() -eq "latest"){
+            try{
+                if($PropertyName){
+                    $PropertyVersion = $Property.propertyVersion
+                }
+                else{
+                    $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                    $PropertyVersion = $Property.latestVersion
+                }
+            }
+            catch{
+                throw $_.Exception
+            }
         }
 
-        $CurrentHostnames.Add( [PSCustomObject] @{
-            cnameType = "EDGE_HOSTNAME";
-            cnameFrom = $NewHostnames[$i];
-            cnameTo = $RelativeEdge
-        }) | Out-Null
+        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractID&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString&accountSwitchKey=$AccountSwitchKey"
+        $CombinedHostnameArray = New-Object -TypeName System.Collections.ArrayList
     }
 
-    $Body = $CurrentHostnames | ConvertTo-Json -Depth 100
+    process{
+        foreach($Hostname in $NewHostnames){
+            $CombinedHostnameArray.Add($Hostname) | Out-Null
+        }
+    }
 
-    try {
-        if($ValidateHostnames)
-        {
-            $Result = Set-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -Body $Body -GroupID $GroupID -ContractId $ContractId -ValidateHostnames -Section $Section -AccountSwitchKey $AccountSwitchKey
+    end{
+        $BodyObj = @{ add = $CombinedHostnameArray }
+        $Body = $BodyObj | ConvertTo-Json -Depth 100
+
+        try {
+            $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            return $Result.hostnames.items
         }
-        else
-        {
-            $Result = Set-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -Body $Body -GroupID $GroupID -ContractId $ContractId -Section $Section -AccountSwitchKey $AccountSwitchKey
+        catch {
+            throw $_.Exception
         }
-       
-        return $Result
     }
-    catch {
-        throw $_.Exception
-    }
+
+    
 }
 

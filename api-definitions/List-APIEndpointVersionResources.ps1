@@ -10,7 +10,7 @@ function List-APIEndpointVersionResources
     )
 
     if($APIEndpointName){
-        $APIEndpointID = (List-APIEndpoints -Contains $APIEndpointName -PageSize 1 -AccountSwitchKey $PS).apiEndPointId
+        $APIEndpointID = (List-APIEndpoints -Contains $APIEndpointName -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).apiEndPointId
     }
 
     if($VersionNumber.ToLower() -eq "latest"){

@@ -132,9 +132,6 @@ function Invoke-AkamaiRestMethod
     {
         throw "Error: Invalid Request URI"
     }
-
-    # Sanitize ReqURL (Certain {OPEN} APIs don't handle empty query parameters well)
-    $ReqURL = Remove-NullQueryParameters -ReqURL $ReqURL
     Write-Debug "Request URL = $ReqURL"
 
     # Sanitize Method param
@@ -154,7 +151,7 @@ function Invoke-AkamaiRestMethod
 
     # Add body to signature. Truncate if body is greater than max-body (Akamai default is 131072). PUT Method does not require adding to signature.
 
-    if ($Body -and $Method -eq "POST")
+    if ($Body -and ($Method -eq "POST"))
     {
         $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
         if($Body.Length -gt $MaxBody){
