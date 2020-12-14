@@ -121,7 +121,12 @@ function Invoke-AkamaiRestMethod
         Write-Debug "Original Query = $QueryString"
         Write-Debug "Sanitised Query = $SanitisedQuery"
         # Reconstruct Path
-        $Path = $PathOnly + "?" + $SanitisedQuery
+        if($SanitisedQuery){
+            $Path = $PathOnly + "?" + $SanitisedQuery
+        }
+        else{
+            $Path = $PathOnly
+        }
     }
 
     # Set ReqURL from host and provided path
