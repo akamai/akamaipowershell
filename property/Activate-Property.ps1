@@ -12,7 +12,7 @@ function Activate-Property
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch]   $AcknowledgeAllWarnings,
         [Parameter(Mandatory=$false)]                                [string]   $GroupID,
         [Parameter(Mandatory=$false)]                                [string]   $ContractId,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   [ValidateSet('NONE', 'OTHER', 'NO_PRODUCTION_TRAFFIC', 'EMERGENCY')] $NoncomplianceReason = 'NONE',
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   [ValidateSet('NONE', 'OTHER', 'NO_PRODUCTION_TRAFFIC', 'EMERGENCY')] $NoncomplianceReason,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $OtherNoncomplianceReason,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $CustomerEmail,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $PeerReviewdBy,
@@ -63,7 +63,7 @@ function Activate-Property
             $NotifyEmails = $NotifyEmails -split ","
         }
 
-        if($NoncomplianceReason -eq 'NONE'){
+        if($NoncomplianceReason -eq 'NONE' -and $Network -eq 'Production'){
             if($CustomerEmail -eq '' -or $PeerReviewdBy -eq '' -or $UnitTested -eq $false){
                 throw "You must supply the following when NonComplianceReason is 'NONE': CustomerEmail, PeerReviewedBy & UnitTested"
             }
@@ -81,11 +81,12 @@ function Activate-Property
             $BodyObj['acknowledgeAllWarnings'] = $true
         }
 
-        $ComplianceRecord = @{
-            noncomplianceReason = $NoncomplianceReason
-        }
-
         # Only add optional fields if they are present
+
+        $ComplianceRecord = @{}
+        if($NoncomplianceReason){
+            $ComplianceRecord['noncomplianceReason'] = $NoncomplianceReason
+        }
         if($CustomerEmail){
             $ComplianceRecord['customerEmail'] = $CustomerEmail
         }
@@ -102,7 +103,10 @@ function Activate-Property
             $ComplianceRecord['otherNoncomplianceReason'] = $OtherNoncomplianceReason
         }
 
-        $BodyObj['complianceRecord'] =  $ComplianceRecord
+        # Only add compliance record to body if not empty
+        if($ComplianceRecord.count -gt 0){
+            $BodyObj['complianceRecord'] =  $ComplianceRecord
+        }
 
         $Body = $BodyObj | ConvertTo-Json -Depth 100
     }

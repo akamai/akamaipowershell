@@ -55,7 +55,8 @@ function Invoke-AkamaiRestMethod
     param(
         [Parameter(Mandatory=$false)] [ValidateSet("GET", "PUT", "POST", "DELETE","PATCH")] [string] $Method = "GET",
         [Parameter(Mandatory=$true)]  [string] $Path,
-        [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$false)] $Body,
+        [Parameter(Mandatory=$false)] [string] $InputFile,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [hashtable] $AdditionalHeaders,
@@ -152,21 +153,28 @@ function Invoke-AkamaiRestMethod
     $SignatureData = $Method + "`thttps`t"
     $SignatureData += $Auth.$Section.Host + "`t" + $Path
 
-    Write-Debug "SignatureData = $SignatureData"
-
     # Add body to signature. Truncate if body is greater than max-body (Akamai default is 131072). PUT Method does not require adding to signature.
+    if($Method -eq "POST"){
+        if($Body)
+        {
+            $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
+            if($Body.Length -gt $MaxBody){
+                $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body.Substring(0,$MaxBody))))
+            }
+            else{
+                $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body)))
+            }
 
-    if ($Body -and ($Method -eq "POST"))
-    {
-        $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
-        if($Body.Length -gt $MaxBody){
-            $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body.Substring(0,$MaxBody))))
+            $SignatureData += "`t`t" + $Body_Hash + "`t"
         }
-        else{
-            $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body)))
+        elseif($InputFile)
+        {
+            $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
+            $Bytes = Get-Content -AsByteStream $InputFile
+            $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash($Bytes))
+            $SignatureData += "`t`t" + $Body_Hash + "`t"
+            Write-Debug "Signature generated from input file $InputFile"
         }
-
-        $SignatureData += "`t`t" + $Body_Hash + "`t"
     }
     else
     {
@@ -178,6 +186,8 @@ function Invoke-AkamaiRestMethod
     $SignatureData += "access_token=" + $Auth.$Section.ClientAccessToken + ";"
     $SignatureData += "timestamp=" + $TimeStamp  + ";"
     $SignatureData += "nonce=" + $Nonce + ";"
+
+    Write-Debug "SignatureData = $SignatureData"
 
     # Generate SigningKey
     $SigningKey = Crypto -secret $Auth.$Section.ClientSecret -message $TimeStamp
@@ -239,6 +249,15 @@ function Invoke-AkamaiRestMethod
                     }
                     
                 }
+                if ($InputFile) {
+                    if($UseProxy){
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile -Proxy $ENV:https_proxy
+                    }
+                    else {
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile
+                    }
+                    
+                }
                 else {
                     if($UseProxy) {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Proxy $ENV:https_proxy
@@ -253,8 +272,8 @@ function Invoke-AkamaiRestMethod
             }
         }
         else{
-            try {
-                if ($Body) {
+            try{
+                if($Body){
                     if($UseProxy){
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
                     }
@@ -263,16 +282,24 @@ function Invoke-AkamaiRestMethod
                     }
                     
                 }
-                else {
-                    if($UseProxy) {
+                elseif($InputFile) {
+                    if($UseProxy){
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
+                    }
+                    else{
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable
+                    }
+                }
+                else{
+                    if($UseProxy){
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
                     }
-                    else {
+                    else{
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                 }
             }
-            catch {
+            catch{
                 throw $_.ErrorDetails
             }
         }

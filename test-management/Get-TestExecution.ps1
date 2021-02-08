@@ -1,7 +1,7 @@
 function Get-TestExecution
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $TestDefinitionExecutionID,
+        [Parameter(Mandatory=$true)]  [string] $TestDefinitionExecutionID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

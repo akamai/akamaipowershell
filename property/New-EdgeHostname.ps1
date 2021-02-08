@@ -30,7 +30,7 @@ function New-EdgeHostname
 
         if($SecureNetwork -ne ''){ $BodyObj['secureNetwork'] = $SecureNetwork }
         if($SlotNumber){ $BodyObj['slotNumber'] = $SlotNumber }
-        if($CertEnrollmentID){ $BodyObj['certEnrollmentID'] = $CertEnrollmentID }
+        if($CertEnrollmentID){ $BodyObj['certEnrollmentId'] = $CertEnrollmentID }
 
         $Body = $BodyObj | ConvertTo-Json -depth 100
     }

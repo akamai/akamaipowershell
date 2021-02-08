@@ -13,6 +13,8 @@ function Get-ZoneRecordSets
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    Write-Host -ForegroundColor Yellow "Warning: This function has been deprecated and will be removed in a future release. Use List-RecordSets"
+
     $Path = "/config-dns/v2/zones/$Zone/recordsets?page=$Page&pageSize=$PageSize&search=$Search&showAll=$ShowAllString&sortBy=$SortBy&types=$Types&accountSwitchKey=$AccountSwitchKey"
 
     try {

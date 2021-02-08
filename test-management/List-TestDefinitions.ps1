@@ -1,12 +1,17 @@
 function List-TestDefinitions
 {
     Param(
+        [Parameter(Mandatory=$false)] [switch] $IncludeRecentlyDeleted,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v1/test-definitions?accountSwitchKey=$AccountSwitchKey"
+    # nullify false switches
+    $IncludeRecentlyDeletedString = $IncludeRecentlyDeleted.IsPresent.ToString().ToLower()
+    if(!$IncludeRecentlyDeleted){ $IncludeRecentlyDeletedString = '' }
+
+    $Path = "/test-management/v1/test-definitions?includeRecentlyDeleted=$IncludeRecentlyDeletedString&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

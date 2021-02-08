@@ -20,8 +20,12 @@ function Get-EdgeHostname
             $DNSZone = 'edgesuite.net'
             $RecordName = $EdgeHostname.Replace('.edgesuite.net','')
         }
+        elseif($EdgeHostname.Contains('.akamaized.net')){
+            $DNSZone = 'akamaized.net'
+            $RecordName = $EdgeHostname.Replace('.akamaized.net','')
+        }
         else{
-            throw '$EdgeHostname must be in the format <recordName>.edge(suite|key).net'
+            throw '$EdgeHostname must be in the format <recordName>.edge(suite|key).net or <recordName>.akamaized.net'
         }
     
         $Path = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName`?accountSwitchKey=$AccountSwitchKey"
