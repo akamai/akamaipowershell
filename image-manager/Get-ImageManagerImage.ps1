@@ -1,8 +1,8 @@
-function Get-ImageManagerPolicy
+function Get-ImageManagerImage
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $PolicySetAPIKey,
-        [Parameter(Mandatory=$true)]  [string] $PolicyID,
+        [Parameter(Mandatory=$true)]  [string] $ImageID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(Mandatory=$false)] [string] $ContractID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -11,7 +11,7 @@ function Get-ImageManagerPolicy
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v2/network/$Network/policies/$PolicyID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/imaging/v0/network/$Network/images/$ImageID`?accountSwitchKey=$AccountSwitchKey"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if($ContractID -ne ''){
