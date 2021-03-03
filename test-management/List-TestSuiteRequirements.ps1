@@ -1,13 +1,13 @@
-function Get-TestDefinition
+function List-TestSuiteRequirements
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $TestDefinitionID,
+        [Parameter(Mandatory=$true)]  [string] $TestSuiteID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v2/comparative/test-definitions/$TestDefinitionID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/test-suites/$TestSuiteID/associations/requirements?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

@@ -5,7 +5,7 @@ function List-ImageManagerPolicies
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(Mandatory=$false)] [string] $ContractID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'image-manager',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

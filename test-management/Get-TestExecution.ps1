@@ -7,7 +7,7 @@ function Get-TestExecution
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v1/test-definition-executions/$TestDefinitionExecutionID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/comparative/test-definition-executions/$TestDefinitionExecutionID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

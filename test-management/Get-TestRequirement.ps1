@@ -7,7 +7,7 @@ function Get-TestRequirement
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v1/functional/requirements/$RequirementID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/requirements/$RequirementID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

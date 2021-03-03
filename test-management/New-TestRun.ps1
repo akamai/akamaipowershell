@@ -1,16 +1,16 @@
-function Remove-TestRequirement
+function List-TestRuns
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $RequirementID,
+        [Parameter(Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v2/functional/requirements/$RequirementID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/test-runs?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
