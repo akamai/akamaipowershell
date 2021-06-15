@@ -1,4 +1,4 @@
-function Set-AppSecPolicyCustomRule
+function Set-AppSecPolicyReputationProfile
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
@@ -31,7 +31,7 @@ function Set-AppSecPolicyCustomRule
     $BodyObj = @{
         action = $Action
     }
-    $Body = $BodyObj | ConvertTo-Json
+    $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section

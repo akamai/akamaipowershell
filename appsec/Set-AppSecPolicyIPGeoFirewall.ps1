@@ -32,7 +32,7 @@ function Set-AppSecPolicyIPGeoFirewall
         $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/ip-geo-firewall?accountSwitchKey=$AccountSwitchKey"
 
         if($IPGeoFirewallSettings){
-            $Body = $IPGeoFirewallSettings | ConvertTo-Json
+            $Body = $IPGeoFirewallSettings | ConvertTo-Json -Depth 100
         }
     
         try {

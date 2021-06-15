@@ -31,7 +31,7 @@ function Set-AppSecPolicyAttackGroup
     $BodyObj = @{
         action = $Action
     }
-    $Body = $BodyObj | ConvertTo-Json
+    $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section

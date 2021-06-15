@@ -1,11 +1,11 @@
-function Set-AppSecPolicyRule
+function Set-AppSecPolicyReputationProfileAction
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
-        [Parameter(Mandatory=$true)]  [string] $RuleID,
+        [Parameter(Mandatory=$true)]  [string] $ReputationProfileID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $Action,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -26,11 +26,9 @@ function Set-AppSecPolicyRule
         $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/rules/$RuleID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/reputation-profiles/$ReputationProfileID`?accountSwitchKey=$AccountSwitchKey"
 
-    $BodyObj = @{
-        action = $Action
-    }
+    $BodyObj = [PSCustomObject] @{ action = $Action }
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
