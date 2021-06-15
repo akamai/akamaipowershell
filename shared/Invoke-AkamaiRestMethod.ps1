@@ -240,16 +240,15 @@ function Invoke-AkamaiRestMethod
     if ($Method -eq "PUT" -or $Method -eq "POST" -or $Method -eq "PATCH") {
         if($PSVersionTable.PSVersion.Major -le 5){
             try {
-                if ($Body) {
+                if($Body){
                     if($UseProxy){
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -Proxy $ENV:https_proxy
                     }
                     else {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body
                     }
-                    
                 }
-                if ($InputFile) {
+                elseif($InputFile){
                     if($UseProxy){
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile -Proxy $ENV:https_proxy
                     }
@@ -258,8 +257,8 @@ function Invoke-AkamaiRestMethod
                     }
                     
                 }
-                else {
-                    if($UseProxy) {
+                else{
+                    if($UseProxy){
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Proxy $ENV:https_proxy
                     }
                     else {
