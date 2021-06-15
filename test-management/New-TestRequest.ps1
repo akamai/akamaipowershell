@@ -19,7 +19,7 @@ function New-TestRequest
             $TestRequest.PSObject.Members.Remove('createdDate')
             $TestRequest.PSObject.Members.Remove('modifiedBy')
             $TestRequest.PSObject.Members.Remove('modifiedDate')
-            $Body = $TestRequest | ConvertTo-Json -Depth 100
+            $Body = @($TestRequest) | ConvertTo-Json -AsArray -Depth 100
         }
 
         try {
