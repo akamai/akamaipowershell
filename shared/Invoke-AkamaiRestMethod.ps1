@@ -75,7 +75,8 @@ function Invoke-AkamaiRestMethod
     for($i = 0; $i -lt $EdgeRCContent.length; $i++){
         $line = $EdgeRCContent[$i]
         if($line.contains("[") -and $line.contains("]")){
-            $SectionHeader = $Line.replace("[","").replace("]","")
+            $SectionHeader = $Line.Substring($Line.indexOf('[')+1)
+            $SectionHeader = $SectionHeader.SubString(0,$SectionHeader.IndexOf(']'))
             $Auth[$SectionHeader] = @{}
             $CurrentSection = $SectionHeader
         }
