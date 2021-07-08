@@ -32,7 +32,7 @@ function Set-AppSecPolicyReputationAnalysis
         $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/reputation-analysis?accountSwitchKey=$AccountSwitchKey"
 
         if($ReputationSettings){
-            $Body = $ReputationSettings | ConvertTo-Json
+            $Body = $ReputationSettings | ConvertTo-Json -Depth 100
         }
     
         try {

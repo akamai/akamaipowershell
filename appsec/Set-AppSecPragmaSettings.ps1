@@ -1,11 +1,10 @@
-function Set-AppSecPolicyPenaltyBox
+function Set-AppSecPragmaSettings
 {
     Param(
-        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
+        [Parameter(ParameterSetName="name", Mandatory=$true)] [string] $ConfigName,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]   [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$true)]  [string] $PolicyID,
-        [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $PenaltyBoxSettings,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)] [object] $PragmaSettings,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -28,21 +27,21 @@ function Set-AppSecPolicyPenaltyBox
         if($VersionNumber.ToLower() -eq 'latest'){
             $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
         }
-    
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/penalty-box?accountSwitchKey=$AccountSwitchKey"
 
-        if($PenaltyBoxSettings){
-            $Body = $PenaltyBoxSettings | ConvertTo-Json -Depth 100
+        if($PragmaSettings){
+            $Body = $PragmaSettings | ConvertTo-Json -Depth 100
         }
+    
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/advanced-settings/pragma-header?accountSwitchKey=$AccountSwitchKey"
     
         try {
             $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_.Exception 
         }
     }
 
-    end{}    
+    end{}
 }

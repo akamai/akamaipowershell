@@ -25,7 +25,7 @@ function Set-AppSecCustomRuleActions
     $BodyObj = @{
         action = $Action
     }
-    $Body = $BodyObj | ConvertTo-Json
+    $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/custom-rules/$RuleID`?accountSwitchKey=$AccountSwitchKey"
 
