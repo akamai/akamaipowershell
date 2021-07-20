@@ -61,8 +61,7 @@ function Invoke-AkamaiNSAPIRequest {
     }
 
     $Headers = @{}
-    $EncodedPath = [System.Web.HttpUtility]::UrlEncode($Path)
-
+    
     # Action Header
     $Options = @{
         'version' = '1'
