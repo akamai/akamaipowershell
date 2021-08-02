@@ -8,7 +8,7 @@ function List-CloudletPolicyVersions
         [Parameter(Mandatory=$false)] [int]    $Offset,
         [Parameter(Mandatory=$false)] [int]    $Pagesize = 10,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

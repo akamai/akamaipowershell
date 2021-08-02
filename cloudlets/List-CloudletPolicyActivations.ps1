@@ -5,7 +5,7 @@ function List-CloudletPolicyActivations
         [Parameter(Mandatory=$false)][ValidateSet('prod','staging')] [string] $Network,
         [Parameter(Mandatory=$false)] [string] $PropertyName,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
