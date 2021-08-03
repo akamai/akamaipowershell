@@ -3,7 +3,7 @@ function List-CloudletLoadBalancingActivations
     Param(
         [Parameter(Mandatory=$true)]  [string] $OriginID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
