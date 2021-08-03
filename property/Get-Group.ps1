@@ -4,7 +4,7 @@ function Get-Group
         [Parameter(Mandatory=$true, ParameterSetName="id")] [string] $GroupID,
         [Parameter(Mandatory=$true, ParameterSetName="name")] [string] $GroupName,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

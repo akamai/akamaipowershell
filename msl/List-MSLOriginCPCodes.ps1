@@ -3,7 +3,7 @@ function List-MSLOriginCPCodes
     Param(
         [Parameter(Mandatory=$false)] [string] [ValidateSet('AKAMAI','THIRD_PARTY')] $Type,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

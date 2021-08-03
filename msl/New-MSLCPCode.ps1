@@ -4,7 +4,7 @@ function New-MSLCPCode
         [Parameter(Mandatory=$true)]  [string] $Name,
         [Parameter(Mandatory=$true)]  [string] $ContractID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

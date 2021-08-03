@@ -6,7 +6,7 @@ function Activate-TCMSet
         [Parameter(Mandatory=$false)] [switch] $Staging,
         [Parameter(Mandatory=$false)] [switch] $Production,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -5,7 +5,7 @@ function List-SLAPerformanceReports
         [Parameter(Mandatory=$true)]  [string] $Start,
         [Parameter(Mandatory=$true)]  [string] $End,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

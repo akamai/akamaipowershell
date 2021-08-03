@@ -9,7 +9,7 @@ function Set-EdgeHostname
         [Parameter(Mandatory=$false)] [string] $Comments,
         [Parameter(Mandatory=$false)] [string] $StatusUpdateEmail,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

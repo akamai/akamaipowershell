@@ -4,7 +4,7 @@ function List-FRMCidrBlocks
         [Parameter(Mandatory=$false)] [string] $EffectiveDateGt,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('add', 'update', 'delete')] $LastAction,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'firewall',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
