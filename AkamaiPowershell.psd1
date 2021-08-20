@@ -12,13 +12,13 @@
 RootModule = 'AkamaiPowershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.4.1'
+ModuleVersion = '1.5.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
 
 # ID used to uniquely identify this module
-GUID = 'a1e090f2-3141-4f15-a36e-caf21fc46c9b'
+GUID = 'a97f93ba-aa4e-433e-8949-f41fceb5866a'
 
 # Author of this module
 Author = 'Stuart Macleod'
