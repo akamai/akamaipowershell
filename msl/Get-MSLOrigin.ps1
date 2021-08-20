@@ -3,7 +3,7 @@ function Get-MSLOrigin
     Param(
         [Parameter(Mandatory=$true)]  [int]    $OriginID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

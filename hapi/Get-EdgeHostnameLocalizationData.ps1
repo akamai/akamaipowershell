@@ -3,7 +3,7 @@ function Get-EdgeHostnameLocalizationData
     Param(
         [Parameter(Mandatory=$false)] [string] $Language,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -3,7 +3,7 @@ function List-CtrApiContracts
     Param(
         [Parameter(Mandatory=$false)] [string] [ValidateSet('TOP', 'ALL')] $Depth,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

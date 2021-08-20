@@ -4,7 +4,7 @@ function Validate-TCMSet
         [Parameter(Mandatory=$true, ParameterSetName='attributes', ValueFromPipeline=$true)] [string] $Set,
         [Parameter(Mandatory=$true, ParameterSetName='postbody')]   [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

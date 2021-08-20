@@ -6,6 +6,7 @@ function Set-ImageManagerPolicy
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(Mandatory=$false)] [string] $ContractID,
         [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $Policy,
+        [Parameter(Mandatory=$false,ParameterSetName='pipeline')] [int] $RolloutDuration,
         [Parameter(Mandatory=$true,ParameterSetName='body')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -24,6 +25,9 @@ function Set-ImageManagerPolicy
         }
 
         if($Policy){
+            if($RolloutDuration){
+                $Policy | Add-Member -MemberType NoteProperty -Name rolloutDuration -Value $RolloutDuration -Force
+            }
             $Body = $Policy | ConvertTo-Json -Depth 100
         }
 

@@ -3,7 +3,7 @@ function List-MSLVODOrigins
     Param(
         [Parameter(Mandatory=$true)]  [string] $EncoderLocation,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

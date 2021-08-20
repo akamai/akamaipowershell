@@ -5,7 +5,7 @@ function List-TCMSets
         [Parameter(Mandatory=$false)] [switch] $DeployedOnStaging,
         [Parameter(Mandatory=$false)] [switch] $DeployedOnProduction,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

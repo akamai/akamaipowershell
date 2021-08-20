@@ -7,7 +7,7 @@ function Get-GTMLivenessPerProperty
         [Parameter(Mandatory=$false)] [string] $AgentIP,
         [Parameter(Mandatory=$false)] [string] $TargetIP,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

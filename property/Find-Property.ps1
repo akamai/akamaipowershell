@@ -8,7 +8,7 @@ function Find-Property
         [Parameter(Mandatory=$false)] [switch] $JustProductionActive,
         [Parameter(Mandatory=$false)] [switch] $JustStagingActive,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
