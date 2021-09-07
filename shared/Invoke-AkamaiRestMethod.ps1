@@ -210,7 +210,7 @@ function Invoke-AkamaiRestMethod
     # Add Auth & Accept headers
     $Headers.Add('Authorization',$AuthorizationHeader)
     $Headers.Add('Accept','application/json')
-    $Headers.Add('Content-Type', 'application/json')
+    $Headers.Add('Content-Type', 'application/json; charset=utf-8')
 
     # Add additional headers
     if($AdditionalHeaders)
@@ -219,6 +219,9 @@ function Invoke-AkamaiRestMethod
             $Headers[$_] = $AdditionalHeaders[$_]
         }
     }
+
+    # Set ContentType param from Content-Type header. This is sent along with bodies to fix string encoding issues in IRM
+    $ContentType = $Headers['Content-Type']
 
     # Add additional headers if POSTing or PUTing
     If ($Body)
@@ -244,27 +247,27 @@ function Invoke-AkamaiRestMethod
             try {
                 if($Body){
                     if($UseProxy){
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -Proxy $ENV:https_proxy
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body -Proxy $ENV:https_proxy
                     }
                     else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body
                     }
                 }
                 elseif($InputFile){
                     if($UseProxy){
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile -Proxy $ENV:https_proxy
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -Proxy $ENV:https_proxy
                     }
                     else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile
                     }
                     
                 }
                 else{
                     if($UseProxy){
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Proxy $ENV:https_proxy
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Proxy $ENV:https_proxy
                     }
                     else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType
                     }
                 }
             }
@@ -275,10 +278,10 @@ function Invoke-AkamaiRestMethod
         else { # GET requests typically
             try{
                 if($UseProxy) {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction SilentlyContinue -Proxy $ENV:https_proxy
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -MaximumRedirection 0 -ErrorAction SilentlyContinue -Proxy $ENV:https_proxy
                 }
                 else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -MaximumRedirection 0 -ErrorAction SilentlyContinue
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -MaximumRedirection 0 -ErrorAction SilentlyContinue
                 }
     
                 # Redirects aren't well handled due to signatures needing regenerated
@@ -298,27 +301,27 @@ function Invoke-AkamaiRestMethod
             try{
                 if($Body){
                     if($UseProxy){
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
                     }
                     else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                     
                 }
                 elseif($InputFile) {
                     if($UseProxy){
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
                     }
                     else{
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                 }
                 else{
                     if($UseProxy){
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
                     }
                     else{
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable
+                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                 }
             }
@@ -329,10 +332,10 @@ function Invoke-AkamaiRestMethod
         else { # GET requests typically
             try {
                 if($UseProxy) {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
                 }
                 else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop
+                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop
                 }
             }
             catch {

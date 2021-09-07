@@ -5,6 +5,7 @@ function Test-OpenAPI
         [Parameter(Mandatory=$false)] [string] $Method = 'GET',
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $Accept,
+        [Parameter(Mandatory=$false)] [string] $ContentType,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -21,10 +22,14 @@ function Test-OpenAPI
         }
     }
 
+    $AdditionalHeaders = @{}
+
     if($Accept){
-        $AdditionalHeaders = @{
-            Accept = $Accept
-        }
+        $AdditionalHeaders['Accept'] = $Accept
+    }
+
+    if($ContentType){
+        $AdditionalHeaders['Content-Type'] = $ContentType
     }
 
     try {
