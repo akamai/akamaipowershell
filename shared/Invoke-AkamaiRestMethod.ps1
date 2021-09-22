@@ -65,7 +65,60 @@ function Invoke-AkamaiRestMethod
         [Parameter(Mandatory=$false)] [string] $ResponseHeadersVariable
     )
 
-    # Get credentials from EdgeRC
+    ### Instantiate path and query variables
+    $PathElements = $Path.Split("?")
+    $PathOnly = $PathElements[0]
+    $QueryString = $PathElements[1]
+    # Sanitise query string
+    if($null -ne $QueryString){
+        $SanitisedQuery = Sanitise-QueryString -QueryString $QueryString
+    }
+
+    ### Check Profile
+    $ActiveProfile = Get-ActiveAkamaiProfile
+    if($null -ne $ActiveProfile){
+        if($null -ne $ActiveProfile.EdgeRCFile -and $ActiveProfile.EdgeRCFile -ne ''){ # Only override if default value
+            if($EdgeRCFile -eq '~\.edgrc'){
+                Write-Debug "Overriding EdgeRCFile from profile. New value = $($ActiveProfile.EdgeRCFile)"
+                $EdgeRCFile = $ActiveProfile.EdgeRCFile
+            }
+        }
+        if($null -ne $ActiveProfile.Section -and $ActiveProfile.Section -ne ''){
+            if($Section -eq 'default'){ # Only override if default value
+                Write-Debug "Overriding Section from profile. New value = $($ActiveProfile.Section)"
+                $Section = $ActiveProfile.Section
+            }
+        }
+
+        # Update query string from profile
+        if($null -ne $ActiveProfile.AccountSwitchKey -and $ActiveProfile.AccountSwitchKey -ne ''){
+            if($SanitisedQuery){
+                if($SanitisedQuery.contains("accountSwitchKey")){
+                    Write-Debug "Not replacing specified AccountSwitchKey with one from Profile"
+                }
+                else{
+                    Write-Debug "Updating query string to include '&accountSwitchKey=$($ActiveProfile.AccountSwitchKey)'"
+                    $SanitisedQuery += "&accountSwitchKey=$($ActiveProfile.AccountSwitchKey)"
+                }
+            }
+            else{
+                Write-Debug "Updating query string to include '?accountSwitchKey=$($ActiveProfile.AccountSwitchKey)'"
+                $SanitisedQuery = "accountSwitchKey=$($ActiveProfile.AccountSwitchKey)"
+            }
+        }
+    }
+
+    ### Reconstruct Path with sanitised query
+    if($SanitisedQuery){
+        Write-Debug "Original Query = $QueryString"
+        Write-Debug "Sanitised Query = $SanitisedQuery"
+        $Path = $PathOnly + "?" + $SanitisedQuery
+    }
+    else{
+        $Path = $PathOnly
+    }
+
+    ### Get credentials from EdgeRC
     if(!(Test-Path $EdgeRCFile)){
         throw "Error: EdgeRCFile $EdgeRCFile not found"
     }
@@ -112,23 +165,6 @@ function Invoke-AkamaiRestMethod
     # Set IM staging host if switch present
     if($Auth.$Section.Host.Contains('.imaging.') -and $Staging) {
         $Auth.$Section.Host = $Auth.$Section.Host.Replace(".imaging.",".imaging-staging.")
-    }
-
-    # Sanitise query string
-    if($Path.Contains("?")){
-        $PathElements = $Path.Split("?")
-        $PathOnly = $PathElements[0]
-        $QueryString = $PathElements[1]
-        $SanitisedQuery = Sanitise-QueryString -QueryString $QueryString
-        Write-Debug "Original Query = $QueryString"
-        Write-Debug "Sanitised Query = $SanitisedQuery"
-        # Reconstruct Path
-        if($SanitisedQuery){
-            $Path = $PathOnly + "?" + $SanitisedQuery
-        }
-        else{
-            $Path = $PathOnly
-        }
     }
 
     # Set ReqURL from host and provided path
