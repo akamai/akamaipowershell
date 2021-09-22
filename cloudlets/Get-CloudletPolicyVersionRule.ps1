@@ -9,6 +9,11 @@ function Get-CloudletPolicyVersionRule
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    if($Version -eq 'latest'){
+        $Version = (List-CloudletPolicyVersions -PolicyID $PolicyID -Pagesize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).Version
+        Write-Debug "Found latest version = $Version"
+    }
+
     $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/rules/$AkaRuleID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
