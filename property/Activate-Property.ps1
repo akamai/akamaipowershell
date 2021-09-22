@@ -1,3 +1,51 @@
+<#
+.SYNOPSIS
+EdgeGrid Powershell - Property API
+.DESCRIPTION
+Activate specific version of Property Manager property
+.PARAMETER PropertyName
+Name of the property to activate. Either -PropertyName or -PropertyID is required.
+.PARAMETER PropertyID
+ID of the property to activate. Either -PropertyName or -PropertyID is required.
+.PARAMETER PropertyVersion
+Version of the property to activate. To activate the latest version use -PropertyVersion 'latest'. REQUIRED
+.PARAMETER Network
+Network on which to activate. Only 'Staging' and 'Production' are valid. REQUIRED
+.PARAMETER Note
+Activation note. OPTIONAL
+.PARAMETER NotifyEmails
+Comma-separated list or PS Array of email addresses to receive activation updates. REQUIRED
+.PARAMETER Body
+POST body for the activation request. This is instead of specifying PropertyVersion, Network, Note and Notifyemails
+.PARAMETER AcknowledgeAllWarnings
+Include to automatically acknowledge all warnings thrown by Property Manager validation. OPTIONAL
+.PARAMETER GroupId
+Group ID, either with grp_ prefix or not. OPTIONAL
+.PARAMETER ContractId
+Contract ID, either with ctr_ prefix or not. OPTIONAL
+.PARAMETER NoncomplianceReason
+Internal use only. Part of Akamai peer review process.
+.PARAMETER CustomerEmail
+Internal use only. Part of Akamai peer review process.
+.PARAMETER PeerReviewdBy
+Internal use only. Part of Akamai peer review process.
+.PARAMETER UnitTested
+Internal use only. Part of Akamai peer review process.
+.PARAMETER TicketID
+Internal use only. Part of Akamai peer review process.
+.PARAMETER EdgeRCFile
+Path to .edgerc file, defaults to ~/.edgerc. OPTIONAL
+.PARAMETER ContractId
+.edgerc Section name. Defaults to 'default'. OPTIONAL
+.PARAMETER AccountSwitchKey
+Account switch key if applying to an account external to yoru API user. Only usable by Akamai staff and partners. OPTIONAL
+.EXAMPLE
+Activate-Property -PropertyName myproperty -PropertyVersion 1 -Network Staging -NotifyEmails "email@example.com" -AcknowledgeAllWarnings
+.LINK
+developer.akamai.com
+#>
+
+
 function Activate-Property
 {
     Param(
