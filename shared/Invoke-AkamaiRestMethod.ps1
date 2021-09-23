@@ -176,6 +176,10 @@ function Invoke-AkamaiRestMethod
             $SignatureData += "`t`t" + $Body_Hash + "`t"
             Write-Debug "Signature generated from input file $InputFile"
         }
+        else
+        {
+            $SignatureData += "`t`t`t"
+        }
     }
     else
     {
