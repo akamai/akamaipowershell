@@ -12,7 +12,7 @@
 RootModule = 'AkamaiPowershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.5.0'
+ModuleVersion = '1.5.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -107,15 +107,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'NOTE: This release contains potentially breaking changes, specifically to the default values of the  parameter. Please read the following thoroughly before updating.
-
-- Changed default section to ''default'' for all but CCU APIs
-- Added lots of new AppSec functions
-- Now support comments in .edgrc lines
-- New Cloudlet download function
-- Now support rolloutDuration in Image Manager
-- New Image Manager rollback function
-- Fixes for Netstorage on Powershell 5'
+        ReleaseNotes = 'This release contains various bugfixes and minor new features. Primarily, it deals with POSTs with no body, which generated invalid signatures, as well as adding "latest" support in the cloudlets API.'
 
         # Prerelease string of this module
         # Prerelease = ''
