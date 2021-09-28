@@ -3,6 +3,7 @@ function New-EdgeWorker
     Param(
         [Parameter(Mandatory=$true)]  [string] $Name,
         [Parameter(Mandatory=$true)]  [string] $GroupID,
+        [Parameter(Mandatory=$true)]  [int] [ValidateSet(100,200)] $ResourceTierID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -13,6 +14,7 @@ function New-EdgeWorker
     $BodyObj = @{
         name = $Name
         groupId = $GroupID
+        resourceTierId = $ResourceTierID
     }
     $Body = $BodyObj | ConvertTo-Json
 

@@ -15,6 +15,11 @@ function Set-CloudletPolicyVersion
     $OmitRulesString = $OmitRules.IsPresent.ToString().ToLower()
     if(!$OmitRules){ $OmitRulesString = '' }
 
+    if($Version -eq 'latest'){
+        $Version = (List-CloudletPolicyVersions -PolicyID $PolicyID -Pagesize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).Version
+        Write-Debug "Found latest version = $Version"
+    }
+
     $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version`?matchRuleFormat=$MatchRuleFormat&omitRules=$OmitRulesString&accountSwitchKey=$AccountSwitchKey"
 
     try {
