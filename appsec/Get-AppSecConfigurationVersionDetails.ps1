@@ -8,6 +8,8 @@ function Get-AppSecConfigurationVersionDetails
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    Write-Host -ForegroundColor Yellow "WARNING: This cmdlet is deprecated and will be removed in a future release. Use Get-AppSecConfigurationVersion"
+
     $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber`?accountSwitchKey=$AccountSwitchKey"
 
     try {

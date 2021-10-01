@@ -4,7 +4,7 @@ function List-EdgeHostnameChangeRequestsForHostname
         [Parameter(Mandatory=$true)] [string] $RecordName,
         [Parameter(Mandatory=$true)] [string] $DNSZone,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -6,13 +6,17 @@ function Get-CloudletPolicyVersion
         [Parameter(Mandatory=$false)] [string] $MatchRuleFormat,
         [Parameter(Mandatory=$false)] [switch] $OmitRules,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     # Nullify false switches
     $OmitRulesString = $OmitRules.IsPresent.ToString().ToLower()
     if(!$OmitRules){ $OmitRulesString = '' }
+
+    if($Version -eq 'latest'){
+        $Version = (List-CloudletPolicyVersions -PolicyID $PolicyID -Pagesize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).Version
+    }
 
     $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version`?matchRuleFormat=$MatchRuleFormat&omitRules=$OmitRulesString&accountSwitchKey=$AccountSwitchKey"
 

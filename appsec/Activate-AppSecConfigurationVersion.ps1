@@ -7,6 +7,8 @@ function Activate-AppSecConfigurationVersion
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    Write-Host -ForegroundColor Yellow "WARNING: This cmdlet is deprecated and will be removed in a future release. Use Activate-AppSecConfiguration"
+
     $Path = "/appsec/v1/activations?accountSwitchKey=$AccountSwitchKey"
 
     try {

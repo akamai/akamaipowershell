@@ -7,9 +7,15 @@ function Get-DataStreamRawLogs
         [Parameter(Mandatory=$false)] [string] $Page,
         [Parameter(Mandatory=$false)] [string] $Size,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    # Support 'now' for End
+    if($End -eq "now"){
+        $utime = (Get-Date).ToUniversalTime().AddSeconds(-61) # Datastream needs end to be at least 1 minute in the past
+        $End = Get-Date -Date $utime -Format yyyy-MM-ddTHH:mm:ssZ
+    }
 
     $DateTimeMatch = '[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
     if($Start -notmatch $DateTimeMatch -or $End -notmatch $DateTimeMatch){

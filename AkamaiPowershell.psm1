@@ -24,5 +24,17 @@ $PS1Files | Where {$_.Name.StartsWith('List-')} | foreach {
 
 # Alias Remove-Zone to Submit-BulkZoneDeleteRequest until such time as there is
 # an actual non-bulk zone delete endpoint
-Set-Alias -Name 'Remove-Zone' -Value 'Submit-BulkZoneDeleteRequest'
-Export-ModuleMember -Function 'Submit-BulkZoneDeleteRequest' -Alias 'Remove-Zone'
+Set-Alias -Name 'Remove-Zone' -Value 'New-BulkZoneDeleteRequest'
+Export-ModuleMember -Function 'New-BulkZoneDeleteRequest' -Alias 'Remove-Zone'
+
+# GTM Config aliases
+Set-Alias -Name 'New-GTMDomainASMap' -Value 'Set-GTMDomainASMap'
+Set-Alias -Name 'New-GTMDomainDatacenter' -Value 'Set-GTMDomainDatacenter'
+Set-Alias -Name 'New-GTMDomainGeoMap' -Value 'Set-GTMDomainGeoMap'
+Set-Alias -Name 'New-GTMDomainProperty' -Value 'Set-GTMDomainProperty'
+Set-Alias -Name 'New-GTMDomainResource' -Value 'Set-GTMDomainResource'
+Export-ModuleMember -Function 'New-GTMDomainASMap' -Alias 'Set-GTMDomainASMap'
+Export-ModuleMember -Function 'New-GTMDomainDatacenter' -Alias 'Set-GTMDomainDatacenter'
+Export-ModuleMember -Function 'New-GTMDomainGeoMap' -Alias 'Set-GTMDomainGeoMap'
+Export-ModuleMember -Function 'New-GTMDomainProperty' -Alias 'Set-GTMDomainProperty'
+Export-ModuleMember -Function 'New-GTMDomainResource' -Alias 'Set-GTMDomainResource'

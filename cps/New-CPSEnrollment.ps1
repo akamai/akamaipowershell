@@ -7,7 +7,7 @@ function New-CPSEnrollment
         [Parameter(Mandatory=$false)] [string] $DeployNotBefore,
         [Parameter(Mandatory=$false)] [switch] $AllowDuplicateCN,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

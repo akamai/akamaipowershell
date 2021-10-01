@@ -3,7 +3,7 @@ function List-NetworkLists
     Param(
         [Parameter(Mandatory=$false)] [switch] $Extended,
         [Parameter(Mandatory=$false)] [switch] $IncludeElements,
-        [Parameter(Mandatory=$false)] [string] $ListType = "IP",
+        [Parameter(Mandatory=$false)] [string] [ValidateSet('IP','GEO')] $ListType,
         [Parameter(Mandatory=$false)] [string] $Search,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',

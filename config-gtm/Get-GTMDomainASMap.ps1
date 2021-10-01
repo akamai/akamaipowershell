@@ -1,8 +1,8 @@
 function Get-GTMDomainASMap
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $DomainName,
-        [Parameter(Mandatory=$false)] [string] $MapName,
+        [Parameter(Mandatory=$true)] [string] $DomainName,
+        [Parameter(Mandatory=$true)] [string] $MapName,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

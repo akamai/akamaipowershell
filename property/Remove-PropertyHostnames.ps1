@@ -1,49 +1,67 @@
 function Remove-PropertyHostnames
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(Mandatory=$false,ParameterSetName='name')] [string] $PropertyName,
+        [Parameter(Mandatory=$false,ParameterSetName='id')]   [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
-        [Parameter(Mandatory=$true)]  [string[]] $HostnamesToRemove,
+        [Parameter(Mandatory=$true)]  [string] $HostnamesToRemove,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
+        [Parameter(Mandatory=$false)] [switch] $IncludeCertStatus,
         [Parameter(Mandatory=$false)] [switch] $ValidateHostnames,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    # Input validation
-    if($HostnamesToRemove.Count -eq 1 -and $HostnamesToRemove[0].Contains(","))
-    {
-        $HostnamesToRemove = $HostnamesToRemove[0].Replace(" ", "").Split(",")
-    }
 
-    $CurrentHostnames = Get-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -GroupID $GroupID -ContractId $ContractId -Section $Section -AccountSwitchKey $AccountSwitchKey
-    $RemainingHostnames = New-Object System.Collections.ArrayList
+    # nullify false switches
+    $IncludeCertStatusString = $IncludeCertStatus.IsPresent.ToString().ToLower()
+    if(!$IncludeCertStatus){ $IncludeCertStatusString = '' }
+    $ValidateHostnamesString = $ValidateHostnames.IsPresent.ToString().ToLower()
+    if(!$ValidateHostnames){ $ValidateHostnamesString = '' }
 
-    $CurrentHostnames | foreach {
-        if($_.cnameFrom -notin $HostnamesToRemove)
-        {
-            $RemainingHostnames.Add($_) | Out-Null
+    # Find property if user has specified PropertyName
+    if($PropertyName){
+        try{
+            $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $PropertyID = $Property.propertyId
+            if($PropertyID -eq ''){
+                throw "Property '$PropertyName' not found"
+            }
+        }
+        catch{
+            throw $_.Exception
         }
     }
 
-    $Body = $RemainingHostnames | ConvertTo-Json -Depth 100
+    if($PropertyVersion.ToLower() -eq "latest"){
+        try{
+            if($PropertyName){
+                $PropertyVersion = $Property.propertyVersion
+            }
+            else{
+                $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                $PropertyVersion = $Property.latestVersion
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
+
+    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractID&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString&accountSwitchKey=$AccountSwitchKey"
+
+    $RemovalArray = $HostnamesToRemove -split ","
+    $BodyObj = @{ remove = $RemovalArray }
+    $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        if($ValidateHostnames)
-        {
-            $Result = Set-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -Body $Body -GroupID $GroupID -ContractId $ContractId -ValidateHostnames -Section $Section -AccountSwitchKey $AccountSwitchKey
-        }
-        else
-        {
-            $Result = Set-PropertyHostnames -PropertyId $PropertyId -PropertyVersion $PropertyVersion -Body $Body -GroupID $GroupID -ContractId $ContractId -Section $Section -AccountSwitchKey $AccountSwitchKey
-        }
-       
-        return $Result
+        $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        return $Result.hostnames.items
     }
     catch {
         throw $_.Exception
     }
-}
 
+}

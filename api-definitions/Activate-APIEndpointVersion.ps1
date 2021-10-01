@@ -1,8 +1,9 @@
 function Activate-APIEndpointVersion
 {
     Param(
-        [Parameter(Mandatory=$true)]  [int] $APIEndpointID,
-        [Parameter(Mandatory=$true)]  [int] $VersionNumber,
+        [Parameter(Mandatory=$true)] [string] $APIEndpointName,
+        [Parameter(Mandatory=$true)] [int]    $APIEndpointID,
+        [Parameter(Mandatory=$true)] [string] $VersionNumber,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [string] $Notes,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [string] [ValidateSet('Production', 'Staging', 'Both')] $Networks,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [string] $NotificationRecipients,
@@ -11,6 +12,14 @@ function Activate-APIEndpointVersion
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    if($APIEndpointName){
+        $APIEndpointID = (List-APIEndpoints -Contains $APIEndpointName -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).apiEndPointId
+    }
+
+    if($VersionNumber.ToLower() -eq "latest"){
+        $VersionNumber = (List-APIEndpointVersions -APIEndpointID $APIEndpointID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | Sort-Object -Property versionNumber -Descending)[0].versionNumber
+    }
 
     if($PSCmdlet.ParameterSetName -eq "attributes"){
         if($Networks -eq 'Production' -or $Networks -eq 'Staging'){

@@ -3,7 +3,7 @@ function List-CloudletConditionalOrigins
     Param(
         [Parameter(Mandatory=$false)] [string] [ValidateSet('APPLICATION_LOAD_BALANCER','CUSTOMER','NETSTORAGE')] $Type = 'APPLICATION_LOAD_BALANCER',
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'cloudlets',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     

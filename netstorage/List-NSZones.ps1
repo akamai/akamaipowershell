@@ -11,7 +11,7 @@ function List-NSZones
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.items
+        return $Result
     }
     catch {
         throw $_.Exception

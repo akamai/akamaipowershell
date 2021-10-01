@@ -1,8 +1,8 @@
 function Remove-GTMDomainProperty
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $DomainName,
-        [Parameter(Mandatory=$false)] [string] $PropertyName,
+        [Parameter(Mandatory=$true)]  [string] $DomainName,
+        [Parameter(Mandatory=$true)]  [string] $PropertyName,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

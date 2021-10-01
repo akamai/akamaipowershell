@@ -2,67 +2,55 @@
 #
 #	Name: Add-ProductsToCPCodes.ps1
 #	Author: S Macleod
-#	Purpose: Adds Product lines to CP Code array
+#	Purpose: Adds Product lines to CP Code array from List-CPCodes cmdlet
 #	Date: 18/02/2019
 #	Version: 1 - Initial
+#            2 - Updated and simplified. 3/6/20
 #
 #************************************************************************
 
 Param(
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
-        [Parameter(Mandatory=$true)]  [string] $AccountSwitchKey,
-        [Parameter(Mandatory=$true)]  [int[]]  $CPCodes,
+        [Parameter(Mandatory=$true)]  $CPCodes,
         [Parameter(Mandatory=$true)]  [string] $ProductIDToAdd,
-        [Parameter(Mandatory=$false)] [switch] $JustTesting
+        [Parameter(Mandatory=$false)] [switch] $JustTesting,
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = "~\.edgerc",
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-if(!(Get-Module AkamaiPowershell))
+for($i = 0; $i -lt $CPCodes.count; $i++)
 {
-    Write-Host -ForegroundColor Yellow "Please import the Akamai Powershell module before running this script"
-    return
-}
+    $PercentComplete = ($i / $CPCodes.Count * 100)
+    $PercentComplete = [math]::Round($PercentComplete)
+    Write-Progress -Activity "Updating CP Codes..." -Status "$PercentComplete% Complete:" -PercentComplete $PercentComplete;
 
-foreach($CPCode in $CPCodes)
-{
-    if($AccountSwitchKey)
-    {
-        $Detail = Get-CPCode -Section $Section -AccountSwitchKey $AccountSwitchKey -CPCode $CPCode
-    }
-    else
-    {
-        $Detail = Get-CPCode -Section $Section -CPCode $CPCode
-    }
+    $CPCode = $CPCodes[$i]
+    $Detail = Get-CPCode -CPCode $CPCode.cpcodeId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 
-    if($Detail.products[0].productId -ne $ProductIDToAdd)
-    {
+    if($ProductIDToAdd -notin $Detail.products.productId){
         $Detail.products += @{productId = $ProductIDToAdd}
+    }
+    else{
+        Write-Host -ForegroundColor Yellow "Warning: CP Code $($CPCode.cpcodeId) already contains product $ProductIDToAdd. Nothing to do"
+        continue
     }
 
     if($JustTesting)
     {
-        Write-Host -ForegroundColor Green "JUST TESTING: Adding product $ProductIDToAdd to CP Code $CPCode"
+        Write-Host -ForegroundColor Green "JUST TESTING: Adding product $ProductIDToAdd to CP Code $($CPCode.cpcodeId)"
     }
     else
     {
         try
         {
-            Write-Host "Adding product $ProductIDToAdd to CP Code $CPCode"
+            Write-Host -ForegroundColor Yellow "Adding product $ProductIDToAdd to CP Code $($CPCode.cpcodeId)"
             $Json = $Detail | ConvertTo-Json -Depth 10
-            if($AccountSwitchKey)
-            {
-                $Result = Set-CPCode -Section $Section -AccountSwitchKey $AccountSwitchKey -CPCode $CPCode -Body $Json
-            }
-            else
-            {
-                $Result = Set-CPCode -Section $Section -CPCode $CPCode -Body $Json
-            }
-            return $Result
+            $Result = Set-CPCode -CPCode $CPCode.cpcodeId -Body $Json -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         }
         catch
         {
-            Write-Host "ERROR: Failed to update CP Code $CPCode"
+            Write-Host "ERROR: Failed to update CP Code $($CPCode.cpcodeId)"
             Write-Host $_
-            return
         }
     }
 }

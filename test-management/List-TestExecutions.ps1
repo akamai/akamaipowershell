@@ -12,7 +12,7 @@ function List-TestExecutions
     $LatestPerTestDefinitionString = $LatestPerTestDefinition.IsPresent.ToString().ToLower()
     if(!$LatestPerTestDefinition){ $LatestPerTestDefinitionString = '' }
 
-    $Path = "/test-management/v1/test-definition-executions?latestPerTestDefinition=$LatestPerTestDefinitionString&testDefinitionIds=$TestDefinitionIDs?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/comparative/test-definition-executions?latestPerTestDefinition=$LatestPerTestDefinitionString&testDefinitionIds=$TestDefinitionIDs?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

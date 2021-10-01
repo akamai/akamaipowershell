@@ -3,13 +3,13 @@ function New-PropertyVersion
     Param(
         [Parameter(Mandatory=$false)] [string] $PropertyName,    
         [Parameter(Mandatory=$false)] [string] $PropertyId,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)]  [string] $CreateFromVersion,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)]  [string] $CreateFromEtag,
-        [Parameter(ParameterSetName='postbody', Mandatory=$false)]  [string] $Body,
+        [Parameter(ParameterSetName='attributes-version', Mandatory=$true)]  [string] $CreateFromVersion,
+        [Parameter(ParameterSetName='attributes-etag', Mandatory=$true)]  [string] $CreateFromEtag,
+        [Parameter(ParameterSetName='postbody', Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
@@ -30,13 +30,8 @@ function New-PropertyVersion
         }
     }
 
-    if($PSCmdlet.ParameterSetName -eq 'attributes')
+    if($PSCmdlet.ParameterSetName.StartsWith('attributes'))
     {
-        if($CreateFromVersion -eq '' -and $CreateFromEtag -eq '')
-        {
-            return "If specifying attributes you must provide at least one of: CreateFromVersion, CreateFromEtag"
-        }
-
         if($CreateFromVersion){
             if($CreateFromVersion.ToLower() -eq "latest"){
                 try{
@@ -56,17 +51,17 @@ function New-PropertyVersion
             $PostObject = @{"createFromVersion"=$CreateFromVersion}
         }
         
-        if($CreateFromEtag){
+        elseif($CreateFromEtag){
             $PostObject = @{"createFromEtag"=$CreateFromEtag}
         }
 
-        $Body = $PostObject | Convertto-json
+        $Body = $PostObject | ConvertTo-json
     }
     
     $Path = "/papi/v1/properties/$PropertyId/versions?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

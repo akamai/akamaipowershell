@@ -1,7 +1,8 @@
 function List-AppSecConfigurationVersions
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $ConfigID,
+        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$false)] [switch] $Detail,
         [Parameter(Mandatory=$false)] [int]    $Page = 1,
         [Parameter(Mandatory=$false)] [int]    $PageSize = 25,
@@ -14,7 +15,17 @@ function List-AppSecConfigurationVersions
     $DetailString = $Detail.IsPresent.ToString().ToLower()
     if(!$Detail){ $DetailString = '' }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions?detail=$DetailString&page=$Page&pagSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
+    if($ConfigName){
+        $Config = List-AppSecConfigurations -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.name -eq $ConfigName}
+        if($Config){
+            $ConfigID = $Config.id
+        }
+        else{
+            throw("Security config '$ConfigName' not found")
+        }
+    }
+
+    $Path = "/appsec/v1/configs/$ConfigID/versions?detail=$DetailString&page=$Page&pageSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

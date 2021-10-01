@@ -11,7 +11,7 @@ function Get-AMDRealTimeData
         [Parameter(Mandatory=$false)] [int]    $Offset,
         [Parameter(Mandatory=$false)] [switch] $Reduce,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

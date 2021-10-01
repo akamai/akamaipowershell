@@ -13,7 +13,7 @@ function New-EdgeHostname
         [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $Options,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'papi',
+        [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -30,7 +30,7 @@ function New-EdgeHostname
 
         if($SecureNetwork -ne ''){ $BodyObj['secureNetwork'] = $SecureNetwork }
         if($SlotNumber){ $BodyObj['slotNumber'] = $SlotNumber }
-        if($CertEnrollmentID){ $BodyObj['certEnrollmentID'] = $CertEnrollmentID }
+        if($CertEnrollmentID){ $BodyObj['certEnrollmentId'] = $CertEnrollmentID }
 
         $Body = $BodyObj | ConvertTo-Json -depth 100
     }
