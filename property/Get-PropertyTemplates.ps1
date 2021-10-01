@@ -1,6 +1,7 @@
 function Get-PropertyTemplates {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
@@ -8,6 +9,19 @@ function Get-PropertyTemplates {
         [Parameter(Mandatory=$false)] [string] $Section = 'papi',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    if($PropertyName){
+        try{
+            $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $PropertyID = $Property.propertyId
+            if($PropertyID -eq ''){
+                throw "Property '$PropertyName' not found"
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
 
     $Rules = Get-PropertyRuleTree -PropertyId $PropertyId -PropertyVersion $PropertyVersion -GroupID $GroupId -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 
