@@ -1,3 +1,22 @@
+<#
+.SYNOPSIS
+Akamai Powershell - Recursively converting rules to snippets
+.DESCRIPTION
+Takes a property rule tree and converts to a json, replacing with #include: statement.
+.PARAMETER Rules
+Rule PS object to recurse
+.PARAMETER Path
+Current folder path to write content to
+.PARAMETER CurrentDepth
+Current level of recursion. If equal or greater than MaxDept children will remain in the parent json file
+.PARAMETER MaxDepth
+Maximum depth as specified by the user. Allows you to limit the level of recursion and just leave children in json
+.EXAMPLE
+Get-ChildRuleTemplate -Rules $Rules -Path /property/offload -CurrentDepth 1 -MaxDepth 2
+.LINK
+developer.akamai.com
+#>
+
 function Get-ChildRuleTemplate {
     Param(
         [Parameter(Mandatory=$true)] [object] $Rules,
@@ -8,14 +27,14 @@ function Get-ChildRuleTemplate {
     
     $SafeName = Sanitise-FileName -FileName $Rules.Name
     $CurrentPath = "$Path\$SafeName"
-    $NewDepth = $CurrentDepth++
+    $NewDepth = $CurrentDepth + 1
 
     if(!(Test-Path $CurrentPath)) {
         New-Item -Name $CurrentPath -ItemType Directory | Out-Null
     }
 
-    for($i = 0; $i -lt $Rules.children.count; $i++) {
-        if($CurrentDepth -le $MaxDepth){
+    if($NewDepth -lt $MaxDepth){
+        for($i = 0; $i -lt $Rules.children.count; $i++) {
             Get-ChildRuleTemplate -Rules $Rules.children[$i] -Path $CurrentPath -CurrentDepth $NewDepth -MaxDepth $MaxDepth
             $SafeChildName = Sanitise-FileName -FileName $Rules.children[$i].Name
             $Rules.children[$i] = "#include:$SafeChildName\$SafeChildName.json"
@@ -24,6 +43,37 @@ function Get-ChildRuleTemplate {
 
     $Rules | ConvertTo-Json -Depth 100 | Out-File "$CurrentPath\$SafeName.json"
 }
+
+<#
+.SYNOPSIS
+Akamai Powershell - Splitting out properties to snippets
+.DESCRIPTION
+Pulls a property rule tree from PAPI and breaks it down into json snippets, to a specified depth
+.PARAMETER PropertyName
+Property name to read from PAPI. Either this or PropertyID is required
+.PARAMETER PropertyId
+Property ID to read from PAPI. Either this or PropertyName is required
+.PARAMETER PropertyVersion
+Version of property to read from PAPI. Can be integer of 'latest'
+.PARAMETER OutputDir
+FOlder to write snippets to. OPTIONAL
+.PARAMETER MaxDepth
+Depth of recursion. Defaults to 100, which is effectively unlimited. OPTIONAL
+.PARAMETER GroupID
+PAPI group for the property. OPTIONAL
+.PARAMETER ContractId
+PAPI contract from the property. OPTIONAL
+.PARAMETER EdgeRCFile
+Path to .edgerc file, defaults to ~/.edgerc. OPTIONAL
+.PARAMETER ContractId
+.edgerc Section name. Defaults to 'default'. OPTIONAL
+.PARAMETER AccountSwitchKey
+Account switch key if applying to an account external to yoru API user. Only usable by Akamai staff and partners. OPTIONAL
+.EXAMPLE
+Merge-PropertyRuleTemplates -SourceDirectory /property -OutputToFile -OutputFileName rules.json
+.LINK
+developer.akamai.com
+#>
 
 function Get-PropertyRuleTemplates {
     Param(
