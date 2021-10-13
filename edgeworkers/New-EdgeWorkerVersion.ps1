@@ -1,13 +1,27 @@
 function New-EdgeWorkerVersion
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $EdgeWorkerID,
+        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
         [Parameter(Mandatory=$true,ParameterSetName='dir')]  [string] $CodeDirectory,
         [Parameter(Mandatory=$true,ParameterSetName='file')] [string] $CodeBundle,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    if($Name){
+        try{
+            $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
+            $EdgeWorkerID = $EdgeWorker.edgeWorkerId
+            if(!$EdgeWorkerID){
+                throw "EdgeWorker $Name not found"
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
 
     if($CodeDirectory){
         if( Get-Command tar -ErrorAction SilentlyContinue){
