@@ -29,10 +29,11 @@ function Get-SIEMData
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $ConfigID,
-        [Parameter(Mandatory=$false)] [string] $Offset,
+        [Parameter(Mandatory=$true,ParameterSetName="offset")] [string] $Offset,
+        [Parameter(Mandatory=$true,ParameterSetName="fromto")] [string] $From,
+        [Parameter(Mandatory=$true,ParameterSetName="fromto")] [string] $To,
         [Parameter(Mandatory=$false)] [string] $Limit,
-        [Parameter(Mandatory=$false)] [string] $From,
-        [Parameter(Mandatory=$false)] [string] $To,
+        [Parameter(Mandatory=$false)] [switch] $Decode,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -42,9 +43,48 @@ function Get-SIEMData
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
     }
     catch {
         throw $_.Exception 
     }
+
+    $Events = New-Object -TypeName System.Collections.ArrayList
+    $Output = New-Object -TypeName PSCustomObject
+
+    ### Invoke-RestMethod doesn't handle the json due to it being multiple objects, so we split on line breaks, then convert to objects in an array
+    if($Result.GetType().Name -eq "String"){
+        ## Parse out empty last line
+        if($Result.EndsWith("`n")){
+            $Result = $Result.SubString(0,($Result.Length - 1))
+        }
+        $ResultArray = $Result -split "`n"
+        $ResponseContext = $ResultArray[-1] | ConvertFrom-Json -Depth 100
+
+        if($ResultArray.count -gt 1){
+            $UnprocessedEvents = $ResultArray[0..($ResultArray.Count - 2)]
+            foreach($JSONEvent in $UnprocessedEvents) {
+                $Event = $JSONEvent | ConvertFrom-Json -Depth 100
+                if($Decode){
+                    ## Call parsing function to url and base64-decode event members
+                    $ParsedEvent = Parse-SIEMEvent -Event $Event
+                    $Events.Add($ParsedEvent) | Out-Null
+                }
+                else{
+                    $Events.Add($Event) | Out-Null
+                }
+            }
+        }
+        else{
+            $Events = $null
+        }
+
+        $Output | Add-Member -MemberType NoteProperty -Name "Events" -Value $Events
+        $Output | Add-Member -MemberType NoteProperty -Name "ResponseContext" -Value $ResponseContext
+    }
+    else{
+        $Output | Add-Member -MemberType NoteProperty -Name "Events" -Value $null
+        $Output | Add-Member -MemberType NoteProperty -Name "ResponseContext" -Value $Result
+    }
+    
+    return $Output
 }
