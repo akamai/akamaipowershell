@@ -28,7 +28,7 @@ function List-AppSecPolicyAttackGroups
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.attackGroupActions
     }
     catch {
         throw $_.Exception
