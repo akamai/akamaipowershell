@@ -1,15 +1,41 @@
 function Set-EdgeWorker
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $EdgeWorkerID,
-        [Parameter(Mandatory=$true)]  [string] $Name,
+        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $EdgeWorkerID,
+        [Parameter(Mandatory=$false)] [string] $NewName,
         [Parameter(Mandatory=$true)]  [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    if($Name){
+        try{
+            $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
+            $EdgeWorkerID = $EdgeWorker.edgeWorkerId
+            if(!$EdgeWorkerID){
+                throw "EdgeWorker $Name not found"
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
+
     $Path = "/edgeworkers/v1/ids/$EdgeWorkerID`?accountSwitchKey=$AccountSwitchKey"
+
+    ### Set body to update name
+    if($NewName){
+        $Name = $NewName
+    }
+    ### Use old name if NewName missing
+    else{
+        if(!$Name){
+            $EdgeWorker = Get-EdgeWorker -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $Name = $EdgeWorker.name
+        }
+    }
 
     $BodyObj = @{
         name = $Name

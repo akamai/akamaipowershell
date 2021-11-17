@@ -295,7 +295,7 @@ function Invoke-AkamaiRestMethod
                 }
             }
             catch{
-                throw $_.ErrorDetails
+                throw $_
             }
         }
     }
