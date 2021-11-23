@@ -211,10 +211,19 @@ function Invoke-AkamaiRestMethod
     # Create IDictionary to hold request headers
     $Headers = @{}
 
-    # Add Auth & Accept headers
+    ## Calculate custom UA
+    if($PSVersionTable.PSVersion.Major -ge 6){ #< 6 is missing the OS member of PSVersionTable, so we use env variables
+        $UserAgent = "AkamaiPowershell/$($Env:AkamaiPowershellVersion) (Powershell $PSEdition $($PSVersionTable.PSVersion) $PSCulture, $($PSVersionTable.OS))"
+    }
+    else{
+        $UserAgent = "AkamaiPowershell/$($Env:AkamaiPowershellVersion) (Powershell $PSEdition $($PSVersionTable.PSVersion) $PSCulture, $($Env:OS))"
+    }
+    
+    # Add headers
     $Headers.Add('Authorization',$AuthorizationHeader)
     $Headers.Add('Accept','application/json')
     $Headers.Add('Content-Type', 'application/json; charset=utf-8')
+    $Headers.Add('User-Agent', $UserAgent)
 
     # Add additional headers
     if($AdditionalHeaders)
