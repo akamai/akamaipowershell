@@ -33,6 +33,11 @@ function Set-CloudletPolicyVersion
             ### Sanitise
             foreach($Rule in $UpdateObj.matchRules){
                 $Rule.PSObject.Members.Remove('location')
+
+                ### RC-specific
+                if($Rule.type -eq 'igMatchRule'){
+                    $Rule.PSObject.Members.Remove('matchURL')
+                }
             }
 
             $Body = $UpdateObj | ConvertTo-Json -Depth 100
