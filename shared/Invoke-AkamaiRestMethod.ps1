@@ -67,6 +67,7 @@ function Invoke-AkamaiRestMethod {
     if ($Script:AkamaiSession -ne $null -and $Script:AkamaiSession.Auth.$Section -ne $null) {
         #Use the script session auth instead of a file
         $Auth = $Script:AkamaiSession.Auth
+        $authSource = "cached Akamai session credential" #Used in error messages
     }
     else {
         ### Get .edgrc credentials
@@ -74,14 +75,15 @@ function Invoke-AkamaiRestMethod {
 
         #Cache the results so subsiquent calls don't have to read the file again
         $Script:AkamaiSession.Auth = $Auth
+        $authSource = "$EdgeRCFile file" #Used in error messages
     }
 
     # Validate auth contents
     if ($null -eq $Auth.$Section) {
-        throw "Error: Config section [$Section] not found in $EdgeRCFile"
+        throw "Error: Config section [$Section] not found in the $authSource"
     }
     if ($null -eq $Auth.$Section.ClientToken -or $null -eq $Auth.$Section.ClientAccessToken -or $null -eq $Auth.$Section.ClientSecret -or $null -eq $Auth.$Section.Host) {
-        throw "Error: Some necessary auth elements missing from section $Section. Please check your EdgeRC file"
+        throw "Error: Some necessary auth elements missing from section $Section. Please check the $authSource"
     }
    Write-Debug "Obtained credentials from section '$Section'"
 
