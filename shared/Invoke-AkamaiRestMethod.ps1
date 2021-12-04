@@ -83,7 +83,7 @@ function Invoke-AkamaiRestMethod {
     if ($null -eq $Auth.$Section.ClientToken -or $null -eq $Auth.$Section.ClientAccessToken -or $null -eq $Auth.$Section.ClientSecret -or $null -eq $Auth.$Section.Host) {
         throw "Error: Some necessary auth elements missing from section $Section. Please check your EdgeRC file"
     }
-    Write-Debug "Obtained credentials from section '$Section' of EdgeRC file $EdgeRCFile"
+   Write-Debug "Obtained credentials from section '$Section'"
 
     # Set IM staging host if switch present
     if ($Auth.$Section.Host.Contains('.imaging.') -and $Staging) {
