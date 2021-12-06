@@ -4,7 +4,7 @@ function Activate-CloudletPolicyVersion
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$false)] [string] $AdditionalPropertyNames,
-        [Parameter(Mandatory=$false)] [string] $Network = 'production',
+        [Parameter(Mandatory=$true)]  [string] [ValidateSet('staging','production')] $Network,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
