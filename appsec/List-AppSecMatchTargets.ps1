@@ -29,6 +29,9 @@ function List-AppSecMatchTargets
         $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
     }
 
+    if($PolicyName){
+        $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
+    }
 
     $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets?policyId=$PolicyID&includeChildObjectName=$IncludeChildObjectNameString&accountSwitchKey=$AccountSwitchKey"
 
