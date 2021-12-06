@@ -24,9 +24,11 @@ function Get-ChildRuleTemplate {
         [Parameter(Mandatory=$true)] [int]    $CurrentDepth,
         [Parameter(Mandatory=$true)] [int]    $MaxDepth
     )
+
+    $OSSlashChar = Get-OSSlashCharacter
     
     $SafeName = Sanitise-FileName -FileName $Rules.Name
-    $ChildPath = "$Path\$SafeName"
+    $ChildPath = "$Path$OSSlashChar$SafeName"
     $NewDepth = $CurrentDepth + 1
 
     if($NewDepth -lt $MaxDepth){
@@ -38,11 +40,11 @@ function Get-ChildRuleTemplate {
         for($i = 0; $i -lt $Rules.children.count; $i++) {
             Get-ChildRuleTemplate -Rules $Rules.children[$i] -Path $ChildPath -CurrentDepth $NewDepth -MaxDepth $MaxDepth
             $SafeChildName = Sanitise-FileName -FileName $Rules.children[$i].Name
-            $Rules.children[$i] = "#include:$SafeName\$SafeChildName.json"
+            $Rules.children[$i] = "#include:$SafeName$OSSlashChar$SafeChildName.json"
         }
     }
 
-    $Rules | ConvertTo-Json -Depth 100 | Out-File "$Path\$SafeName.json"
+    $Rules | ConvertTo-Json -Depth 100 | Out-File "$Path$OSSlashChar$SafeName.json"
 }
 
 <#

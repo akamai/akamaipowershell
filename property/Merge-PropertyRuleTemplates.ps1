@@ -70,10 +70,22 @@ function Merge-PropertyRuleTemplates {
         $Source = Get-Item $SourceDirectory
     }
 
-    $Rules = Get-Content -Raw "$($Source.FullName)$DefaultRuleFilename" | ConvertFrom-Json -Depth 100
+    if($PSVersionTable.PSVersion.Major -gt 5){
+        $Rules = Get-Content -Raw "$($Source.FullName)$DefaultRuleFilename" | ConvertFrom-Json -Depth 100
+    }
+    else{
+        $Rules = Get-Content -Raw "$($Source.FullName)$DefaultRuleFilename" | ConvertFrom-Json
+    }
+    
 
     ## Get Variables
-    $Rules.variables = Get-Content -Raw "$($Source.FullName)pmVariables.json" | ConvertFrom-Json -Depth 100
+    if($PSVersionTable.PSVersion.Major -gt 5){
+        $Rules.variables = Get-Content -Raw "$($Source.FullName)pmVariables.json" | ConvertFrom-Json -Depth 100
+    }
+    else{
+        $Rules.variables = Get-Content -Raw "$($Source.FullName)pmVariables.json" | ConvertFrom-Json
+    }
+    
 
     for($i = 0; $i -lt $Rules.children.count; $i++){
         if($Rules.children[$i].GetType().Name -eq 'String' -and $Rules.children[$i].StartsWith('#include:')){
