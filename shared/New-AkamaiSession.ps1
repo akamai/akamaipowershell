@@ -67,7 +67,14 @@ Function New-AkamaiSession {
         [Parameter(Mandatory = $true, ParameterSetName = "json")] [string] $EdgeRCJSON,
         [Parameter()] [switch] $Passthrough
     )
-    if ($EdgeRCJSON) { #Use the json string to configure the session
+    if (-not ($Script:AkamaiSession) -and $Passthrough.IsPresent -eq $false) {
+        $Script:AkamaiSession = [PSCustomObject]@{
+            Auth = $null
+        }
+    }
+
+    if ($EdgeRCJSON) {
+        #Use the json string to configure the session
         $AuthInfo = ConvertFrom-Json $EdgeRCJSON
 
         # Validate auth contents and structure
@@ -77,30 +84,32 @@ Function New-AkamaiSession {
         foreach ($p in $AuthInfo.PSObject.Properties) {
             $AuthSection = $p.Value
             if ($null -eq $AuthSection.ClientToken -or $null -eq $AuthSection.ClientAccessToken -or $null -eq $AuthSection.ClientSecret -or $null -eq $AuthSection.Host) {
-                throw "Error: Some necessary auth elements missing from the auth section. Please check your EdgeRC JSON"
+                throw "Error: Some necessary auth elements missing from the auth section $($p.Name). Please check your EdgeRC JSON"
             }
         }
-    }
-    else { #Use the individually supplied creds and section name
-        $AuthInfo = @{ $Environment = @{
-                ClientToken       = $ClientToken
-                ClientAccessToken = $AccessToken
-                Host              = $HostName
-                ClientSecret      = $ClientSecret
-            }
+        #Return the object if passthrough is present. Otherwise set the script variable
+        if ($Passthrough.IsPresent) {
+            return @{Auth = $AuthInfo }
         }
-    }
-    #Return the object if passthrough is present. Otherwise set the script variable
-    if ($Passthrough.IsPresent) {
-        return @{Auth = $AuthInfo}
+        else {
+            $Script:AkamaiSession.Auth = $authInfo
+        }
     }
     else {
-        if (-not ($Script:AkamaiSession -and $Script:AkamaiSession.GetType().Name -eq "Hashtable")) {
-            $Script:AkamaiSession = @{}
+        #Use the individually supplied creds and section name
+        $newAuth = [PSCustomObject]@{
+            ClientToken       = $ClientToken
+            ClientAccessToken = $ClientAccessToken
+            Host              = $HostName
+            ClientSecret      = $ClientSecret
         }
-        if ($Script:AkamaiSession.Auth -eq $null) {
-            $Script:AkamaiSession.Auth = @{}
+        if ($Passthrough.IsPresent) {
+            return [PSCustomObject]@{Auth = [PSCustomObject]@{$Environment = $newAuth } }
         }
-        $Script:AkamaiSession.Auth = $authInfo
+        else {
+            #add the environment to the Auth object. Force an overwrite if needed
+            $Script:AkamaiSession.Auth | Add-Member -MemberType NoteProperty -Name $Environment -Value $newAuth -Force
+        }
+    
     }
 }
