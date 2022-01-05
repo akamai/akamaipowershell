@@ -4,7 +4,8 @@ function Set-AppSecPolicyEvaluationRuleConditions
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$true)]  [string] $PolicyID,
+        [Parameter(Mandatory=$false)] [string] $PolicyName,
+        [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $RuleID,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $Conditions,
         [Parameter(Mandatory=$false)] [string] $Body,
@@ -32,6 +33,10 @@ function Set-AppSecPolicyEvaluationRuleConditions
     
         if($Conditions){
             $Body = $Conditions | ConvertTo-Json -Depth 100
+        }
+
+        if($PolicyName){
+            $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
         }
     
         $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/eval-rules/$RuleID/condition-exception?accountSwitchKey=$AccountSwitchKey"

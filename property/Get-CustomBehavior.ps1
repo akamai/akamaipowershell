@@ -11,7 +11,7 @@ function Get-CustomBehavior
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.customBehaviors.items
     }
     catch {
         throw $_.Exception

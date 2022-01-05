@@ -4,7 +4,8 @@ function Set-AppSecPolicySlowPostSettings
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$true)]  [string] $PolicyID,
+        [Parameter(Mandatory=$false)] [string] $PolicyName,
+        [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $SlowPostSettings,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -27,6 +28,10 @@ function Set-AppSecPolicySlowPostSettings
     
         if($VersionNumber.ToLower() -eq 'latest'){
             $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
+        }
+
+        if($PolicyName){
+            $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
         }
     
         $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/slow-post?accountSwitchKey=$AccountSwitchKey"

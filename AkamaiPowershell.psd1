@@ -12,7 +12,7 @@
 RootModule = 'AkamaiPowershell.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.5.1'
+ModuleVersion = '1.6.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -107,7 +107,14 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'This release contains various bugfixes and minor new features. Primarily, it deals with POSTs with no body, which generated invalid signatures, as well as adding "latest" support in the cloudlets API.'
+        ReleaseNotes = 'Lots of new updates included in this release:
+
+- New PAPI template functions with optional depth to split your PAPI rules into multiple files
+- Splitting out EdgeRC parsing into a separate function so it can be reused in IDM
+- Policy name support for AppSec API
+- Improvements to cloudlets functions
+- Custom UserAgent so we can track who is using the module and which versions they are on
+- Fix for Get-CustomBehavior output'
 
         # Prerelease string of this module
         # Prerelease = ''

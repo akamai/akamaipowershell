@@ -38,3 +38,10 @@ Export-ModuleMember -Function 'New-GTMDomainDatacenter' -Alias 'Set-GTMDomainDat
 Export-ModuleMember -Function 'New-GTMDomainGeoMap' -Alias 'Set-GTMDomainGeoMap'
 Export-ModuleMember -Function 'New-GTMDomainProperty' -Alias 'Set-GTMDomainProperty'
 Export-ModuleMember -Function 'New-GTMDomainResource' -Alias 'Set-GTMDomainResource'
+
+# Set module version env variable, used in custom UA
+$Exp = Get-Content -Raw $PSScriptRoot\AkamaiPowershell.psd1
+$Details = Invoke-Expression $Exp
+$Env:AkamaiPowershellVersion = $Details.ModuleVersion
+Remove-Variable $Exp
+$Details = $null

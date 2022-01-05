@@ -2,7 +2,8 @@ function Get-EdgeWorkerReport
 {
     Param(
         [Parameter(Mandatory=$true)]  [int]    $ReportID,
-        [Parameter(Mandatory=$true)]  [string] $EdgeWorkerID,
+        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
         [Parameter(Mandatory=$true)]  [string] $Start,
         [Parameter(Mandatory=$true)]  [string] $End,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('onClientRequest','onOriginRequest','onOriginResponse','onClientResponse','responseProvider')] $EventHandler,
@@ -11,6 +12,19 @@ function Get-EdgeWorkerReport
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    if($Name){
+        try{
+            $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
+            $EdgeWorkerID = $EdgeWorker.edgeWorkerId
+            if(!$EdgeWorkerID){
+                throw "EdgeWorker $Name not found"
+            }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
 
     $DateTimeMatch = '[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
     if($Start -notmatch $DateTimeMatch -or $End -notmatch $DateTimeMatch){

@@ -4,7 +4,8 @@ function Set-AppSecPolicyAttackGroup
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$true)]  [string] $PolicyID,
+        [Parameter(Mandatory=$false)] [string] $PolicyName,
+        [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $AttackGroupID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $Action,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -24,6 +25,10 @@ function Set-AppSecPolicyAttackGroup
 
     if($VersionNumber.ToLower() -eq 'latest'){
         $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
+    }
+
+    if($PolicyName){
+        $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
     }
 
     $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/attack-groups/$AttackGroupID`?accountSwitchKey=$AccountSwitchKey"
