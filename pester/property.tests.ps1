@@ -1,14 +1,14 @@
 Import-Module $PSScriptRoot\..\AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestGroupName = 'AkamaiPowershell'
+$Script:TestPropertyName = 'akamaipowershell-testing'
+$Script:AdditionalHostname = 'new.host'
 
-Describe 'PAPI Tests' {
-    # Setup shared variables
-    $Script:EdgeRCFile = $env:PesterEdgeRCFile
-    $Script:Section = 'default'
-    $Script:TestContract = '1-1NC95D'
-    $Script:TestGroupName = 'AkamaiPowershell'
-    $Script:TestPropertyName = 'akamaipowershell-testing'
-    $Script:AdditionalHostname = 'new.host'
-
+Describe 'Safe PAPI Tests' {
     ### Get-AccountID
     $Script:AccountID = Get-AccountID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-AccountID gets an account ID' {
@@ -147,9 +147,9 @@ Describe 'PAPI Tests' {
     }
 
     ### Get-PropertyRuleTree to file
-    Get-PropertyRuleTree -PropertyName $TestPropertyName -PropertyVersion latest -OutputToFile -OutputFileName temp.json -EdgeRCFile $EdgeRCFile -Section $Section
+    Get-PropertyRuleTree -PropertyName $TestPropertyName -PropertyVersion latest -OutputToFile -OutputFileName rules.json -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-PropertyRuleTree creates json file' {
-        'temp.json' | Should -Exist
+        'rules.json' | Should -Exist
     }
 
     <#
@@ -159,19 +159,16 @@ Describe 'PAPI Tests' {
     }
     #>
 
-    ### Cleanup rules file
-    Remove-Item temp.json -Force
-
     ### Get-PropertyRuleTemplates
     Get-PropertyRuleTemplates -PropertyName $TestPropertyName -PropertyVersion latest -OutputDir templates -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-PropertyRuleTemplates creates expected files' {
-        'temp\main.json' | Should -Exist
+        'templates\main.json' | Should -Exist
     }
 
     ### Merge-PropertyRuleTemplates creates output file
-    Merge-PropertyRuleTemplates -SourceDirectory templates -OutputToFile -OutputFileName temp.json
+    Merge-PropertyRuleTemplates -SourceDirectory templates -OutputToFile -OutputFileName templates.json
     it 'Get-PropertyRuleTemplates creates expected files' {
-        'temp.json' | Should -Exist
+        'templates.json' | Should -Exist
     }
 
     ### Merge-PropertyRuleTemplates creates custom object
@@ -180,10 +177,6 @@ Describe 'PAPI Tests' {
         $MergedRules | Should -BeOfType [PSCustomObject]
         $MergedRules.rules | Should -Not -BeNullOrEmpty
     }
-
-    ### Cleanup files
-    Remove-Item temp.json -Force
-    Remove-Item templates -Recurse -Force
 
     ### New-PropertyVersion
     $Script:PropertyVersion = New-PropertyVersion -PropertyId $FoundProperty.propertyId -CreateFromVersion $PropertyVersion.propertyVersion -EdgeRCFile $EdgeRCFile -Section $Section
@@ -246,5 +239,55 @@ Describe 'PAPI Tests' {
     it 'List-RuleFormats returns results' {
         $RuleFormats | Should -Not -BeNullOrEmpty
     }
+
+    ### Activate-Property
+    $Script:Activation = Activate-Property -PropertyName $TestPropertyName -PropertyVersion latest -Network Staging -NotifyEmails "mail@example.com" -AcknowledgeAllWarnings -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-RuleFormats returns results' {
+        $Activation.activationLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-Activation
+    # Sanitise activation ID from previous response
+    $Script:ActivationID = ($Activation.activationLink -split "/")[-1]
+    if($ActivationID.contains("?")){
+        $ActivationID = $ActivationID.Substring(0,$ActivationID.IndexOf("?"))
+    }
+    $Script:ActivationResult = Get-PropertyActivation -PropertyName $TestPropertyName -ActivationID $ActivationID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-Activation finds the correct activation' {
+        $ActivationResult[0].activationId | Should -Be $ActivationID
+    }
+
+    AfterAll {
+        ### Cleanup files
+        Remove-Item rules.json -Force
+        Remove-Item templates.json -Force
+        Remove-Item templates -Recurse -Force
+    }
     
+}
+
+Describe 'Unsafe PAPI Tests' {
+    ### New-Property
+    $Script:NewProperty = New-Property -PropertyName $TestPropertyName -ProductID SPM -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'New-Property creates a property' {
+        $NewProperty.propertyLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### Remove-Property
+    $Script:RemoveProperty = Remove-Property -PropertyID 000000 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Remove-Property removes a property' {
+        $RemoveProperty.message | Should -Be "Deletion Successful."
+    }
+
+    ### New-EdgeHostname
+    $Script:NewEdgeHostname = New-EdgeHostname -DomainPrefix test -DomainSuffix edgesuite.net -IPVersionBehavior IPV4 -ProductId SPM -SecureNetwork STANDARD_TLS -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'New-Property creates a property' {
+        $NewEdgeHostname.edgeHostnameLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-CPCode
+    $Script:NewCPCode = New-CPCode -CPCodeName testCP -ProductId SPM -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'New-Property creates a property' {
+        $NewCPCode.cpcodeLink | Should -Not -BeNullOrEmpty
+    }
 }
