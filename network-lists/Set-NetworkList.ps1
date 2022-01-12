@@ -15,7 +15,7 @@ function Set-NetworkList
     begin{}
 
     process{
-        $Path = "/network-list/v2/network-lists/$NetworkListID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/network-list/v2/network-lists/$NetworkListID/elements?element=$Element&accountSwitchKey=$AccountSwitchKey"
         $Method = 'PUT'
 
         if($Operation -ne 'set'){
@@ -23,11 +23,14 @@ function Set-NetworkList
             if($Element -eq ''){
                 throw '$Element param is required when adding or removing from a list'
             }
-            $Path += "/elements&element=$Element"
             Write-Warning 'The $Operation and $Element params will be deprecated in a future relase. Use AddTo-NetworkList or RemoveFrom-NetworkList to add or remove items.'
             if($Operation -eq 'remove'){
                 $Method = 'DELETE'
             }
+        }
+        else{
+            # Remove /elements from path until opeation is deprecated
+            $Path = $Path.Replace("/elements","")
         }
 
         if($NetworkList){
