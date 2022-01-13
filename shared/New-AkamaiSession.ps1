@@ -107,9 +107,16 @@ Function New-AkamaiSession {
             return [PSCustomObject]@{Auth = [PSCustomObject]@{$Environment = $newAuth } }
         }
         else {
-            #add the environment to the Auth object. Force an overwrite if needed
-            $Script:AkamaiSession.Auth | Add-Member -MemberType NoteProperty -Name $Environment -Value $newAuth -Force
+            #If this is the first section, create the Auth object
+            if ($Script:AkamaiSession.Auth -eq $null) {
+                $Script:AkamaiSession.Auth = [PSCustomObject] @{
+                    $Environment = $newAuth
+                }
+            }
+            else {
+                #add the environment to the existing Auth object. Force an overwrite if needed
+                $Script:AkamaiSession.Auth | Add-Member -MemberType NoteProperty -Name $Environment -Value $newAuth -Force
+            }
         }
-    
     }
 }
