@@ -6,16 +6,7 @@ A session variable created with New-AkamaiSession. Use Get-AkamaiSession to fetc
 #>
 function Set-AkamaiSession {
     param (
-        [Parameter(Mandatory=$true, ParameterSetName="full")] [hashtable] $AkamaiSession,
-        [Parameter(Mandatory=$true, ParameterSetName="auth")] [hashtable] $AuthProperty
+        [Parameter(Mandatory=$true, ParameterSetName="full", Position=1)] [PSCustomObject] $AkamaiSession
     )
-
-    if([string]::IsNullOrWhiteSpace($AkamaiSession)){
-        if(-not $script:AkamaiSession){
-            $script:AkamaiSession = @{}
-        }
-        $script:AkamaiSession.Auth = $AuthProperty
-    } else {
         $Script:AkamaiSession = $AkamaiSession
-    }
 }
