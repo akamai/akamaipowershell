@@ -1,6 +1,11 @@
 # AkamaiPowershell PowerShell Module
 # Changelog
 
+## 1.6.1 - (13/12/2021)
+
+### Templating bugfixes
+Fixes for a few minor issues in the new property template logic.
+
 ## 1.6.0 - (06/12/2021)
 
 ### Templates, AppSec, Cloudlets and more
