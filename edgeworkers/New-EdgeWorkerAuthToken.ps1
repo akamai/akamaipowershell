@@ -1,5 +1,6 @@
 function New-EdgeWorkerAuthToken
 {
+    [CmdletBinding(DefaultParameterSetName = 'url')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $Secret,
         [Parameter(Mandatory=$true,ParameterSetName='acl')] [string] $ACLPath,

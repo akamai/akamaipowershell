@@ -1,18 +1,26 @@
 function New-EdgeWorkerVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
-        [Parameter(Mandatory=$true,ParameterSetName='dir')]  [string] $CodeDirectory,
-        [Parameter(Mandatory=$true,ParameterSetName='file')] [string] $CodeBundle,
+        [Parameter(Mandatory=$false)] [string] $CodeDirectory,
+        [Parameter(Mandatory=$false)] [string] $CodeBundle,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    if($CodeDirectory -ne '' -and $CodeBundle -ne ''){
+        throw "Specify only one of -CodeDirectory or -CodeBundle"
+    }
+
     if($Name){
         try{
             $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
+            if($EdgeWorker.count -gt 1){
+                throw "Found multiple EdgeWorkers with name $Name. Use -EdgeWorkerID to be more specific"
+            }
             $EdgeWorkerID = $EdgeWorker.edgeWorkerId
             if(!$EdgeWorkerID){
                 throw "EdgeWorker $Name not found"
