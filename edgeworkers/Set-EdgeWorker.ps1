@@ -1,5 +1,6 @@
 function Set-EdgeWorker
 {
+    [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $EdgeWorkerID,

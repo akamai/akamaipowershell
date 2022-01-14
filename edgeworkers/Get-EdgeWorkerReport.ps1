@@ -1,5 +1,6 @@
 function Get-EdgeWorkerReport
 {
+    [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(Mandatory=$true)]  [int]    $ReportID,
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
