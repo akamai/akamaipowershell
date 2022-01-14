@@ -12,6 +12,9 @@ function List-EdgeWorkerVersions
     if($Name){
         try{
             $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
+            if($EdgeWorker.count -gt 1){
+                throw "Found multiple EdgeWorkers with name $Name. Use -EdgeWorkerID to be more specific"
+            }
             $EdgeWorkerID = $EdgeWorker.edgeWorkerId
             if(!$EdgeWorkerID){
                 throw "EdgeWorker $Name not found"
