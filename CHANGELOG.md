@@ -1,6 +1,11 @@
 # AkamaiPowershell PowerShell Module
 # Changelog
 
+## 1.6.2 - (14/12/2021)
+
+### Edgeworker improvements
+Fixes for parametersetname bug which prevented new versions being created, as well as cmdletbinding, new Remove- functions and pester testing overhaul.
+
 ## 1.6.1 - (13/12/2021)
 
 ### Templating bugfixes
