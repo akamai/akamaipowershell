@@ -130,7 +130,12 @@ function Invoke-AkamaiRestMethod
         elseif($InputFile)
         {
             $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
-            $Bytes = Get-Content -AsByteStream $InputFile
+            if($PSVersionTable.PSVersion.Major -le 5) {
+                $Bytes = Get-Content $InputFile -Encoding Byte
+            }
+            else{
+                $Bytes = Get-Content $InputFile -AsByteStream
+            }
             $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash($Bytes))
             $SignatureData += "`t`t" + $Body_Hash + "`t"
             Write-Debug "Signature generated from input file $InputFile"
