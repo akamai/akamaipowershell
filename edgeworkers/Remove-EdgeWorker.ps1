@@ -1,10 +1,9 @@
-function List-EdgeWorkerActivations
+function Remove-EdgeWorker
 {
     [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $EdgeWorkerID,
-        [Parameter(Mandatory=$false)] [string] $Version,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -26,10 +25,10 @@ function List-EdgeWorkerActivations
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations?version=$Version&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
