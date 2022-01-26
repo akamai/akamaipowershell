@@ -56,7 +56,7 @@ function Get-EdgeWorkerAuthToken
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.akamaiEwTrace
     }
     catch {
         throw $_.Exception
