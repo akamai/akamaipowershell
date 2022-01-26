@@ -1,14 +1,18 @@
-function Get-EdgeWorkerActivation
+function List-EdgeWorkerProperties
 {
     [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
-        [Parameter(Mandatory=$true)]  [string] $ActivationID,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $EdgeWorkerID,
+        [Parameter(Mandatory=$false)] [switch] $ActiveOnly,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
+
+    # nullify false switches
+    $ActiveOnlyString = $ActiveOnly.IsPresent.ToString().ToLower()
+    if(!$ActiveOnly){ $ActiveOnlyString = '' }
 
     if($Name){
         try{
@@ -26,21 +30,11 @@ function Get-EdgeWorkerActivation
         }
     }
 
-    if($ActivationID.ToLower() -eq "latest"){
-        try{
-            $Activations = List-EdgeWorkerActivations -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-            $ActivationID = $Activations[0].activationId
-        }
-        catch{
-            throw $_.Exception
-        }
-    }
-
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations/$ActivationID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/properties?activeOnly=$ActiveOnlyString&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.activations
     }
     catch {
         throw $_.Exception

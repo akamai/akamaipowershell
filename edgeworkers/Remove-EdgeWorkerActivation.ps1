@@ -1,4 +1,4 @@
-function Get-EdgeWorkerActivation
+function Remove-EdgeWorkerActivation
 {
     [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
@@ -39,7 +39,7 @@ function Get-EdgeWorkerActivation
     $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations/$ActivationID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

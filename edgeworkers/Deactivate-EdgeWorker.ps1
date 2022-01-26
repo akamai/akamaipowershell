@@ -1,10 +1,12 @@
-function Get-EdgeWorkerActivation
+function Deactivate-EdgeWorker
 {
     [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
-        [Parameter(Mandatory=$true)]  [string] $ActivationID,
+        [Parameter(Mandatory=$true)]  [string] $Version,
+        [Parameter(Mandatory=$true)]  [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
+        [Parameter(Mandatory=$false)] [string] $Note,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -13,9 +15,6 @@ function Get-EdgeWorkerActivation
     if($Name){
         try{
             $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
-            if($EdgeWorker.count -gt 1){
-                throw "Found multiple EdgeWorkers with name $Name. Use -EdgeWorkerID to be more specific"
-            }
             $EdgeWorkerID = $EdgeWorker.edgeWorkerId
             if(!$EdgeWorkerID){
                 throw "EdgeWorker $Name not found"
@@ -26,20 +25,31 @@ function Get-EdgeWorkerActivation
         }
     }
 
-    if($ActivationID.ToLower() -eq "latest"){
+    if($Version.ToLower() -eq "latest"){
         try{
-            $Activations = List-EdgeWorkerActivations -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-            $ActivationID = $Activations[0].activationId
+            $Versions = List-EdgeWorkerVersions -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $Version = $Versions[-1].version
         }
         catch{
             throw $_.Exception
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations/$ActivationID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/deactivations?accountSwitchKey=$AccountSwitchKey"
+
+    $BodyObj = [PSCustomObject] @{
+        network = $Network
+        version = $Version
+    }
+
+    if($Note -ne ''){
+        $BodyObj | Add-Member -MemberType NoteProperty -Name 'note' -Value $Note
+    }
+
+    $Body = $BodyObj | ConvertTo-Json
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
