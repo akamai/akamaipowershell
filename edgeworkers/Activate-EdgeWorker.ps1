@@ -26,8 +26,8 @@ function Activate-EdgeWorker
 
     if($Version.ToLower() -eq "latest"){
         try{
-            $Versions = List-EdgeWorkerVersions -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-            $Version = $Versions[-1].version
+            $Versions = List-EdgeWorkerVersions -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | Sort-Object -Property sequenceNumber -Descending
+            $Version = $Versions[0].version
         }
         catch{
             throw $_.Exception
