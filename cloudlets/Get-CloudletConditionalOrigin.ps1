@@ -7,7 +7,7 @@ function Get-CloudletConditionalOrigin
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
-    $Path = "/cloudlets/api/v2/origins/$OriginID`&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/origins/$OriginID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

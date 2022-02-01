@@ -10,7 +10,7 @@ function New-CloudletConditionalOrigin
 
     Write-Host -ForegroundColor Yellow "WARNING: This cmdlet is deprecated and will be removed in a future release. Use New-CloudletLoadBalancer going forward"
     
-    $Path = "/cloudlets/api/v2/origins/$OriginID`&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/origins/$OriginID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
