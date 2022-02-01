@@ -72,9 +72,6 @@ function Invoke-AkamaiRestMethod {
     else {
         ### Get .edgrc credentials
         $Auth = Parse-EdgeRCFile -EdgeRCFile $EdgeRCFile -Section $Section
-
-        #Cache the results so subsiquent calls don't have to read the file again
-         Set-AkamaiSession -AuthProperty $Auth
         $authSource = "$EdgeRCFile file" #Used in error messages
     }
 
