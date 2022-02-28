@@ -15,7 +15,7 @@ function Set-CPSEnrollment
         $Path = "/cps/v2/enrollments/$EnrollmentID`?accountSwitchKey=$AccountSwitchKey"
         $AdditionalHeaders = @{
             'accept' = 'application/vnd.akamai.cps.enrollment-status.v1+json'
-            'content-type' = 'application/vnd.akamai.cps.enrollment.v7+json'
+            'content-type' = 'application/vnd.akamai.cps.enrollment.v11+json'
         }
 
         if($InputFile){
