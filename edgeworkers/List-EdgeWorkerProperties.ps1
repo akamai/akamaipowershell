@@ -34,7 +34,7 @@ function List-EdgeWorkerProperties
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.activations
+        return $Result.properties
     }
     catch {
         throw $_.Exception

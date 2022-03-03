@@ -4,6 +4,7 @@ $Script:EdgeRCFile = $env:PesterEdgeRCFile
 $Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
 $Script:Section = 'default'
 $Script:TestGroupID = 131831
+$Script:TestContract = '1-1NC95D'
 $Script:TestEdgeworkerName = 'akamaipowershell-testing'
 $Script:TestEdgeworkerVersion = '0.0.1'
 $Script:BundleJson = '{ "edgeworker-version": "0.0.1", "description" : "Pester testing" }'
@@ -15,6 +16,12 @@ Describe 'Safe Edgeworker Tests' {
         it 'EW should not already exist' {
             { Get-EdgeWorker -Name $TestEdgeworkerName -EdgeRCFile $EdgeRCFile -Section $Section } | Should -BeNullOrEmpty
         }
+    }
+
+    ### List-EdgeWorkerResourceTiers
+    $Script:Tiers = List-EdgeWorkerResourceTiers -ContractId $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeWorkerResourceTiers returns tiers' {
+        $Tiers | Should -Not -BeNullOrEmpty
     }
 
     ### List-Edgeworkers
@@ -112,6 +119,57 @@ Describe 'Safe Edgeworker Tests' {
 }
 
 Describe 'Unsafe Edgeworker Tests' {
+    ### Activate-EdgeWorker
+    $Script:ActivationResult = Activate-EdgeWorker -EdgeWorkerID 12345 -Version 0.0.1 -Network STAGING -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Activate-EdgeWorker returns valid response' {
+        $ActivationResult.edgeWorkerId | Should -Not -BeNullOrEmpty
+    }
 
-    
+    ### List-EdgeWorkerActivations
+    $Script:Activations = List-EdgeWorkerActivations -EdgeWorkerID 12345 -Version 0.0.1 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'List-EdgeWorkerActivations returns valid response' {
+        $Activations[0].activationId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-EdgeWorkerActivation
+    $Script:Activation = Get-EdgeWorkerActivation -EdgeWorkerID 12345 -ActivationID 1 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeWorkerActivation returns valid response' {
+        $Activation.edgeWorkerId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Remove-EdgeworkerActivation
+    $Script:ActivationCancellation = Remove-EdgeWorkerActivation -EdgeWorkerID 12345 -ActivationID 1 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeWorkerDeactivation returns valid response' {
+        $ActivationCancellation.edgeWorkerId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Deactivate-EdgeWorker
+    $Script:DeactivationResult = Deactivate-EdgeWorker -EdgeWorkerID 12345 -Version 0.0.1 -Network STAGING -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Deactivate-EdgeWorker returns valid response' {
+        $DeactivationResult.edgeWorkerId | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-EdgeWorkerDeactivations
+    $Script:Deactivations = List-EdgeWorkerDeactivations -EdgeWorkerID 12345 -Version 0.0.1 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'List-EdgeWorkerDeactivations returns valid response' {
+        $Deactivations[0].deactivationId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-EdgeWorkerDeactivation
+    $Script:Deactivation = Get-EdgeWorkerDeactivation -EdgeWorkerID 12345 -DeactivationID 1 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeWorkerDeactivation returns valid response' {
+        $Deactivation.edgeWorkerId | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-EdgeWorkerProperties
+    $Script:Properties = List-EdgeWorkerProperties -EdgeWorkerID 12345 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeWorkerDeactivation returns valid response' {
+        $Properties.count | Should -Not -Be 0
+    }
+
+    ### Get-EdgeWorkerAuthToken
+    $Script:Token = Get-EdgeWorkerAuthToken -Hostname www.example.com -Expiry 60 -Network STAGING -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeWorkerDeactivation returns valid response' {
+        $Token | Should -Not -BeNullOrEmpty
+    }
 }
