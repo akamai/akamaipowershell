@@ -25,7 +25,7 @@ function New-EdgeKVNamespace
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.namespaces
+        return $Result
     }
     catch {
         throw $_.Exception
