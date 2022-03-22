@@ -26,6 +26,16 @@ function Get-EdgeWorkerActivation
         }
     }
 
+    if($ActivationID.ToLower() -eq "latest"){
+        try{
+            $Activations = List-EdgeWorkerActivations -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $ActivationID = $Activations[0].activationId
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
+
     $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations/$ActivationID`?accountSwitchKey=$AccountSwitchKey"
 
     try {

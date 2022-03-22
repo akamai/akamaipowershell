@@ -1,4 +1,4 @@
-function List-EdgeWorkerActivations
+function List-EdgeWorkerDeactivations
 {
     [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
@@ -26,11 +26,11 @@ function List-EdgeWorkerActivations
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations?version=$Version&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/deactivations?version=$Version&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.activations
+        return $Result.deactivations
     }
     catch {
         throw $_.Exception
