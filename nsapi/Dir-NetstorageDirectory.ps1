@@ -28,7 +28,7 @@ function Dir-NetstorageDirectory {
 
     try {
         $Result = Invoke-AkamaiNSAPIRequest -Path $Path -Action $Action -AdditionalOptions $AdditionalOptions -AuthFile $Authfile -Section $Section
-        return $Result.list.file
+        return $Result.stat.file
     }
     catch {
         throw $_
