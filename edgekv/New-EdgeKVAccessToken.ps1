@@ -16,24 +16,27 @@ function New-EdgeKVAccessToken
     $Path = "/edgekv/v1/tokens?accountSwitchKey=$AccountSwitchKey"
 
     if($PSCmdlet.ParameterSetName -eq "attributes"){
-        $DateTimeMatch = '[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
-        if($Expiry -notmatch $DateTimeMatch){
-            throw "ERROR: Expiry must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
+        ### Check expiry datetime
+        try{
+            $DT = Get-Date $Expiry -ErrorAction Stop
+        }
+        catch{
+            throw "$Expiry is not a valid datetime"
         }
 
         $BodyObj = @{
             name = $Name
-            allow_on_production = $AllowOnProduction.IsPresent
-            allow_on_staging = $AllowOnStaging.IsPresent
+            allowOnProduction = $AllowOnProduction.IsPresent
+            allowOnStaging = $AllowOnStaging.IsPresent
             expiry = $Expiry
-            namespace_permissions = @{ $Namespace = @() }
+            namespacePermissions = @{ $Namespace = @() }
         }
 
         $Permissions.ToCharArray() | foreach {
             if($_ -ne 'r' -and $_ -ne 'w' -and $_ -ne 'd'){
                 throw "Permissions must be 'r', 'w' or 'd'"
             }
-            $BodyObj.namespace_permissions.$Namespace += $_
+            $BodyObj.namespacePermissions.$Namespace += $_
         }
 
         $Body = $BodyObj | ConvertTo-Json -depth 100
