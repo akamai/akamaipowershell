@@ -1,4 +1,4 @@
-function Activate-EdgeWorker
+function Deactivate-EdgeWorker
 {
     [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
@@ -6,6 +6,7 @@ function Activate-EdgeWorker
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
+        [Parameter(Mandatory=$false)] [string] $Note,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -26,20 +27,25 @@ function Activate-EdgeWorker
 
     if($Version.ToLower() -eq "latest"){
         try{
-            $Versions = List-EdgeWorkerVersions -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | Sort-Object -Property sequenceNumber -Descending
-            $Version = $Versions[0].version
+            $Versions = List-EdgeWorkerVersions -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $Version = $Versions[-1].version
         }
         catch{
             throw $_.Exception
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/deactivations?accountSwitchKey=$AccountSwitchKey"
 
-    $BodyObj = @{
+    $BodyObj = [PSCustomObject] @{
         network = $Network
         version = $Version
     }
+
+    if($Note -ne ''){
+        $BodyObj | Add-Member -MemberType NoteProperty -Name 'note' -Value $Note
+    }
+
     $Body = $BodyObj | ConvertTo-Json
 
     try {

@@ -87,7 +87,7 @@ Describe 'Safe PAPI Tests' {
 
     ### Get-CustomBehaviors
     $Script:CustomBehavior = Get-CustomBehavior -BehaviorId $CustomBehaviors[0].behaviorId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-CustomBehaviors should not be null' {
+    it 'Get-CustomBehavior should not be null' {
         $CustomBehavior | Should -Not -BeNullOrEmpty
     }
 
@@ -186,7 +186,7 @@ Describe 'Safe PAPI Tests' {
 
     ### Set-PropertyRuleTree via pipeline
     $Script:Rules = $Rules | Set-PropertyRuleTree -PropertyName $TestPropertyName -PropertyVersion latest -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-PropertyRuleTree returns rules object' {
+    it 'Set-PropertyRuleTree returns rules object' {
         $Rules | Should -BeOfType PSCustomObject
         $Rules.rules | Should -Not -BeNullOrEmpty
     }
@@ -242,7 +242,7 @@ Describe 'Safe PAPI Tests' {
 
     ### Activate-Property
     $Script:Activation = Activate-Property -PropertyName $TestPropertyName -PropertyVersion latest -Network Staging -NotifyEmails "mail@example.com" -AcknowledgeAllWarnings -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-RuleFormats returns results' {
+    it 'Activate-Property returns activationlink' {
         $Activation.activationLink | Should -Not -BeNullOrEmpty
     }
 
@@ -289,5 +289,11 @@ Describe 'Unsafe PAPI Tests' {
     $Script:NewCPCode = New-CPCode -CPCodeName testCP -ProductId SPM -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-Property creates a property' {
         $NewCPCode.cpcodeLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### Deactivate-Property
+    $Script:Deactivation = Deactivate-Property -PropertyID 123456 -PropertyVersion 1 -Network Staging -NotifyEmails "mail@example.com" -AcknowledgeAllWarnings -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Deactivate-Property returns activationlink' {
+        $Deactivation.activationLink | Should -Not -BeNullOrEmpty
     }
 }

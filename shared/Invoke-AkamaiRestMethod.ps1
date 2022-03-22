@@ -312,7 +312,7 @@ function Invoke-AkamaiRestMethod {
                 }
             }
             catch {
-                throw $_.ErrorDetails
+                throw $_
             }
         }
         else {
@@ -338,7 +338,7 @@ function Invoke-AkamaiRestMethod {
                     }
                 }
                 else {
-                    throw $_.ErrorDetails
+                    throw $_
                 }
             }
         }

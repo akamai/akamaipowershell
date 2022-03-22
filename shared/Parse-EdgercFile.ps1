@@ -13,17 +13,19 @@ function Parse-EdgeRCFile{
     $Auth = @{}
     for($i = 0; $i -lt $EdgeRCContent.length; $i++){
         $line = $EdgeRCContent[$i]
-        if($line.contains("[") -and $line.contains("]")){
-            $SectionHeader = $Line.Substring($Line.indexOf('[')+1)
+        $SanitisedLine = $line.Replace(" ","")
+
+        if($SanitisedLine.contains("[") -and $SanitisedLine.contains("]")){
+            $SectionHeader = $SanitisedLine.Substring($SanitisedLine.indexOf('[')+1)
             $SectionHeader = $SectionHeader.SubString(0,$SectionHeader.IndexOf(']'))
             $Auth[$SectionHeader] = @{}
             $CurrentSection = $SectionHeader
         }
 
-        if($line.ToLower().StartsWith("client_token")) { $Auth[$CurrentSection]['ClientToken'] = $line.Replace(" ","").SubString($line.IndexOf("=")) }
-        if($line.ToLower().StartsWith("access_token")) { $Auth[$CurrentSection]['ClientAccessToken'] = $line.Replace(" ","").SubString($line.IndexOf("=")) }
-        if($line.ToLower().StartsWith("host"))         { $Auth[$CurrentSection]['Host'] = $line.Replace(" ","").SubString($line.IndexOf("=")) }
-        if($line.ToLower().StartsWith("client_secret")){ $Auth[$CurrentSection]['ClientSecret'] = $line.Replace(" ","").SubString($line.IndexOf("=")) }
+        if($SanitisedLine.ToLower().StartsWith("client_token")) { $Auth[$CurrentSection]['ClientToken'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitisedLine.ToLower().StartsWith("access_token")) { $Auth[$CurrentSection]['ClientAccessToken'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitisedLine.ToLower().StartsWith("host"))         { $Auth[$CurrentSection]['Host'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitisedLine.ToLower().StartsWith("client_secret")){ $Auth[$CurrentSection]['ClientSecret'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
     }
 
     # Validate auth contents

@@ -30,7 +30,7 @@ function Remove-NetstorageDirectory {
     }   
 
     try {
-        $Result = Invoke-AkamaiNSAPIRequest -Path $Path -Action $Action -Body $Body -AuthFile $Authfile -Section $Section
+        $Result = Invoke-AkamaiNSAPIRequest -Path $Path -Action $Action -Body $Body -AdditionalOptions $AdditionalOptions -AuthFile $Authfile -Section $Section
         return $Result
     }
     catch {

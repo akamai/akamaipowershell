@@ -15,26 +15,7 @@ function Invoke-AkamaiNSAPIRequest {
         throw "Error: Auth File $AuthFile not found"
     }
 
-    $Config = Get-Content $AuthFile
-    if("[$Section]" -notin $Config){
-        throw "Error: Config section [$Section] not found in $EdgeRCFile"
-    }
-
-    $ConfigIndex = [array]::indexof($Config,"[$Section]")
-    $SectionArray = $Config[$ConfigIndex..($ConfigIndex + 5)]
-    $SectionArray | ForEach-Object {
-        if($_.ToLower().StartsWith("key")) { $Key = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-        if($_.ToLower().StartsWith("id")) { $ID = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-        if($_.ToLower().StartsWith("group")) { $Group = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-        if($_.ToLower().StartsWith("host")){ $NSHost = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-        if($_.ToLower().StartsWith("cpcode")){ $CPCode = $_.Replace(" ","").SubString($_.IndexOf("=")) }
-    }
-
-    $NSHost = "https://$NSHost"
-
-    if(!$key -or !$ID -or !$Group -or !$NSHost -or !$CPCode){
-        throw "Error: Some necessary auth elements missing. Please check your auth file"
-    }
+    $Auth = Parse-NSAuthFile -AuthFile $AuthFile -Section $Section
 
     # Check for Proxy Env variable and use if present
     if($null -ne $ENV:https_proxy)
@@ -43,6 +24,7 @@ function Invoke-AkamaiNSAPIRequest {
     }
 
     #Prepend path with / and add CP Code
+    $CPCode = $Auth.$Section.cpcode
     if(!($Path.StartsWith("/"))) {
         $Path = "/$Path"
     }
@@ -88,13 +70,13 @@ function Invoke-AkamaiNSAPIRequest {
     # Generate X-Akamai-ACS-Auth-Data variable
     $Version = 5
     $EpochTime = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
-    $AuthDataHeader = "$Version, 0.0.0.0, 0.0.0.0, $EpochTime, $Nonce, $ID"
+    $AuthDataHeader = "$Version, 0.0.0.0, 0.0.0.0, $EpochTime, $Nonce, $($Auth.$Section.id)"
     $Headers['X-Akamai-ACS-Auth-Data'] = $AuthDataHeader
 
     # Create sign-string for encrypting, reuse shared Crypto
     $SignString = "$Path`nx-akamai-acs-action:$ActionHeader`n"
     $EncryptMessage = $AuthDataHeader + $SignString
-    $Signature = Crypto -secret $Key -message $EncryptMessage
+    $Signature = Crypto -secret $Auth.$Section.key -message $EncryptMessage
     $Headers['X-Akamai-ACS-Auth-Sign'] = $Signature
 
     # Determine HTTP Method from Action
@@ -115,7 +97,7 @@ function Invoke-AkamaiNSAPIRequest {
     }
 
     # Set ReqURL from NSAPI hostname and supplied path
-    $ReqURL = $NSHost + $Path
+    $ReqURL = "https://$($Auth.$Section.host)" + $Path
 
     # Do it.
     if ($Method -eq "PUT" -or $Method -eq "POST") {
