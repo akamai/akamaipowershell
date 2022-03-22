@@ -22,7 +22,7 @@ function New-CPSEnrollment
 
     $AdditionalHeaders = @{
         'accept' = 'application/vnd.akamai.cps.enrollment-status.v1+json'
-        'content-type' = 'application/vnd.akamai.cps.enrollment.v7+json'
+        'content-type' = 'application/vnd.akamai.cps.enrollment.v11+json'
     }
     $Path = "/cps/v2/enrollments?contractId=$ContractID&deploy-not-after=$DeployNotAfter&deploy-not-before=$DeployNotBefore&allowDuplicateCN=$AllowDuplicateCNString&accountSwitchKey=$AccountSwitchKey"
 

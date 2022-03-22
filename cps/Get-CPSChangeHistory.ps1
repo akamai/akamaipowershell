@@ -9,7 +9,7 @@ function Get-CPSChangeHistory
 
     $Path = "/cps/v2/enrollments/$EnrollmentID/history/changes?accountSwitchKey=$AccountSwitchKey"
     $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.change-history.v3+json'
+        'accept' = 'application/vnd.akamai.cps.change-history.v5+json'
     }
 
     try {

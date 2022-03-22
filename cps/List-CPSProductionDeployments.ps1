@@ -9,7 +9,7 @@ function List-CPSProductionDeployments
 
     $Path = "/cps/v2/enrollments/$EnrollmentID/deployments/production?accountSwitchKey=$AccountSwitchKey"
     $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.deployment.v6+json'
+        'accept' = 'application/vnd.akamai.cps.deployment.v7+json'
     }
 
     try {

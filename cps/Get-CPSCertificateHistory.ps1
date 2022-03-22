@@ -9,7 +9,7 @@ function Get-CPSCertificateHistory
 
     $Path = "/cps/v2/enrollments/$EnrollmentID/history/certificates?accountSwitchKey=$AccountSwitchKey"
     $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.certificate-history.v1+json'
+        'accept' = 'application/vnd.akamai.cps.certificate-history.v2+json'
     }
 
     try {
