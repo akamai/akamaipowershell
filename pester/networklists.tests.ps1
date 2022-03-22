@@ -73,5 +73,15 @@ Describe 'Safe Network Lists Tests' {
 }
 
 Describe 'Unsafe Network Lists Tests' {
-    
+    ### Activate-NetworkList
+    $Script:Activate = Activate-NetworkList -NetworkListID $NewList.uniqueId -Environment STAGING -Comments "Activating" -NotificationRecipients 'email@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Activate-NetworkList activates correctly' {
+        $Activate.activationStatus | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-NetworkListActivationStatus
+    $Script:Status = Get-NetworkListActivationStatus -NetworkListID $NewList.uniqueId -Environment STAGING -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-NetworkListActivationStatus returns status' {
+        $Status.activationStatus | Should -Not -BeNullOrEmpty
+    }
 }

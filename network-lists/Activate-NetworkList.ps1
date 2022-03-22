@@ -2,7 +2,7 @@ function Activate-NetworkList
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $NetworkListID,
-        [Parameter(Mandatory=$false)] [string] [ValidateSet('PRODUCTION','STAGING')] $Environment = 'PRODUCTION',
+        [Parameter(Mandatory=$true)]  [string] [ValidateSet('PRODUCTION','STAGING')] $Environment = 'PRODUCTION',
         [Parameter(Mandatory=$false)] [string] $Comments,
         [Parameter(Mandatory=$false)] [string] $NotificationRecipients,
         [Parameter(Mandatory=$false)] [string] $SiebelTicketID,
