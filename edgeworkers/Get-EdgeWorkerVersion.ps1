@@ -1,5 +1,6 @@
 function Get-EdgeWorkerVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
@@ -12,6 +13,9 @@ function Get-EdgeWorkerVersion
     if($Name){
         try{
             $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
+            if($EdgeWorker.count -gt 1){
+                throw "Found multiple EdgeWorkers with name $Name. Use -EdgeWorkerID to be more specific"
+            }
             $EdgeWorkerID = $EdgeWorker.edgeWorkerId
             if(!$EdgeWorkerID){
                 throw "EdgeWorker $Name not found"

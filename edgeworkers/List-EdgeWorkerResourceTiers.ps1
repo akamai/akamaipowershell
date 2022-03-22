@@ -1,17 +1,17 @@
-function Get-CloudletConditionalOrigin
+function List-EdgeWorkerResourceTiers
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $OriginID,
+        [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
-    
-    $Path = "/cloudlets/api/v2/origins/$OriginID`?accountSwitchKey=$AccountSwitchKey"
+
+    $Path = "/edgeworkers/v1/resource-tiers?contractId=$ContractID&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.resourceTiers
     }
     catch {
         throw $_.Exception

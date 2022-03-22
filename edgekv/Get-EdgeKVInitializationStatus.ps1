@@ -1,13 +1,12 @@
-function Get-CloudletConditionalOrigin
+function Get-EdgeKVInitializationStatus
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $OriginID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
-    
-    $Path = "/cloudlets/api/v2/origins/$OriginID`?accountSwitchKey=$AccountSwitchKey"
+
+    $Path = "/edgekv/v1/initialize?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

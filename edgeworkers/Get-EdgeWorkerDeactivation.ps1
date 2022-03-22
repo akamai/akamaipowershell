@@ -1,10 +1,10 @@
-function List-EdgeWorkerActivations
+function Get-EdgeWorkerDeactivation
 {
     [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $EdgeWorkerID,
-        [Parameter(Mandatory=$false)] [string] $Version,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
+        [Parameter(Mandatory=$true)]  [string] $DeactivationID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -26,11 +26,21 @@ function List-EdgeWorkerActivations
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations?version=$Version&accountSwitchKey=$AccountSwitchKey"
+    if($DeactivationID.ToLower() -eq "latest"){
+        try{
+            $Deactivations = List-EdgeWorkerDeactivations -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $DeactivationID = $Deactivations[0].deactivationId
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
+
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/deactivations/$DeactivationID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.activations
+        return $Result
     }
     catch {
         throw $_.Exception

@@ -50,31 +50,47 @@ Invoke-AkamaiRestMethod -Method GET -Path '/path/to/api?withParams=true' -EdgeRC
 .LINK
 developer.akamai.com
 #>
-function Invoke-AkamaiRestMethod
-{
+function Invoke-AkamaiRestMethod {
     param(
-        [Parameter(Mandatory=$false)] [ValidateSet("GET", "PUT", "POST", "DELETE","PATCH")] [string] $Method = "GET",
-        [Parameter(Mandatory=$true)]  [string] $Path,
-        [Parameter(Mandatory=$false)] $Body,
-        [Parameter(Mandatory=$false)] [string] $InputFile,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
-        [Parameter(Mandatory=$false)] [hashtable] $AdditionalHeaders,
-        [Parameter(Mandatory=$false)] [boolean] $Staging,
-        [Parameter(Mandatory=$false)] [string] $MaxBody = 131072,
-        [Parameter(Mandatory=$false)] [string] $ResponseHeadersVariable
+        [Parameter(Mandatory = $false)] [ValidateSet("GET", "PUT", "POST", "DELETE", "PATCH")] [string] $Method = "GET",
+        [Parameter(Mandatory = $true)]  [string] $Path,
+        [Parameter(Mandatory = $false)] $Body,
+        [Parameter(Mandatory = $false)] [string] $InputFile,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile = '~\.edgerc',
+        [Parameter(Mandatory = $false)] [string] $Section = 'default',
+        [Parameter(Mandatory = $false)] [hashtable] $AdditionalHeaders,
+        [Parameter(Mandatory = $false)] [boolean] $Staging,
+        [Parameter(Mandatory = $false)] [string] $MaxBody = 131072,
+        [Parameter(Mandatory = $false)] [string] $ResponseHeadersVariable
     )
 
-    ### Get .edgrc credentials
-    $Auth = Parse-EdgeRCFile -EdgeRCFile $EdgeRCFile -Section $Section
+    if ($Script:AkamaiSession -ne $null -and $Script:AkamaiSession.Auth.$Section -ne $null) {
+        #Use the script session auth instead of a file
+        $Auth = $Script:AkamaiSession.Auth
+        $authSource = "cached Akamai session credential" #Used in error messages
+    }
+    else {
+        ### Get .edgrc credentials
+        $Auth = Parse-EdgeRCFile -EdgeRCFile $EdgeRCFile -Section $Section
+        $authSource = "$EdgeRCFile file" #Used in error messages
+    }
+
+    # Validate auth contents
+    if ($null -eq $Auth.$Section) {
+        throw "Error: Config section [$Section] not found in the $authSource"
+    }
+    if ($null -eq $Auth.$Section.ClientToken -or $null -eq $Auth.$Section.ClientAccessToken -or $null -eq $Auth.$Section.ClientSecret -or $null -eq $Auth.$Section.Host) {
+        throw "Error: Some necessary auth elements missing from section $Section. Please check the $authSource"
+    }
+   Write-Debug "Obtained credentials from section '$Section'"
 
     # Set IM staging host if switch present
-    if($Auth.$Section.Host.Contains('.imaging.') -and $Staging) {
-        $Auth.$Section.Host = $Auth.$Section.Host.Replace(".imaging.",".imaging-staging.")
+    if ($Auth.$Section.Host.Contains('.imaging.') -and $Staging) {
+        $Auth.$Section.Host = $Auth.$Section.Host.Replace(".imaging.", ".imaging-staging.")
     }
 
     # Sanitise query string
-    if($Path.Contains("?")){
+    if ($Path.Contains("?")) {
         $PathElements = $Path.Split("?")
         $PathOnly = $PathElements[0]
         $QueryString = $PathElements[1]
@@ -82,10 +98,10 @@ function Invoke-AkamaiRestMethod
         Write-Debug "Original Query = $QueryString"
         Write-Debug "Sanitised Query = $SanitisedQuery"
         # Reconstruct Path
-        if($SanitisedQuery){
+        if ($SanitisedQuery) {
             $Path = $PathOnly + "?" + $SanitisedQuery
         }
-        else{
+        else {
             $Path = $PathOnly
         }
     }
@@ -94,8 +110,7 @@ function Invoke-AkamaiRestMethod
     $ReqURL = "https://" + $Auth.$Section.Host + $Path
 
     # ReqURL Verification
-    If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net")
-    {
+    If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net") {
         throw "Error: Invalid Request URI"
     }
     Write-Debug "Request URL = $ReqURL"
@@ -114,41 +129,42 @@ function Invoke-AkamaiRestMethod
     $SignatureData += $Auth.$Section.Host + "`t" + $Path
 
     # Add body to signature. Truncate if body is greater than max-body (Akamai default is 131072). PUT Method does not require adding to signature.
-    if($Method -eq "POST"){
-        if($Body)
-        {
+    if ($Method -eq "POST") {
+        if ($Body) {
             $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
-            if($Body.Length -gt $MaxBody){
-                $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body.Substring(0,$MaxBody))))
+            if ($Body.Length -gt $MaxBody) {
+                $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body.Substring(0, $MaxBody))))
             }
-            else{
+            else {
                 $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash([System.Text.Encoding]::ASCII.GetBytes($Body)))
             }
 
             $SignatureData += "`t`t" + $Body_Hash + "`t"
         }
-        elseif($InputFile)
-        {
+        elseif ($InputFile) {
             $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
-            $Bytes = Get-Content -AsByteStream $InputFile
+            if($PSVersionTable.PSVersion.Major -le 5) {
+                $Bytes = Get-Content $InputFile -Encoding Byte
+            }
+            else{
+                $Bytes = Get-Content $InputFile -AsByteStream
+            }
             $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash($Bytes))
             $SignatureData += "`t`t" + $Body_Hash + "`t"
             Write-Debug "Signature generated from input file $InputFile"
         }
-        else
-        {
+        else {
             $SignatureData += "`t`t`t"
         }
     }
-    else
-    {
+    else {
         $SignatureData += "`t`t`t"
     }
 
     $SignatureData += "EG1-HMAC-SHA256 "
     $SignatureData += "client_token=" + $Auth.$Section.ClientToken + ";"
     $SignatureData += "access_token=" + $Auth.$Section.ClientAccessToken + ";"
-    $SignatureData += "timestamp=" + $TimeStamp  + ";"
+    $SignatureData += "timestamp=" + $TimeStamp + ";"
     $SignatureData += "nonce=" + $Nonce + ";"
 
     Write-Debug "SignatureData = $SignatureData"
@@ -185,8 +201,7 @@ function Invoke-AkamaiRestMethod
     $Headers.Add('User-Agent', $UserAgent)
 
     # Add additional headers
-    if($AdditionalHeaders)
-    {
+    if ($AdditionalHeaders) {
         $AdditionalHeaders.Keys | foreach {
             $Headers[$_] = $AdditionalHeaders[$_]
         }
@@ -196,11 +211,10 @@ function Invoke-AkamaiRestMethod
     $ContentType = $Headers['Content-Type']
 
     # Add additional headers if POSTing or PUTing
-    If ($Body)
-    {
-      # turn off the "Expect: 100 Continue" header
-      # as it's not supported on the Akamai side.
-      [System.Net.ServicePointManager]::Expect100Continue = $false
+    If ($Body) {
+        # turn off the "Expect: 100 Continue" header
+        # as it's not supported on the Akamai side.
+        [System.Net.ServicePointManager]::Expect100Continue = $false
     }
 
     # Set TLS version to 1.2
@@ -208,25 +222,24 @@ function Invoke-AkamaiRestMethod
 
 
     # Check for Proxy Env variable and use if present
-    if($null -ne $ENV:https_proxy)
-    {
+    if ($null -ne $ENV:https_proxy) {
         $UseProxy = $true
     }
 
     # Differentiate on PS 5 and later as PS 5's Invoke-RestMethod doesn't behave the same as the later versions
-    if($PSVersionTable.PSVersion.Major -le 5){ 
+    if ($PSVersionTable.PSVersion.Major -le 5) { 
         if ($Method -eq "PUT" -or $Method -eq "POST" -or $Method -eq "PATCH") {
             try {
-                if($Body){
-                    if($UseProxy){
+                if ($Body) {
+                    if ($UseProxy) {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body -Proxy $ENV:https_proxy
                     }
                     else {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body
                     }
                 }
-                elseif($InputFile){
-                    if($UseProxy){
+                elseif ($InputFile) {
+                    if ($UseProxy) {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -Proxy $ENV:https_proxy
                     }
                     else {
@@ -234,8 +247,8 @@ function Invoke-AkamaiRestMethod
                     }
                     
                 }
-                else{
-                    if($UseProxy){
+                else {
+                    if ($UseProxy) {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Proxy $ENV:https_proxy
                     }
                     else {
@@ -247,9 +260,10 @@ function Invoke-AkamaiRestMethod
                 throw $_
             }
         }
-        else { # GET requests typically
-            try{
-                if($UseProxy) {
+        else {
+            # GET requests typically
+            try {
+                if ($UseProxy) {
                     $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -MaximumRedirection 0 -ErrorAction SilentlyContinue -Proxy $ENV:https_proxy
                 }
                 else {
@@ -257,22 +271,22 @@ function Invoke-AkamaiRestMethod
                 }
     
                 # Redirects aren't well handled due to signatures needing regenerated
-                if($null -ne ($Response.PSObject.members | where {$_.Name -eq "redirectLink"}) ){
+                if ($null -ne ($Response.PSObject.members | where { $_.Name -eq "redirectLink" }) ) {
                     Write-Debug "Redirecting to $($Response.redirectLink)"
                     $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
                 }
             }
-            catch{
+            catch {
                 throw $_
             }
         }
     }
     # PS 6+, the .net versions
-    else{
+    else {
         if ($Method -eq "PUT" -or $Method -eq "POST" -or $Method -eq "PATCH") {
-            try{
-                if($Body){
-                    if($UseProxy){
+            try {
+                if ($Body) {
+                    if ($UseProxy) {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
                     }
                     else {
@@ -280,30 +294,31 @@ function Invoke-AkamaiRestMethod
                     }
                     
                 }
-                elseif($InputFile) {
-                    if($UseProxy){
+                elseif ($InputFile) {
+                    if ($UseProxy) {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
                     }
-                    else{
+                    else {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                 }
-                else{
-                    if($UseProxy){
+                else {
+                    if ($UseProxy) {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
                     }
-                    else{
+                    else {
                         $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                 }
             }
-            catch{
-                throw $_.ErrorDetails
+            catch {
+                throw $_
             }
         }
-        else { # GET requests typically
+        else {
+            # GET requests typically
             try {
-                if($UseProxy) {
+                if ($UseProxy) {
                     $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
                 }
                 else {
@@ -312,8 +327,7 @@ function Invoke-AkamaiRestMethod
             }
             catch {
                 # Redirects aren't well handled due to signatures needing regenerated
-                if($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302)
-                {
+                if ($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302) {
                     try {
                         $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
                         Write-Debug "Redirecting to $NewPath"
@@ -324,13 +338,13 @@ function Invoke-AkamaiRestMethod
                     }
                 }
                 else {
-                    throw $_.ErrorDetails
+                    throw $_
                 }
             }
         }
         
         # Set ResponseHeadersVariable to be passed back to requesting function
-        if($ResponseHeadersVariable){
+        if ($ResponseHeadersVariable) {
             Set-Variable -name $ResponseHeadersVariable -Value (Get-Variable -Name $ResponseHeadersVariable -ValueOnly) -Scope Script
         }
     }

@@ -55,7 +55,12 @@ Function Set-PropertyRuleTree
 
         # Add notes if required
         if($VersionNotes){
-            $BodyObj = $Body | ConvertFrom-Json -Depth 100
+            if ($PSVersionTable.PSVersion.Major -le 5) { 
+                $BodyObj = $Body | ConvertFrom-Json
+            }
+            else{
+                $BodyObj = $Body | ConvertFrom-Json -Depth 100
+            }
             if($BodyObj.comments){
                 $BodyObj.comments = $VersionNotes
             }

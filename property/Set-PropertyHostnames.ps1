@@ -62,7 +62,7 @@ function Set-PropertyHostnames
 
     end{
         if($PSCmdlet.ParameterSetName -eq 'pipeline'){
-            $Body = $CombinedHostnameArray | ConvertTo-Json -Depth 100 -AsArray
+            $Body = ConvertTo-Json -Depth 100 $CombinedHostnameArray
         }
         Write-Debug "Body = $Body"
 

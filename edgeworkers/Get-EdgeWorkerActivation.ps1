@@ -1,5 +1,6 @@
 function Get-EdgeWorkerActivation
 {
+    [CmdletBinding(DefaultParameterSetName = 'name')]
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
@@ -12,10 +13,23 @@ function Get-EdgeWorkerActivation
     if($Name){
         try{
             $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
+            if($EdgeWorker.count -gt 1){
+                throw "Found multiple EdgeWorkers with name $Name. Use -EdgeWorkerID to be more specific"
+            }
             $EdgeWorkerID = $EdgeWorker.edgeWorkerId
             if(!$EdgeWorkerID){
                 throw "EdgeWorker $Name not found"
             }
+        }
+        catch{
+            throw $_.Exception
+        }
+    }
+
+    if($ActivationID.ToLower() -eq "latest"){
+        try{
+            $Activations = List-EdgeWorkerActivations -EdgeWorkerID $EdgeWorkerID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            $ActivationID = $Activations[0].activationId
         }
         catch{
             throw $_.Exception
