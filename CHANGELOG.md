@@ -1,6 +1,21 @@
 # AkamaiPowershell PowerShell Module
 # Changelog
 
+## 1.7.0 - (24/03/2022)
+
+### Signing, testing and general improvements
+- Code is now digitally signed, allowing use on clients with ExecutionPolicy of RemoteSigned or AllSigned
+- Pester testing added for Property, CPS, NSAPI, EdgeWorkers, EdgeKV & NetworkLists 
+- CPS request formats are now updated to the latest versions
+- New options for creation and editing of Network Lists
+- Overhaul of Nestorage auth file parsing to support spacing, along with fixes to NS commands
+- New endpoints to bring EdgeKV API support up to date, particularly in access tokens
+- New endpoints to bring EdgeWorker API support up to date, including auth token endpoint support
+- Added spacing support for .edgerc files
+- Added Deactivate-Property function
+- Updating PS 6+ thrown errors to throw entire error, rather than ErrorDetails sub-member. Change already made for PS 5
+- Fixing incompatibility with PS 5 for Set-PropertyRuleTree, Set-PropertyHostnames, Merge-PropertyRuleTemplates and Invoke-AkamaiRestMethod
+
 ## 1.6.2 - (14/12/2021)
 
 ### Edgeworker improvements
