@@ -35,7 +35,7 @@ function Set-AppSecCustomRule
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

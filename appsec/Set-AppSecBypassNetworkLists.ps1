@@ -51,7 +51,7 @@ function Set-AppSecBypasNetworkLists
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 }

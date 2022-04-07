@@ -38,7 +38,7 @@ function List-AppSecPolicies
         return $Result.policies
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

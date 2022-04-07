@@ -40,7 +40,7 @@ function Set-AppSecRatePolicy
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

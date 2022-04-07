@@ -45,7 +45,7 @@ function Set-AppSecPolicyIPGeoFirewall
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

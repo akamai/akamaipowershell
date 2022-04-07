@@ -45,7 +45,7 @@ function Set-AppSecPolicySlowPostSettings
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

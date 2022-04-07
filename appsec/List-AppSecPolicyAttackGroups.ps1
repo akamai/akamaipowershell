@@ -36,7 +36,7 @@ function List-AppSecPolicyAttackGroups
         return $Result.attackGroupActions
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

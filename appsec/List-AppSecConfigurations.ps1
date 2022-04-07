@@ -13,7 +13,7 @@ function List-AppSecConfigurations
         return $Result.configurations
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

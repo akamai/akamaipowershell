@@ -45,7 +45,7 @@ function Set-AppSecPolicyPenaltyBox
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

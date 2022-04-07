@@ -30,6 +30,6 @@ function List-AppSecReputationProfiles
         return $Result.ReputationProfiles
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }

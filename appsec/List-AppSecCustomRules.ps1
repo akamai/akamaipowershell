@@ -25,7 +25,7 @@ function List-AppSecCustomRules
         return $Result.customRules
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

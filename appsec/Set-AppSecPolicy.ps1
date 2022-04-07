@@ -43,6 +43,6 @@ function Set-AppSecPolicy
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }

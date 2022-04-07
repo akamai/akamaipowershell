@@ -40,7 +40,7 @@ function List-AppSecMatchTargets
         return $Result.matchTargets
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

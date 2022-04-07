@@ -37,7 +37,7 @@ function Get-AppSecPolicyReputationProfileAction
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

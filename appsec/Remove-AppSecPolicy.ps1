@@ -37,6 +37,6 @@ function Remove-AppSecPolicy
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
