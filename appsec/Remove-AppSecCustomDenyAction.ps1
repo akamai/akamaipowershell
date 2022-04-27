@@ -1,10 +1,10 @@
-function Set-AppSecConfiguration
+function Remove-AppSecCustomDenyAction
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
-        [Parameter(Mandatory=$true)]  [string] $NewName,
-        [Parameter(Mandatory=$true)]  [string] $Description,
+        [Parameter(Mandatory=$true)]  [string] $VersionNumber,
+        [Parameter(Mandatory=$true)]  [string] $CustomDenyID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -20,16 +20,14 @@ function Set-AppSecConfiguration
         }
     }
 
-    $BodyObj = @{
-        name = $NewName
-        description = $Description
+    if($VersionNumber.ToLower() -eq 'latest'){
+        $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
     }
-    $Body = $BodyObj | ConvertTo-Json
 
-    $Path = "/appsec/v1/configs/$ConfigID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-deny/$CustomDenyID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
