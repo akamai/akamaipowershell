@@ -1,4 +1,4 @@
-function List-ApiKeyCollections
+function List-APIKeyCollections
 {
     Param(
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',

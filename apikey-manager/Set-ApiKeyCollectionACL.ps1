@@ -1,9 +1,9 @@
-function Set-ApiKeyCollectionACL
+function Set-APIKeyCollectionACL
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $CollectionID,
-        [Parameter(Mandatory=$false,ParameterSetName='pipeline',ValueFromPipeline=$true)] [string[]] $ACL,
-        [Parameter(Mandatory=$false,ParameterSetName='body',ValueFromPipeline=$true)] [string] $Body,
+        [Parameter(Mandatory=$true)] [string] $CollectionID,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [string[]] $ACL,
+        [Parameter(Mandatory=$true,ParameterSetName='body',ValueFromPipeline=$true)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
