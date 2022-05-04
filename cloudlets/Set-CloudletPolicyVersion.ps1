@@ -50,7 +50,7 @@ function Set-CloudletPolicyVersion
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

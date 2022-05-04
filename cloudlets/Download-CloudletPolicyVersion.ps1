@@ -41,7 +41,7 @@ function Download-CloudletPolicyVersion
         return
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

@@ -21,7 +21,7 @@ function Get-CloudletPolicyVersionRule
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block
