@@ -22,7 +22,7 @@ function New-APIKeyCollection
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

@@ -14,6 +14,6 @@ function Get-ApiKeyCollection
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
