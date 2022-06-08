@@ -20,7 +20,7 @@ function Set-NSUploadAccount
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 }

@@ -13,7 +13,7 @@ function List-NSUploadAccounts
         return $Result.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block
