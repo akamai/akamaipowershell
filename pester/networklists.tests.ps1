@@ -3,7 +3,7 @@ Import-Module $PSScriptRoot\..\AkamaiPowershell.psm1 -DisableNameChecking -Force
 $Script:EdgeRCFile = $env:PesterEdgeRCFile
 $Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
 $Script:Section = 'default'
-$Script:TestGroupID = 131831
+$Script:TestGroupID = 209759
 $Script:TestContract = '1-1NC95D'
 $Script:TestListName = 'akamaipowershell-testing'
 $Script:TestElement = '1.1.1.1'

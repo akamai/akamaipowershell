@@ -31,7 +31,7 @@ function New-AppSecCustomRule
     
         try {
             $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
-            return $Result.configurations
+            return $Result
         }
         catch {
             throw $_ 
