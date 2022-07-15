@@ -1,4 +1,4 @@
-function Restore-APIRevokedKeys
+function Restore-APIKeys
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $Keys,
