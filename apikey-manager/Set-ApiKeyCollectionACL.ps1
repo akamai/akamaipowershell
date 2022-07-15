@@ -13,7 +13,7 @@ function Set-APIKeyCollectionACL
 
     process {
         if($ACL){
-            $Body = $ACL | ConvertTo-Json
+            $Body = ConvertTo-Json $ACL -Depth 100
         }
 
         $Path = "/apikey-manager-api/v1/collections/$CollectionID/acl?accountSwitchKey=$AccountSwitchKey"
@@ -28,5 +28,4 @@ function Set-APIKeyCollectionACL
     }
 
     end {}
-
 }
