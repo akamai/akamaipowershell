@@ -1,5 +1,6 @@
 function Activate-CloudletLoadBalancingVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'attributes')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $OriginID,
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [ValidateSet('STAGING','PRODUCTION')] [string] $Network,

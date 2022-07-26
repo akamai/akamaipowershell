@@ -1,6 +1,5 @@
 function List-CloudletPolicies
 {
-    [CmdletBinding(DefaultParameterSetName = 'all')]
     Param(
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [switch] $IncludeDeleted,

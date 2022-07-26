@@ -1,23 +1,24 @@
-function New-CloudletPolicy
+function New-SharedCloudletPolicy
 {
+    [CmdletBinding(DefaultParameterSetName = 'attributes')]
     Param(
-        [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [string] $Name,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $Description,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [int]    $GroupID,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true) ] [int]    $CloudletID,
-        [Parameter(ParameterSetName='postbody', Mandatory=$false)]   [string] $Body,
+        [Parameter(Mandatory=$true,ParameterSetName='attributes') ] [string] $Name,
+        [Parameter(Mandatory=$false,ParameterSetName='attributes')] [string] $Description,
+        [Parameter(Mandatory=$true,ParameterSetName='attributes') ] [int]    $GroupID,
+        [Parameter(Mandatory=$true,ParameterSetName='attributes') ] [string] [ValidateSet('ER','FR','AS','VP2')] $CloudletType,
+        [Parameter(Mandatory=$true,ParameterSetName='postbody')]    [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/api/v2/policies?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/v3/policies?accountSwitchKey=$AccountSwitchKey"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
         $BodyObj = @{ 
             name = $Name
-            cloudletId = $CloudletID
+            cloudletType = $CloudletType
             groupId = $GroupID
             description = $Description
             policyType = 'SHARED'

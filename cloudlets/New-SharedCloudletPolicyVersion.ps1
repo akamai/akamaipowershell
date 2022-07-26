@@ -1,11 +1,12 @@
 function New-SharedCloudletPolicyVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'pipeline')]
     Param(
         [Parameter(Mandatory=$true) ] [string] $PolicyID,
-        [Parameter(ParameterSetName='pipeline', ValueFromPipeline=$True, Mandatory=$true)]  [Object] $Policy,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $Description,
-        [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [object[]] $MatchRules,
-        [Parameter(ParameterSetName='postbody', Mandatory=$false)]   [string] $Body,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline', ValueFromPipeline=$True)]  [Object] $Policy,
+        [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [string] $Description,
+        [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [object[]] $MatchRules,
+        [Parameter(Mandatory=$true,ParameterSetName='postbody')]    [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

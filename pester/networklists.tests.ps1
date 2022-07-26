@@ -3,7 +3,7 @@ Import-Module $PSScriptRoot\..\AkamaiPowershell.psm1 -DisableNameChecking -Force
 $Script:EdgeRCFile = $env:PesterEdgeRCFile
 $Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
 $Script:Section = 'default'
-$Script:TestGroupID = 131831
+$Script:TestGroupID = 209759
 $Script:TestContract = '1-1NC95D'
 $Script:TestListName = 'akamaipowershell-testing'
 $Script:TestElement = '1.1.1.1'
@@ -14,7 +14,7 @@ Describe 'Safe Network Lists Tests' {
     BeforeDiscovery {
         ### New-NetworkList
         $Script:NewList = New-NetworkList -Name $TestListName -Type IP -Description "testing" -ContractId $TestContract -GroupID $TestGroup -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'List-NetworkLists returns a list of lists' {
+        it 'New-NetworkList creates a list successfully' {
             $NewList.name | Should -Be $TestListName
         }
 

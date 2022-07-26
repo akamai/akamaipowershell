@@ -1,6 +1,5 @@
 function List-SharedCloudletPolicies
 {
-    [CmdletBinding(DefaultParameterSetName = 'all')]
     Param(
         [Parameter(Mandatory=$false)] [int]    $Size = 1000,
         [Parameter(Mandatory=$false)] [string] $Page,

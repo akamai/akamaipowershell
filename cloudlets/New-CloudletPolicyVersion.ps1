@@ -1,5 +1,6 @@
 function New-CloudletPolicyVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'attributes')]
     Param(
         [Parameter(Mandatory=$true) ] [string] $PolicyID,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $Description,

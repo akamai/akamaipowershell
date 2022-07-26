@@ -10,7 +10,7 @@ function Activate-SharedCloudletPolicy
     )
 
     if($Version -eq 'latest'){
-        $Version = (List-SharedCloudletPolicyVersions -PolicyID $PolicyID -Pagesize 10 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey)[0].Version
+        $Version = (List-SharedCloudletPolicyVersions -PolicyID $PolicyID -Size 10 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey)[0].Version
         Write-Debug "Found latest version = $Version"
     }
 
@@ -25,7 +25,7 @@ function Activate-SharedCloudletPolicy
     $Body = ConvertTo-Json $BodyObj -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path- Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
