@@ -7,7 +7,7 @@ function Get-DataStreamHistory
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v1/log/streams/$StreamID/history?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v2/log/streams/$StreamID/history?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
@@ -17,3 +17,5 @@ function Get-DataStreamHistory
         throw $_
     }
 }
+
+Set-Alias -Name Get-DS2StreamHistory -Value Get-DataStreamHistory

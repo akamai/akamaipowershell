@@ -7,7 +7,7 @@ function Remove-DataStream
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v1/log/streams/$StreamID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v2/log/streams/$StreamID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
@@ -17,3 +17,5 @@ function Remove-DataStream
         throw $_
     }
 }
+
+Set-Alias -Name Remove-DS2Stream -Value Remove-DataStream

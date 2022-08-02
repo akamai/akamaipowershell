@@ -16,3 +16,5 @@ function List-DatastreamConnectors
         throw $_
     }
 }
+
+Set-Alias -Name List-DS2Connectors -Value List-DatastreamConnectors

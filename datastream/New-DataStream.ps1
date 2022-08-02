@@ -11,7 +11,7 @@ function New-DataStream
     begin{}
 
     process{
-        $Path = "/datastream-config-api/v1/log/streams?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/datastream-config-api/v2/log/streams?accountSwitchKey=$AccountSwitchKey"
 
         if($Stream){
             $Body = $Stream | ConvertTo-Json -Depth 100
@@ -28,3 +28,5 @@ function New-DataStream
 
     end{}
 }
+
+Set-Alias -Name New-DS2Stream -Value New-DataStream

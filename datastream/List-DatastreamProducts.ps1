@@ -16,3 +16,5 @@ function List-DatastreamProducts
         throw $_
     }
 }
+
+Set-Alias -Name List-DS2Products -Value List-DatastreamProducts
