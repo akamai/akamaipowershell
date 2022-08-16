@@ -2,8 +2,8 @@ function Set-APIThrottlingCounter
 {
     Param(
         [Parameter(Mandatory=$true)] [string] $CounterID,
-        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [string] $Counter,
-        [Parameter(Mandatory=$true,ParameterSetName='body',ValueFromPipeline=$true)] [string] $Body,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $Counter,
+        [Parameter(Mandatory=$true,ParameterSetName='body')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

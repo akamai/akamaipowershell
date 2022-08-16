@@ -1,16 +1,26 @@
-function Reset-APIKeyQuota
+function Import-APIKey
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $Keys,
+        [Parameter(Mandatory=$true)]  [int]    $CollectionID,
+        [Parameter(Mandatory=$true)]  [string] $Content,
+        [Parameter(Mandatory=$true)]  [string] $Filename,
+        [Parameter(Mandatory=$false)] [switch] $Size,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/keys/quota-reset?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/keys/import?accountSwitchKey=$AccountSwitchKey"
     $BodyObj = @{
-        keys = [int[]] ($Keys -split ',')
+        collectionId = $CollectionID
+        content = $Content
+        name = $Filename
     }
+
+    if($Size){
+        $BodyObj['size'] = $Size
+    }
+
     $Body = ConvertTo-Json $BodyObj
 
     try {

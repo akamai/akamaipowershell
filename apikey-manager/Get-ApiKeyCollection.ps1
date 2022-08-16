@@ -1,7 +1,7 @@
 function Get-ApiKeyCollection
 {
     Param(
-        [Parameter(Mandatory=$true)] [string] $CollectionID,
+        [Parameter(Mandatory=$true)]  [string] $CollectionID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

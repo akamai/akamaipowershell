@@ -1,4 +1,4 @@
-function Restore-APIKeys
+function Revoke-APIKey
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $Keys,
@@ -7,9 +7,9 @@ function Restore-APIKeys
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/keys/restore?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/keys/revoke?accountSwitchKey=$AccountSwitchKey"
     $BodyObj = @{
-        keys = ($Keys -split ',')
+        keys = [int[]] ($Keys -split ',')
     }
     $Body = ConvertTo-Json $BodyObj
 

@@ -7,7 +7,7 @@ function Remove-APIThrottlingCounter
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/counters?accountSwitchKey=$AccountSwitchKey"
+$Path = "/apikey-manager-api/v1/counters/$CounterID`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

@@ -1,8 +1,8 @@
-function New-APIKey
+function New-APIKeys
 {
     Param(
         [Parameter(Mandatory=$true)]  [int]    $CollectionID,
-        [Parameter(Mandatory=$true)]  [string] $Value,
+        [Parameter(Mandatory=$true)]  [int]    $Count,
         [Parameter(Mandatory=$false)] [string] $Description,
         [Parameter(Mandatory=$false)] [switch] $IncrementLabel,
         [Parameter(Mandatory=$false)] [string] $Label,
@@ -13,10 +13,10 @@ function New-APIKey
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/keys?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/keys/generate?accountSwitchKey=$AccountSwitchKey"
     $BodyObj = @{
         collectionId = $CollectionID
-        value = $Value
+        count = $Count
         incrementLabel = $IncrementLabel.IsPresent
     }
 

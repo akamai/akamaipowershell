@@ -12,7 +12,7 @@ function New-APIKeyCollection
     
     process{
         if($Collection){
-            $Body = $Collection | ConvertTo-Json -Depth 100
+            $Body = ConvertTo-Json -Depth 100 $Collection
         }
 
         $Path = "/apikey-manager-api/v1/collections?accountSwitchKey=$AccountSwitchKey"

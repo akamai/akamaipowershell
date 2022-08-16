@@ -2,8 +2,8 @@ function Set-APIKey
 {
     Param(
         [Parameter(Mandatory=$true)] [string] $KeyID,
-        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [string] $Key,
-        [Parameter(Mandatory=$true,ParameterSetName='body',ValueFromPipeline=$true)] [string] $Body,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $Key,
+        [Parameter(Mandatory=$true,ParameterSetName='body')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
