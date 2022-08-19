@@ -13,6 +13,8 @@ function Set-AppSecPolicyReputationProfileAction
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
+    Write-Host -ForegroundColor Yellow "WARNING: This cmdlet is deprecated and will be removed in a future release. Use Set-AppSecPolicyReputationProfile going forward"
+
     if($ConfigName){
         $Config = List-AppSecConfigurations -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.name -eq $ConfigName}
         if($Config){

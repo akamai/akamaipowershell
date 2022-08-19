@@ -4,8 +4,8 @@ function New-AppSecReputationProfile
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [object] $ReputationProfile,
-        [Parameter(Mandatory=$true,ParameterSetName='body')]  [object] $Body,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $ReputationProfile,
+        [Parameter(Mandatory=$false)] [object] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

@@ -1,4 +1,4 @@
-function Get-AppSecConfigurationVersionNotes
+function Get-AppSecVersionNotes
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
@@ -27,7 +27,7 @@ function Get-AppSecConfigurationVersionNotes
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.notes
     }
     catch {
         throw $_ 

@@ -1,11 +1,9 @@
-function New-AppSecRatePolicy
+function List-AppSecHostnameOverlaps
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
-        [Parameter(Mandatory=$true)]  [int]    $VersionNumber,
-        [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $Policy,
-        [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -21,15 +19,15 @@ function New-AppSecRatePolicy
         }
     }
 
-    if($Policy){
-        $Body = ConvertTo-Json -Depth 100 $Policy
+    if($VersionNumber.ToLower() -eq 'latest'){
+        $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/rate-policies?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/hostname-coverage/overlapping?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        return $Result.overLappingList
     }
     catch {
         throw $_ 

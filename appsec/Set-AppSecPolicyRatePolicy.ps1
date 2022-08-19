@@ -1,4 +1,4 @@
-function Set-AppSecPolicyAllAPIRequestConstraints
+function Set-AppSecPolicyRatePolicy
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
@@ -6,13 +6,13 @@ function Set-AppSecPolicyAllAPIRequestConstraints
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
-        [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $Action,
+        [Parameter(Mandatory=$true)]  [int]    $RatePolicyID,
+        [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $IPv4Action,
+        [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $IPv6Action,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
-
-    Write-Warning "This function will be deprecated in a future release. Please use Set-AppSecPolicyAPIRequestConstraints without an ApiID parameter for the same effect"
 
     if($ConfigName){
         $Config = List-AppSecConfigurations -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.name -eq $ConfigName}
@@ -28,18 +28,24 @@ function Set-AppSecPolicyAllAPIRequestConstraints
         $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
     }
 
-    $BodyObj = @{
-        action = $Action
+    if($PolicyName){
+        $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
     }
-    $Body = ConvertTo-Json $BodyObj
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/api-request-constraints?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/rate-policies/$RatePolicyID`?accountSwitchKey=$AccountSwitchKey"
+
+    $BodyObj = @{
+        ipv4Action = $IPv4Action
+        ipv6Action = $IPv6Action
+    }
+    $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
-        throw $_
+        throw $_ 
     }
+
 }

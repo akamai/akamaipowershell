@@ -5,8 +5,8 @@ function Set-AppSecCustomDenyAction
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [string] $CustomDenyID,
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  [object] $CustomDenyAction,
-        [Parameter(Mandatory=$true)]  [string] $Body,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $CustomDenyAction,
+        [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey

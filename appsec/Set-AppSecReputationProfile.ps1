@@ -5,8 +5,8 @@ function Set-AppSecReputationProfile
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [string] $ReputationProfileID,
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  [object] $ReputationProfile,
-        [Parameter(Mandatory=$true)]  [object] $Body,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $ReputationProfile,
+        [Parameter(Mandatory=$false)] [object] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -36,7 +36,7 @@ function Set-AppSecReputationProfile
         }
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
             return $Result
         }
         catch {
