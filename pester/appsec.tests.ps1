@@ -427,11 +427,6 @@ Describe 'Safe AppSec Tests' {
         $SetReputationProfileByBody.id | Should -Be $NewReputationProfileByBody.id
     }
 
-    ### Remove-AppSecReputationProfile
-    it 'Remove-AppSecReputationProfile completes successfully' {
-        { Remove-AppSecReputationProfile -ConfigID $NewConfig.configId -VersionNumber 1 -ReputationProfileID $NewReputationProfileByBody.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
-    }
-
     #************************************************#
     #                    Advanced                    #
     #************************************************#
@@ -597,6 +592,71 @@ Describe 'Safe AppSec Tests' {
     }
 
     #************************************************#
+    #               Reputation Analysis              #
+    #************************************************#
+
+    ### Get-AppSecPolicyReputationAnalysis
+    $Script:ReputationAnalysis = Get-AppSecPolicyReputationAnalysis -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyReputationAnalysis returns the correct data' {
+        $ReputationAnalysis.forwardToHTTPHeader | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyReputationAnalysis by pipeline
+    $Script:SetReputationAnalysisByPipeline = ($ReputationAnalysis | Set-AppSecPolicyReputationAnalysis -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-AppSecPolicyReputationAnalysis by pipeline updates correctly' {
+        $SetReputationAnalysisByPipeline.forwardToHTTPHeader | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyReputationAnalysis by body
+    $Script:SetReputationAnalysisByBody = Set-AppSecPolicyReputationAnalysis -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Body (ConvertTo-Json -Depth 10 $ReputationAnalysis) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyReputationAnalysis by body updates correctly' {
+        $SetReputationAnalysisByBody.forwardToHTTPHeader | Should -Not -BeNullOrEmpty
+    }
+
+    #************************************************#
+    #            Reputation Profile Actions          #
+    #************************************************#
+
+    ### List-AppSecPolicyReputationProfiles
+    $Script:ReputationProfileActions = List-AppSecPolicyReputationProfiles -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-AppSecPolicyReputationProfiles returns a list' {
+        $ReputationProfileActions.count | Should -BeGreaterThan 0
+    }
+
+    ### Get-AppSecPolicyReputationProfile
+    $Script:ReputationProfileAction = Get-AppSecPolicyReputationProfile -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -ReputationProfileID $ReputationProfileActions[0].id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyReputationProfile returns a list' {
+        $ReputationProfileAction.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyReputationProfile
+    $Script:SetReputationProfileAction = Set-AppSecPolicyReputationProfile -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -ReputationProfileID $ReputationProfileActions[0].id -Action "deny" -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyReputationProfile updates correctly' {
+        $SetReputationProfileAction.action | Should -Be "deny"
+    }
+
+    #************************************************#
+    #                    Slow POST                   #
+    #************************************************#
+
+    ### Get-AppSecPolicySlowPostSettings
+    $Script:SlowPost = Get-AppSecPolicySlowPostSettings -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicySlowPostSettings returns the correct data' {
+        $ReputationProfileActions.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicySlowPostSettings by pipeline
+    $Script:SetSlowPostByPipeline = ($SlowPost | Set-AppSecPolicySlowPostSettings -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-AppSecPolicySlowPostSettings by pipeline completes successfully' {
+        $SetSlowPostByPipeline.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicySlowPostSettings by body
+    $Script:SetSlowPostByBody = Set-AppSecPolicySlowPostSettings -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Body (ConvertTo-Json -depth 10 $SlowPost) -EdgeRCFile $EdgeRCFile -Section $Section)
+        $SetSlowPostByBody.action | Should -Not -BeNullOrEmpty
+    }
+
+    #************************************************#
     #                    Versions                    #
     #************************************************#
 
@@ -627,6 +687,16 @@ Describe 'Safe AppSec Tests' {
     #                    Removals                    #
     #************************************************#
 
+    ### Remove-AppSecPolicy
+    it 'Remove-AppSecPolicy completes successfully' {
+        {Remove-AppSecPolicy -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+    }
+
+    ### Remove-AppSecReputationProfile
+    it 'Remove-AppSecReputationProfile completes successfully' {
+        { Remove-AppSecReputationProfile -ConfigID $NewConfig.configId -VersionNumber 1 -ReputationProfileID $NewReputationProfileByBody.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
     ### Remove-AppSecCustomDenyAction
     it 'Get-AppSecCustomDenyAction completes successfully' {
         {Remove-AppSecCustomDenyAction -ConfigID $NewConfig.configId -VersionNumber 1 -CustomDenyID $NewCustomDenyAction.id -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
@@ -635,11 +705,6 @@ Describe 'Safe AppSec Tests' {
     ### Get-AppSecMatchTarget
     it 'Remove-AppSecMatchTarget completes successfully' {
         { Remove-AppSecMatchTarget -ConfigID $NewConfig.configId -VersionNumber 1 -TargetID $NewMatchTarget.targetId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
-    }
-
-    ### Remove-AppSecPolicy
-    it 'Remove-AppSecPolicy completes successfully' {
-        {Remove-AppSecPolicy -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
     }
 
     ### Remove-AppSecCustomRule
