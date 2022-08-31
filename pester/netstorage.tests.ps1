@@ -39,7 +39,7 @@ Describe 'Safe Netstorage Tests' {
     ### List-NSZones
     $Script:Zones = List-NSZones -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-NSZones returns a list' {
-        $Zones.count | Should -Not -BeNullOrEmpty
+        $Zones.zones.count | Should -Not -BeNullOrEmpty
     }
 
     ### Set-NSStorageGroup by pipeline
