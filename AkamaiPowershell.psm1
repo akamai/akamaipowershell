@@ -39,6 +39,22 @@ Export-ModuleMember -Function 'New-GTMDomainGeoMap' -Alias 'Set-GTMDomainGeoMap'
 Export-ModuleMember -Function 'New-GTMDomainProperty' -Alias 'Set-GTMDomainProperty'
 Export-ModuleMember -Function 'New-GTMDomainResource' -Alias 'Set-GTMDomainResource'
 
+# Datastream aliases
+Set-Alias -Name Activate-DS2Stream -Value Activate-DataStream
+Set-Alias -Name Deactivate-DS2Stream -Value Deactivate-DataStream
+Set-Alias -Name Get-DS2ActivationHistory -Value Get-DatastreamActivationHistory
+Set-Alias -Name Get-DS2StreamHistory -Value Get-DataStreamHistory
+Set-Alias -Name Get-DS2StreamVersion -Value Get-DataStreamVersion
+Set-Alias -Name List-DS2Connectors -Value List-DataStreamConnectors
+Set-Alias -Name List-DS2DatasetFields -Value List-DataStreamDatasetFields
+Set-Alias -Name List-DS2Groups -Value List-DataStreamGroups
+Set-Alias -Name List-DS2Products -Value List-DataStreamProducts
+Set-Alias -Name List-DS2Streams -Value List-DataStream
+Set-Alias -Name List-DS2StreamTypes -Value List-DataStreamTypes
+Set-Alias -Name New-DS2Stream -Value New-DataStream
+Set-Alias -Name Remove-DS2Stream -Value Remove-DataStream
+Set-Alias -Name Set-DS2Stream -Value Set-DataStream
+
 # Set module version env variable, used in custom UA
 $Exp = Get-Content -Raw $PSScriptRoot\AkamaiPowershell.psd1
 $Details = Invoke-Expression $Exp

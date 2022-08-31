@@ -1,5 +1,6 @@
 function New-CloudletPolicyVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'attributes')]
     Param(
         [Parameter(Mandatory=$true) ] [string] $PolicyID,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $Description,
@@ -52,7 +53,7 @@ function New-CloudletPolicyVersion
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

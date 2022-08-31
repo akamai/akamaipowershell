@@ -14,7 +14,7 @@ Describe 'Safe Network Lists Tests' {
     BeforeDiscovery {
         ### New-NetworkList
         $Script:NewList = New-NetworkList -Name $TestListName -Type IP -Description "testing" -ContractId $TestContract -GroupID $TestGroup -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'List-NetworkLists returns a list of lists' {
+        it 'New-NetworkList creates a list successfully' {
             $NewList.name | Should -Be $TestListName
         }
 

@@ -1,5 +1,6 @@
 function Set-CloudletPolicyVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'attributes')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $Version,
@@ -50,7 +51,7 @@ function Set-CloudletPolicyVersion
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

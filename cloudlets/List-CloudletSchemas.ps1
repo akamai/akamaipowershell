@@ -14,7 +14,7 @@ function List-CloudletSchemas
         return $Result.schemas
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block
