@@ -1,6 +1,5 @@
 function List-CloudletPolicies
 {
-    [CmdletBinding(DefaultParameterSetName = 'all')]
     Param(
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [switch] $IncludeDeleted,
@@ -51,7 +50,7 @@ function List-CloudletPolicies
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

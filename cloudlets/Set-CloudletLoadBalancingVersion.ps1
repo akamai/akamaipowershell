@@ -1,5 +1,6 @@
 function Set-CloudletLoadBalancingVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'pipeline')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $OriginID,
         [Parameter(Mandatory=$true)]  [string] $Version,
@@ -33,7 +34,7 @@ function Set-CloudletLoadBalancingVersion
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

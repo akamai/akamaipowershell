@@ -1,5 +1,6 @@
 function Activate-CloudletLoadBalancingVersion
 {
+    [CmdletBinding(DefaultParameterSetName = 'attributes')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $OriginID,
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [ValidateSet('STAGING','PRODUCTION')] [string] $Network,
@@ -31,7 +32,7 @@ function Activate-CloudletLoadBalancingVersion
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block
