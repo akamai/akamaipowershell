@@ -1,27 +1,27 @@
-function List-DS2Streams
+function List-DataStreamDatasetParameters
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $GroupID,
+        [Parameter(Mandatory=$true)]  [ValidateSet('RAW','AGGREGATED')] [string] $Type,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v1/log/streams?groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v1/datastream1/datasets/$Type`?accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block
 # MIIgEwYJKoZIhvcNAQcCoIIgBDCCIAACAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDm3zip62w8CyWQ
-# gWJJnxnUhw/dbO6CVHki0c6O2VCYy6CCDsEwggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBGyLe8A8ugf+np
+# dcVz+zW2YwqdBj8uNGe/5LCNanU+M6CCDsEwggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -105,23 +105,23 @@ function List-DS2Streams
 # b2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAcizMh6w/je5qGZ
 # As4SxO0wDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG
 # 9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIB
-# FTAvBgkqhkiG9w0BCQQxIgQgBaHMLi4SWA70toD8nyPqBNm/kNiQMzpLyFUn4guw
-# tikwDQYJKoZIhvcNAQEBBQAEggIAXJbHDFOhT+jthcYk4c6Ca8drecuT9eZn0FZz
-# OkUxTII+AL12Rb5GFQspPF0NRPAAAdn9tmpOk11hysBUBFz3guATmeD5KE4XPxg9
-# vn4yLXHiKSjR/Ggk8VyfJXv4XHWTpRShZTJa+SCAWgWkge2Xe0PmLtq6YH4HLZuv
-# ILBINDfhUe2I9ymdrTZbMX5/vO1Krwni+ncBxNBcLJrnrdzlXGxfQlOT5NVcnGco
-# Ul0Wmx5/+S10ScrNQI+hKDQWgn7pK6aWhFjTiMPL3PyWnagvqTafn2oQ2tF2wVPB
-# FSM7KeKF2AgzqI1jTUaRP1LbjAxxX6i5TO1J9VR598xgmyneYTqdWaeCvynN5RZR
-# WSV57vOVFPOOvVJKr3YLkMvILVKdqYaEtdXIE3TqzoRdCwYQS6s25rWbXGTTH17N
-# CVU6Hw37rdnYJheLP2LQN52sqdKveptPq+N0CyAKCAkjo/MDJgM+Gs7vowa8qIfP
-# GLUiCCe5R0zynX9onkYRvnoHAYjIJQinxXpCjB+Iyfrxfgm0qdy9IWltiu0kLm1l
-# bSgRAOewzEC08wAQb/YSQ9t7be3ek61F4hoqHRLBF49IEPuGlgJnalEFkdcqiGnC
-# XyEibNeLE3y+y7o1sCx9+TqJ1mc+QkM3RNeKVqGembbiaI+oq/fKCedYCkSj/eV2
-# mz/jbSShgg1+MIINegYKKwYBBAGCNwMDATGCDWowgg1mBgkqhkiG9w0BBwKggg1X
+# FTAvBgkqhkiG9w0BCQQxIgQg2kQWq2MDmQyDTnc5NARofhUPRondD2sVhQ4jEXq2
+# IUwwDQYJKoZIhvcNAQEBBQAEggIALM6h0kvbY9kwx+N8fJg40IgtjIXYgQOZ7wfi
+# qQ6jB8+4lAZlMc6EJQjVQXybcXnP20UznrEdWi/RbU5LbZPHleBcO32CK4MAKK2z
+# 8Kh+jCpK4hKqVZQKWVZGk0g9AphrX5TihabMSF2gyhQQfrGuptnU8f1yfnvyrYEY
+# +YNfnVN6Y6hrvkea6imHIrFGNHLCVz8L1/4zCikc1l0tSebGhGZk33S43xr7fBYI
+# RQFQYCRK/FFvmlR18B38zwWWuct+BAOAziGZ081l2iRGDectOWUOlcKoUZQHiXb7
+# QWVdXqmVkD5Hv6icV3fYTUvO7Zt8ZJ670dE1tkMviEpzmnZZsLx9yFONZlNiGbH5
+# R/KN0Xpy1npNb4zryExnIodUndKbkx6z8eOF095Up5LVEbiBhVzZ/5nKeiUy8eyj
+# 3DKWxmtMoRMQb+WjtWEgNjJgAptyCrKkaKHW7hbzF2loYGpNZU0/claiyhvYRlZI
+# YyQreHywFCFknazI4h1q8+cBH/JaNAw8znSYtG0UhHKM/xvdB8ijq/EtqFosD/BY
+# TfyOMe4htvj8T4E0JWAXjXLylgBcFsl2KKKPqHRuDe73yzbzeUsPU06oB+89pM7f
+# frTVwq/mXtSVcz2N7G5ug32Gkz01HIIZ42B3kmQSwj3UR14fKamh642FRD+iP+tq
+# HFVs7OGhgg1+MIINegYKKwYBBAGCNwMDATGCDWowgg1mBgkqhkiG9w0BBwKggg1X
 # MIINUwIBAzEPMA0GCWCGSAFlAwQCAQUAMHgGCyqGSIb3DQEJEAEEoGkEZzBlAgEB
-# BglghkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgjTJ2ec0WLFoN76UpqmbfWEF9
-# WtC0aE/vUIp+BYRD3MkCEQDkJeHiQ1FHxDQh8J2zIQDcGA8yMDIyMDMyMzE4MDEw
-# Mlqgggo3MIIE/jCCA+agAwIBAgIQDUJK4L46iP9gQCHOFADw3TANBgkqhkiG9w0B
+# BglghkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg1rkhdRvUOKrwS+09WFgceSL7
+# FQ5qJfUT9h5d++Id/C8CEQDqr4Rz7Si2A7B2YUcXzV83GA8yMDIyMDMyMzE4MDA0
+# NFqgggo3MIIE/jCCA+agAwIBAgIQDUJK4L46iP9gQCHOFADw3TANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
 # c3VyZWQgSUQgVGltZXN0YW1waW5nIENBMB4XDTIxMDEwMTAwMDAwMFoXDTMxMDEw
@@ -180,14 +180,14 @@ function List-DS2Streams
 # ZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQg
 # VGltZXN0YW1waW5nIENBAhANQkrgvjqI/2BAIc4UAPDdMA0GCWCGSAFlAwQCAQUA
 # oIHRMBoGCSqGSIb3DQEJAzENBgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcN
-# MjIwMzIzMTgwMTAyWjArBgsqhkiG9w0BCRACDDEcMBowGDAWBBTh14Ko4ZG+72vK
-# FpG1qrSUpiSb8zAvBgkqhkiG9w0BCQQxIgQgf24ZKODPk3TA2dTJQvQPzfUlPABb
-# Z/AKRRL8v22w3TUwNwYLKoZIhvcNAQkQAi8xKDAmMCQwIgQgsxCQBrwK2YMHkVcp
-# 4EQDQVyD4ykrYU8mlkyNNXHs9akwDQYJKoZIhvcNAQEBBQAEggEAnt9q7QyQX04V
-# DIvwSiPDVJ3rQ9U9vr9tsVIyDzwG2GQmIfLBx+a0SEQ91sGy+PDjA3wTfwkpsQQ/
-# Nmw2OJk5XKFoipuBu1rsHeD3A2cewgfq3lkD5Kc3yZl+z1kY3Ou56+KFunBvKUL9
-# 3B+7y97JpSRZ5M1H8FBDQk6y2ESlkqmSAmysAiRuj8cZIKJE3hbijEqJpfSSv3P2
-# GLPEfmhtxQqTQKYUAX7WId84IcnMw21swqALGyNg80nItn/LdeeeIgBS8R4JqDv8
-# AA2hYNF7mXoz/37NhgLxemzQfyDMVlcn32yPtG6NTS+fBgD9yw9s0FPiko6230Nm
-# flZJrNaruw==
+# MjIwMzIzMTgwMDQ0WjArBgsqhkiG9w0BCRACDDEcMBowGDAWBBTh14Ko4ZG+72vK
+# FpG1qrSUpiSb8zAvBgkqhkiG9w0BCQQxIgQgsj2myaRjv5uVSiDywTpnvigiHFgN
+# QEHvyB2fD5vvq2MwNwYLKoZIhvcNAQkQAi8xKDAmMCQwIgQgsxCQBrwK2YMHkVcp
+# 4EQDQVyD4ykrYU8mlkyNNXHs9akwDQYJKoZIhvcNAQEBBQAEggEApR2mE7G9nRWd
+# tD1echWZ8mk1QnenB2F3OOqGii6/IU3f8ysLo4cnFgtjCHhDjMy6uCBl4wUK4sDI
+# 39FDblPktytk25GmlWP0C2N4g2AaKNyDZTJN0DsH8mjrG/GHW8YovxD+/EYxlXWY
+# Se4V54YqeQfYG5xky6+ssvzHzv2uV0wGR5BQdiypuBXly1r5jep+cTCTewY9lNlp
+# 2kWPprJvHbpcj3ChiMUVEOUoipe4LItKeRUyqBmUdIGpZtMoY/BDfqb2G0KguoWI
+# 0epUPyms9R02Ke3IWu9tELoH+z3xIziURqAk8sgIO6G1DaE36E5ADP4/j3DqRCTl
+# 2ZCKlZxgqw==
 # SIG # End signature block
