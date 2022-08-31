@@ -4,6 +4,7 @@ function List-AppSecMatchTargets
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
+        [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false)] [switch] $IncludeChildObjectName,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -40,7 +41,7 @@ function List-AppSecMatchTargets
         return $Result.matchTargets
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

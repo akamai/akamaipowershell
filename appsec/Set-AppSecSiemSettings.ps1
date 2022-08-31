@@ -39,7 +39,7 @@ function Set-AppSecSiemSettings
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

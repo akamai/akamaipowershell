@@ -32,7 +32,7 @@ function List-AppSecConfigurationVersions
         return $Result.versionList
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

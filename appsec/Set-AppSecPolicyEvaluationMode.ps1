@@ -38,11 +38,11 @@ function Set-AppSecPolicyEvaluationMode
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

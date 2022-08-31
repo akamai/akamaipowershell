@@ -13,7 +13,7 @@ function Get-AppSecSiemVersions
         return $Result.siemDefinitions
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

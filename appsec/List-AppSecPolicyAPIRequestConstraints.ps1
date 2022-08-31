@@ -33,10 +33,10 @@ function List-AppSecPolicyAPIRequestConstraints
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.apiEndpoints
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

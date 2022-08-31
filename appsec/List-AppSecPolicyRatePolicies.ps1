@@ -36,7 +36,7 @@ function List-AppSecPolicyRatePolicies
         return $Result.ratePolicyActions
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

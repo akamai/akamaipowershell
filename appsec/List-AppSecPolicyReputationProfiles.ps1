@@ -36,7 +36,7 @@ function List-AppSecPolicyReputationProfiles
         return $Result.ReputationProfiles
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

@@ -40,7 +40,7 @@ function Set-AppSecMatchTarget
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

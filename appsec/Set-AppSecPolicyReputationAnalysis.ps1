@@ -45,7 +45,7 @@ function Set-AppSecPolicyReputationAnalysis
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

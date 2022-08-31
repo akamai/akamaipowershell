@@ -39,7 +39,7 @@ function New-AppSecMatchTarget
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

@@ -6,7 +6,7 @@ function Set-AppSecPolicySlowPostSettings
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
-        [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $SlowPostSettings,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)] [object] $SlowPostSettings,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -45,7 +45,7 @@ function Set-AppSecPolicySlowPostSettings
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 
