@@ -8,30 +8,8 @@ $Script:TestGroupID = 209759
 $Script:TestPolicyName = 'akamaipowershell'
 $Script:TestPolicyDescription = 'Testing only'
 $Script:TestCloudletType = 'FR'
-$Script:TestMatchRulesJson = '[
-    {
-        "type": "frMatchRule",
-        "id": 0,
-        "name": "Test1",
-        "start": 0,
-        "end": 0,
-        "matchURL": null,
-        "matches": [
-        {
-            "matchValue": "www.example.com",
-            "matchOperator": "equals",
-            "negate": false,
-            "caseSensitive": false,
-            "matchType": "hostname"
-        }
-        ],
-        "akaRuleId": "9c3679ff26421404",
-        "forwardSettings": {
-        "originId": "originId1"
-        }
-    }
-]'
-$Script:TestMatchRules = ConvertFrom-Json -Depth 10 $TestMatchRulesJson
+$Script:TestMatchRulesJson = '[{"type":"frMatchRule","id":0,"name":"Test1","start":0,"end":0,"matchURL":null,"matches":[{"matchValue":"www.example.com","matchOperator":"equals","negate":false,"caseSensitive":false,"matchType":"hostname"}],"akaRuleId":"9c3679ff26421404","forwardSettings":{"originId":"originId1"}}]'
+$Script:TestMatchRules = ConvertFrom-Json $TestMatchRulesJson
 
 Describe 'Safe Cloudlets Tests' {
 
@@ -120,7 +98,7 @@ Describe 'Unsafe Cloudlets Tests' {
     ### List-SharedCloudletPolicyActivations
     $Script:Activations = List-SharedCloudletPolicyActivations -PolicyID 1001 -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'List-SharedCloudletPolicyActivations returns a list' {
-        $Activations.count | Should -Not -BeNullOrEmpty
+        $Activations[0].id | Should -Not -BeNullOrEmpty
     }
 
     ### Activate-SharedCloudletPolicy
