@@ -46,7 +46,7 @@ Describe 'Safe Datastream Tests' {
     ### List-DataStreamProperties
     $Script:Properties = List-DataStreamProperties -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-DataStreamProperties returns a list' {
-        $Properties.count | Should -Not -BeNullOrEmpty
+        $Properties[0].propertyId | Should -Not -BeNullOrEmpty
     }
 
     ### Get-DataStream
