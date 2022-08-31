@@ -27,7 +27,7 @@ function Get-AppSecRequestSizeLimit
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.requestBodyInspectionLimitInKB
+        return $Result
     }
     catch {
         throw $_ 

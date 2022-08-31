@@ -11,28 +11,32 @@ $Script:TestHostnames = 'akamaipowershell-testing.edgesuite.net'
 $Script:TestAPIEndpointID = 817948
 $Script:TestCustomRule = '{"conditions":[{"type":"pathMatch","positiveMatch":true,"value":["/test"],"valueCase":false,"valueIgnoreSegment":false,"valueNormalize":false,"valueWildcard":true}],"name":"cr1","operation":"AND","ruleActivated":false,"structured":true,"tag":["tag1"],"version":1}'
 $Script:TestNotes = "Akamai PowerShell Test"
-$Script:TestPolicyName = "Example"
-$Script:TestPolicyPrefix = "EX01"
-$Script:TestMatchTargetBody = '{"type":"api","apis":[{"id":APIID,}],"securityPolicy":{"policyId":"id1"}}'.replace("APIID", $TestAPIEndpointID)
-$Script:TestMatchTarget = ConvertFrom-Json -Depth 10 $TestMatchTargetBody
+$Script:TestPolicyName = 'Example'
+$Script:TestPolicyPrefix = 'EX01'
+$Script:TestPolicyMode = 'ASE_MANUAL'
+$Script:TestMatchTargetBody = '{"type":"api","apis":[{"id":APIID}],"securityPolicy":{"policyId":"id1"}}'.replace("APIID", $TestAPIEndpointID)
+$Script:TestMatchTarget = ConvertFrom-Json $TestMatchTargetBody
 $Script:TestNetworkListID = '365_AKAMAITOREXITNODES'
 $Script:TestCustomDenyName = 'SampleCustomDeny'
 $Script:TestCustomDenyBody = '{"name":"PlaceHolder","description": "Old Description","parameters":[{"displayName":"Hostname","name":"custom_deny_hostname","value":"deny.akamaipowershell-testing.edgesuite.net"},{"displayName":"Path","name":"custom_deny_path","value":"/"},{"displayName":"IncludeAkamaiReferenceID","name":"include_reference_id","value":"true"},{"displayName":"IncludeTrueClientIP","name":"include_true_ip","value":"false"},{"displayName":"Preventbrowsercaching","name":"prevent_browser_cache","value":"true"},{"displayName":"Responsecontenttype","name":"response_content_type","value":"application/json"},{"displayName":"Responsestatuscode","name":"response_status_code","value":"403"}]}'.replace('PlaceHolder', $TestCustomDenyName)
 $Script:TestRatePolicy1Name = 'Rate Policy 1'
 $Script:TestRatePolicy2Name = 'Rate Policy 2'
 $Script:TestRatePolicyBody = '{"averageThreshold":10,"burstThreshold":50,"clientIdentifier":"ip","matchType":"path","name":"PlaceHolder","path":{"positiveMatch":true,"values":["/*"]},"pathMatchType":"Custom","pathUriPositiveMatch":true,"requestType":"ClientRequest","sameActionOnIpv6":false,"type":"WAF","useXForwardForHeaders":false}'.replace('PlaceHolder', $TestRatePolicy1Name)
-$Script:TestRatePolicy = ConvertFrom-Json -Depth 10 $TestRatePolicyBody
+$Script:TestRatePolicy = ConvertFrom-Json $TestRatePolicyBody
 $TestRatePolicy.name = $TestRatePolicy2Name
 $Script:TestSiemSettingsBody ='{"enableSiem":true,"enableForAllPolicies":true, "siemDefinitionId": 1}'
 $Script:TestSiemSettings = ConvertFrom-Json $TestSiemSettingsBody
 $Script:TestReputationProfile1Name = "AkamaiPowerShell Reputation Profile 1"
 $Script:TestReputationProfile2Name = "AkamaiPowerShell Reputation Profile 2"
 $Script:TestReputationProfileBody = '{"context":"DOSATCK","contextReadable":"DoSAttackers","enabled":true,"name":"PlaceHolder","sharedIpHandling":"BOTH","threshold":7}'.replace('PlaceHolder', $TestReputationProfile1Name)
-$Script:TestReputationProfile = ConvertFrom-Json -Depth 10 $TestReputationProfileBody
+$Script:TestReputationProfile = ConvertFrom-Json $TestReputationProfileBody
 $TestReputationProfile.name = $TestReputationProfile2Name
 $Script:TestPragmaSettingsBody = '{"action":"REMOVE","conditionOperator":"AND"}'
 $Script:TestPragmaSettings = ConvertFrom-Json $TestPragmaSettingsBody
-
+$Script:TestExceptionBody = '{"exception":{"specificHeaderCookieParamXmlOrJsonNames":[{"names":["ExceptMe"],"selector":"REQUEST_HEADERS","wildcard":true}]}}'
+$Script:TestException = ConvertFrom-Json $TestExceptionBody
+$Script:TestRuleID = 950002
+$Script:TestAttackGroupID = 'CMD'
 
 Describe 'Safe AppSec Tests' {
     BeforeDiscovery {
@@ -146,7 +150,7 @@ Describe 'Safe AppSec Tests' {
     ### List-AppSecSelectableHostnames
     $Script:SelectableHostnames = List-AppSecSelectableHostnames -ConfigID $NewConfig.configId -VersionNumber 1 -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-AppSecSelectableHostnames gets a list' {
-        $SelectableHostnames.count | Should -Not -BeNullOrEmpty
+        $SelectableHostnames[0].hostname | Should -Not -BeNullOrEmpty
     }
 
     ### List-AppSecSelectedHostnames
@@ -168,7 +172,7 @@ Describe 'Safe AppSec Tests' {
     ### List-AppSecPolicies
     $Script:Policies = List-AppSecPolicies -ConfigID $NewConfig.configId -VersionNumber 1 -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-AppSecPolicies returns a list' {
-        $Policies.count | Should -Not -BeNullOrEmpty
+        $Policies[0].policyId | Should -Not -BeNullOrEmpty
     }
 
     ### Get-AppSecPolicy by ID and version
@@ -209,7 +213,7 @@ Describe 'Safe AppSec Tests' {
     ### List-AppSecMatchTargets
     $Script:MatchTargets = List-AppSecMatchTargets -ConfigID $NewConfig.configId -VersionNumber 1 -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-AppSecMatchTargets returns a list' {
-        $MatchTargets.count | Should -Not -BeNullOrEmpty
+        $MatchTargets.apiTargets | Should -Not -BeNullOrEmpty
     }
 
     ### Get-AppSecMatchTarget
@@ -500,11 +504,11 @@ Describe 'Safe AppSec Tests' {
     ### Get-AppSecRequestSizeLimit
     $Script:RequestSizeLimit = Get-AppSecRequestSizeLimit -ConfigID $NewConfig.configId -VersionNumber 1 -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-AppSecRequestSizeLimit returns the correct data' {
-        $RequestSizeLimit | Should -Not -BeNullOrEmpty
+        $RequestSizeLimit.requestBodyInspectionLimitInKB | Should -Not -BeNullOrEmpty
     }
 
     ### Set-AppSecRequestSizeLimit
-    $Script:SetRequestSizeLimit = Set-AppSecRequestSizeLimit -ConfigID $NewConfig.configId -VersionNumber 1 -RequestBodyInspectionLimitInKB 32 -EdgeRCFile $EdgeRCFile -Section $Section
+    $Script:SetRequestSizeLimit = Set-AppSecRequestSizeLimit -ConfigID $NewConfig.configId -VersionNumber 1 -RequestSizeLimit 32 -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Set-AppSecRequestSizeLimit updates correctly' {
         $SetRequestSizeLimit.requestBodyInspectionLimitInKB | Should -Be 32
     }
@@ -566,7 +570,7 @@ Describe 'Safe AppSec Tests' {
     ### List-AppSecPolicyRatePolicies
     $Script:RatePolicyActions = List-AppSecPolicyRatePolicies -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-AppSecPolicyRatePolicies returns the correct data' {
-        $RatePolicyActions.count | Should -BeGreaterThan 0
+        $RatePolicyActions[0].id | Should -Not -BeNullOrEmpty
     }
 
     #************************************************#
@@ -576,7 +580,7 @@ Describe 'Safe AppSec Tests' {
     ### List-AppSecPolicyAPIRequestConstraints
     $Script:APIRequestConstraints = List-AppSecPolicyAPIRequestConstraints -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-AppSecPolicyAPIRequestConstraints returns a list' {
-        $APIRequestConstraints.count | Should -BeGreaterThan 0
+        $APIRequestConstraints[0].action | Should -Not -BeNullOrEmpty
     }
 
     ### Set-AppSecPolicyAPIRequestConstraints without ID
@@ -652,8 +656,333 @@ Describe 'Safe AppSec Tests' {
     }
 
     ### Set-AppSecPolicySlowPostSettings by body
-    $Script:SetSlowPostByBody = Set-AppSecPolicySlowPostSettings -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Body (ConvertTo-Json -depth 10 $SlowPost) -EdgeRCFile $EdgeRCFile -Section $Section)
+    $Script:SetSlowPostByBody = Set-AppSecPolicySlowPostSettings -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Body (ConvertTo-Json -depth 10 $SlowPost) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicySlowPostSettings by body completes successfully' {
         $SetSlowPostByBody.action | Should -Not -BeNullOrEmpty
+    }
+
+    #************************************************#
+    #               Custom Rule Actions              #
+    #************************************************#
+
+    ### List-AppSecPolicyCustomRules
+    $Script:CustomRuleActions = List-AppSecPolicyCustomRules -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-AppSecPolicyCustomRules returns a list' {
+        $CustomRuleActions[0].action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyCustomRule
+    $Script:SetCustomRuleAction = Set-AppSecPolicyCustomRule -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $NewCustomRule.id -Action 'deny' -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyCustomRule updates successfully' {
+        $SetCustomRuleAction.action | Should -Be 'deny'
+    }
+
+    ### Set-AppSecPolicyCustomRule (undo so we can delete later)
+    $Script:UnsetCustomRuleAction = Set-AppSecPolicyCustomRule -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $NewCustomRule.id -Action 'none' -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyCustomRule updates successfully' {
+        $UnsetCustomRuleAction.action | Should -Be 'none'
+    }
+
+    #************************************************#
+    #             Policy Advanced Settings           #
+    #************************************************#
+
+    ### Get-AppSecPolicyEvasivePathMatch
+    $Script:PolicyEvasivePathMatch = Get-AppSecPolicyEvasivePathMatch -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyEvasivePathMatch returns the correct data' {
+        $PolicyEvasivePathMatch.enablePathMatch | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyEvasivePathMatch
+    $Script:PolicyEvasivePathMatch = Set-AppSecPolicyEvasivePathMatch -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EnablePathMatch $true -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyEvasivePathMatch updates correctly' {
+        $PolicyEvasivePathMatch.enablePathMatch | Should -Be $true
+    }
+
+    ### Get-AppSecPolicyLogging
+    $Script:PolicyLogging = Get-AppSecPolicyLogging -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyLogging returns the correct data' {
+        $PolicyLogging.override | Should -Not -BeNullOrEmpty
+    }
+    
+    ### Set-AppSecPolicyLogging by pipeline
+    $Script:SetPolicyLoggingByPipeline = ($PolicyLogging | Set-AppSecPolicyLogging -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-AppSecPolicyLogging by pipeline updates correctly' {
+        $SetPolicyLoggingByPipeline.override | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyLogging by body
+    $Script:SetPolicyLoggingByBody = Set-AppSecPolicyLogging -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Body (ConvertTo-Json -depth 10 $PolicyLogging) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyLogging by body updates correctly' {
+        $SetPolicyLoggingByBody.override | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyPragmaSettings
+    $Script:PolicyPragma = Get-AppSecPolicyPragmaSettings -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyPragmaSettings returns the correct data' {
+        $PolicyPragma.override | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyPragmaSettings by pipeline
+    $Script:SetPolicyPragmaByPipeline = ($TestPragmaSettings | Set-AppSecPolicyPragmaSettings -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-AppSecPolicyPragmaSettings by pipeline returns the correct data' {
+        $SetPolicyPragmaByPipeline.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyPragmaSettings by body
+    $Script:SetPolicyPragmaByBody = Set-AppSecPolicyPragmaSettings -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Body $TestPragmaSettingsBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyPragmaSettings by body returns the correct data' {
+        $SetPolicyPragmaByBody.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyRequestSizeLimit
+    $Script:PolicyRequestSizeLimit = Get-AppSecPolicyRequestSizeLimit -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyRequestSizeLimit returns the correct data' {
+        $PolicyRequestSizeLimit.requestBodyInspectionLimitInKB | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyRequestSizeLimit
+    $Script:SetPolicyRequestSizeLimit = Set-AppSecPolicyRequestSizeLimit -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RequestSizeLimit 32 -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyRequestSizeLimit updates correctly' {
+        $SetPolicyRequestSizeLimit.requestBodyInspectionLimitInKB | Should -Be 32
+    }
+
+    #************************************************#
+    #                      WAF                       #
+    #************************************************#
+
+    ### List-AppSecPolicyAttackGroups
+    $Script:AttackGroups = List-AppSecPolicyAttackGroups -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-AppSecPolicyAttackGroups returns the correct data' {
+        $AttackGroups.count | Should -BeGreaterThan 0
+    }
+
+    ### Get-AppSecPolicyAttackGroup
+    $Script:AttackGroup = Get-AppSecPolicyAttackGroup -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $AttackGroups[0].group -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyAttackGroup returns the correct data' {
+        $AttackGroup.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyAttackGroup
+    $Script:SetAttackGroup = Set-AppSecPolicyAttackGroup -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $AttackGroups[0].group -Action "deny" -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyAttackGroup sets correctly' {
+        $SetAttackGroup.action | Should -Be "deny"
+    }
+
+    ### Set-AppSecPolicyAttackGroupExceptions by pipeline
+    $Script:SetAttackGroupExceptionsByPipeline = ($TestException | Set-AppSecPolicyAttackGroupExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $TestAttackGroupID -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-AppSecPolicyAttackGroupExceptions by pipeline sets correctly' {
+        $SetAttackGroupExceptionsByPipeline.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyAttackGroupExceptions by body
+    $Script:SetAttackGroupExceptionsByBody = Set-AppSecPolicyAttackGroupExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $TestAttackGroupID -Body $TestExceptionBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyAttackGroupExceptions by body sets correctly' {
+        $SetAttackGroupExceptionsByBody.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyAttackGroupExceptions
+    $Script:AttackGroupExceptions = Get-AppSecPolicyAttackGroupExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $TestAttackGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyAttackGroupExceptions returns the correct data' {
+        $AttackGroupExceptions.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyRuleExceptions by pipeline
+    $Script:SetRuleExceptionsByPipeline = ($TestException | Set-AppSecPolicyRuleExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-AppSecPolicyRuleExceptions by pipeline sets correctly' {
+        $SetRuleExceptionsByPipeline.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyRuleExceptions by body
+    $Script:SetRuleExceptionsByBody = Set-AppSecPolicyRuleExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -Body $TestExceptionBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyRuleExceptions by body sets correctly' {
+        $SetRuleExceptionsByBody.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyRuleExceptions
+    $Script:RuleExceptions = Get-AppSecPolicyRuleExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyRuleExceptions returns the correct data' {
+        $RuleExceptions.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyMode
+    $Script:PolicyMode = Get-AppSecPolicyMode -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyMode returns the correct data' {
+        $PolicyMode.mode | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyMode
+    $Script:SetPolicyMode = Set-AppSecPolicyMode -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Mode ASE_MANUAL -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyMode sets correctly' {
+        $SetPolicyMode.mode | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-AppSecPolicyRules
+    $Script:PolicyRules = List-AppSecPolicyRules -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-AppSecPolicyRules returns a list' {
+        $PolicyRules.count | Should -BeGreaterThan 0
+    }
+
+    ### Get-AppSecPolicyRule
+    $Script:Rule = Get-AppSecPolicyRule -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyRule returns the correct data' {
+        $Rule.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyRule
+    $Script:SetRule = Set-AppSecPolicyRule -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -Action 'deny' -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyRule updates correctly' {
+        $SetRule.action | Should -Be 'deny'
+    }
+
+    ### Update-AppSecKRSRuleSet
+    $Script:KRSRuleSet = Update-AppSecKRSRuleSet -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Mode $TestPolicyMode -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Update-AppSecKRSRuleSet sets correctly' {
+        $KRSRuleSet.mode | Should -Be $TestPolicyMode
+    }
+
+    ### Get-AppSecPolicyAdaptiveIntelligence
+    $Script:AdaptiveIntel = Get-AppSecPolicyAdaptiveIntelligence -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyAdaptiveIntelligence returns the correct data' {
+        $AdaptiveIntel.threatIntel | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyAdaptiveIntelligence
+    $Script:SetAdaptiveIntel = Set-AppSecPolicyAdaptiveIntelligence -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Action on -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyAdaptiveIntelligence updates correctly' {
+        $SetAdaptiveIntel.threatIntel | Should -Be 'on'
+    }
+
+    ### Get-AppSecPolicyUpgradeDetails
+    $Script:UpgradeDetails = Get-AppSecPolicyUpgradeDetails -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyUpgradeDetails returns the correct data' {
+        $UpgradeDetails.current | Should -Not -BeNullOrEmpty
+    }
+
+
+    #************************************************#
+    #                WAF Evaluation                  #
+    #************************************************#
+
+    ### Set-AppSecPolicyEvaluationMode
+    $Script:EvalMode = Set-AppSecPolicyEvaluationMode -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Mode START -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyEvaluationMode returns the correct data' {
+        $EvalMode.eval | Should -Be 'enabled'
+    }
+
+    ### List-AppSecPolicyEvaluationRules
+    $Script:EvalPolicyRules = List-AppSecPolicyEvaluationRules -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-AppSecPolicyEvaluationRules returns a list' {
+        $EvalPolicyRules.count | Should -BeGreaterThan 0
+    }
+
+    ### Get-AppSecPolicyEvaluationRule
+    $Script:EvalRule = Get-AppSecPolicyEvaluationRule -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyEvaluationRule returns the correct data' {
+        $EvalRule.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyEvaluationRule
+    $Script:EvalSetRule = Set-AppSecPolicyEvaluationRule -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -Action 'deny' -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyEvaluationRule updates correctly' {
+        $EvalSetRule.action | Should -Be 'deny'
+    }
+
+    ### List-AppSecPolicyEvaluationAttackGroups
+    $Script:EvalAttackGroups = List-AppSecPolicyEvaluationAttackGroups -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-AppSecPolicyEvaluationAttackGroups returns the correct data' {
+        $EvalAttackGroups.count | Should -BeGreaterThan 0
+    }
+
+    ### Get-AppSecPolicyEvaluationAttackGroup
+    $Script:EvalAttackGroup = Get-AppSecPolicyEvaluationAttackGroup -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $AttackGroups[0].group -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyEvaluationAttackGroup returns the correct data' {
+        $EvalAttackGroup.action | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyEvaluationAttackGroup
+    $Script:EvalSetAttackGroup = Set-AppSecPolicyEvaluationAttackGroup -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $AttackGroups[0].group -Action "deny" -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyEvaluationAttackGroup sets correctly' {
+        $EvalSetAttackGroup.action | Should -Be "deny"
+    }
+
+    ### Set-AppSecPolicyEvaluationAttackGroupExceptions by pipeline
+    $Script:EvalSetAttackGroupExceptionsByPipeline = ($TestException | Set-AppSecPolicyEvaluationAttackGroupExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $TestAttackGroupID -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-AppSecPolicyEvaluationAttackGroupExceptions by pipeline sets correctly' {
+        $EvalSetAttackGroupExceptionsByPipeline.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyEvaluationAttackGroupExceptions by body
+    $Script:EvalSetAttackGroupExceptionsByBody = Set-AppSecPolicyEvaluationAttackGroupExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $TestAttackGroupID -Body $TestExceptionBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyEvaluationAttackGroupExceptions by body sets correctly' {
+        $EvalSetAttackGroupExceptionsByBody.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyEvaluationAttackGroupExceptions
+    $Script:EvalAttackGroupExceptions = Get-AppSecPolicyEvaluationAttackGroupExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -AttackGroupID $TestAttackGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyEvaluationAttackGroupExceptions returns the correct data' {
+        $EvalAttackGroupExceptions.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyEvaluationRuleExceptions by pipeline
+    $Script:EvalSetRuleExceptionsByPipeline = ($TestException | Set-AppSecPolicyEvaluationRuleExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-AppSecPolicyEvaluationRuleExceptions by pipeline sets correctly' {
+        $EvalSetRuleExceptionsByPipeline.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyEvaluationRuleExceptions by body
+    $Script:EvalSetRuleExceptionsByBody = Set-AppSecPolicyEvaluationRuleExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -Body $TestExceptionBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-AppSecPolicyEvaluationRuleExceptions by body sets correctly' {
+        $EvalSetRuleExceptionsByBody.exception | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyEvaluationRuleExceptions
+    $Script:EvalRuleExceptions = Get-AppSecPolicyEvaluationRuleExceptions -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -RuleID $TestRuleID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecPolicyEvaluationRuleExceptions returns the correct data' {
+        $EvalRuleExceptions.exception | Should -Not -BeNullOrEmpty
+    }
+
+
+    #************************************************#
+    #               Penalty Box Evaluation           #
+    #************************************************#
+
+    # ### Get-AppSecPolicyEvaluationPenaltyBox
+    # $Script:EvalPenaltyBox = Get-AppSecPolicyEvaluationPenaltyBox -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section
+    # it 'Get-AppSecPolicyEvaluationPenaltyBox returns the correct data' {
+    #     $EvalPenaltyBox.penaltyBoxProtection | Should -Not -BeNullOrEmpty
+    # }
+
+    # ### Set-AppSecPolicyEvaluationPenaltyBox by pipeline
+    # $Script:EvalSetPenaltyBoxByPipeline = ($PenaltyBox | Set-AppSecPolicyEvaluationPenaltyBox -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section)
+    # it 'Set-AppSecPolicyEvaluationPenaltyBox by pipeline updates correctly' {
+    #     $EvalSetPenaltyBoxByPipeline.penaltyBoxProtection | Should -Not -BeNullOrEmpty
+    # }
+
+    # ### Set-AppSecPolicyEvaluationPenaltyBox by body
+    # $Script:EvalSetPenaltyBoxByBody = Set-AppSecPolicyEvaluationPenaltyBox -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -Body (ConvertTo-Json -Depth 10 $PenaltyBox) -EdgeRCFile $EdgeRCFile -Section $Section
+    # it 'Set-AppSecPolicyEvaluationPenaltyBox by body updates correctly' {
+    #     $EvalSetPenaltyBoxByBody.penaltyBoxProtection | Should -Not -BeNullOrEmpty
+    # }
+
+    #************************************************#
+    #                     Export                     #
+    #************************************************#
+
+    ### Export-AppSecConfigurationVersionDetails
+    $Script:Export = Export-AppSecConfigurationVersionDetails -ConfigID $NewConfig.configId -VersionNumber 1 -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Export-AppSecConfigurationVersionDetails exports correctly' {
+        $Export.configId | Should -Be $Newconfig.configId
+    }
+    
+    #************************************************#
+    #                  SIEM Versions                 #
+    #************************************************#
+
+    ### Export-AppSecConfigurationVersionDetails
+    $Script:SiemVersions = Get-AppSecSiemVersions -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-AppSecSiemVersions returns the correct data' {
+        $SiemVersions[0].id | Should -Not -BeNullOrEmpty
     }
 
     #************************************************#
@@ -687,6 +1016,11 @@ Describe 'Safe AppSec Tests' {
     #                    Removals                    #
     #************************************************#
 
+    ### Remove-AppSecMatchTarget
+    it 'Remove-AppSecMatchTarget completes successfully' {
+        { Remove-AppSecMatchTarget -ConfigID $NewConfig.configId -VersionNumber 1 -TargetID $NewMatchTarget.targetId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
     ### Remove-AppSecPolicy
     it 'Remove-AppSecPolicy completes successfully' {
         {Remove-AppSecPolicy -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
@@ -700,11 +1034,6 @@ Describe 'Safe AppSec Tests' {
     ### Remove-AppSecCustomDenyAction
     it 'Get-AppSecCustomDenyAction completes successfully' {
         {Remove-AppSecCustomDenyAction -ConfigID $NewConfig.configId -VersionNumber 1 -CustomDenyID $NewCustomDenyAction.id -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
-    }
-
-    ### Get-AppSecMatchTarget
-    it 'Remove-AppSecMatchTarget completes successfully' {
-        { Remove-AppSecMatchTarget -ConfigID $NewConfig.configId -VersionNumber 1 -TargetID $NewMatchTarget.targetId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
     }
 
     ### Remove-AppSecCustomRule
@@ -728,10 +1057,80 @@ Describe 'Safe AppSec Tests' {
 }
 
 Describe 'Unsafe AppSec Tests' {
-    # ### List-AppSeConfigurationHostnameOverlaps
-    # $Script:Overlaps = List-AppSeConfigurationHostnameOverlaps -ConfigID $NewConfig.configId -VersionNumber $NewVersion.version -EdgeRCFile $SafeEdgeRcFile -Section $Section
-    # it 'List-AppSeConfigurationHostnameOverlaps lists hostnames' {
-    #     $Overlaps.count | Should -Not -BeNullOrEmpty
-    # }
+
+    #************************************************#
+    #                   Activations                  #
+    #************************************************#
+
+    ### Activate-AppSecConfigurationVersion
+    $Script:Activate = Activate-AppSecConfiguration -ConfigID 12345 -VersionNumber 1 -Network STAGING -NotificationEmails 'mail@example.com' -Note 'testing' -EdgeRCFile $SafeEdgeRcFile -Section $Section
+    it 'Activate-AppSecConfigurationVersion activates correctly' {
+        $Activate.activationId | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-AppSecActivationHistory
+    $Script:Activations = List-AppSecActivationHistory -ConfigID 12345 -EdgeRCFile $SafeEdgeRcFile -Section $Section
+    it 'List-AppSecActivationHistory returns a list' {
+        $Activations.count | Should -BeGreaterThan 0
+    }
+
+    ### Get-AppSecActivationRequestStatus
+    $Script:ActivationRequest = Get-AppSecActivationRequestStatus -StatusID 'f81c92c5-b150-4c41-9b53-9cef7969150a' -EdgeRCFile $SafeEdgeRcFile -Section $Section
+    it 'Get-AppSecActivationRequestStatus returns the correct data' {
+        $ActivationRequest.statusId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecActivationStatus
+    $Script:ActivationStatus = Get-AppSecActivationStatus -ActivationID 1234 -EdgeRCFile $SafeEdgeRcFile -Section $Section
+    it 'Get-AppSecActivationStatus returns the correct data' {
+        $ActivationStatus.activationId | Should -Not -BeNullOrEmpty
+    }
+
+    #************************************************#
+    #                  Subscriptions                 #
+    #************************************************#
+
+    ### List-AppSecSubscribers
+    $Script:Subscribers = List-AppSecSubscribers -ConfigID 12345 -Feature AAG_TUNING_REC -EdgeRCFile $SafeEdgeRcFile -Section $Section
+    it 'List-AppSecSubscribers returns a list' {
+        $Subscribers.count | Should -BeGreaterThan 0
+    }
+
+    ### New-AppSecSubscription
+    it 'New-AppSecSubscription completes successfully' {
+        { New-AppSecSubscription -ConfigID 12345 -Feature AAG_TUNING_REC -Subscribers "email@example.com, email2@example.com" -EdgeRCFile $SafeEdgeRcFile -Section $Section } | Should -Not -Throw
+    }
+
+    ### Remove-AppSecSubscription
+    it 'Remove-AppSecSubscription completes successfully' {
+        { Remove-AppSecSubscription -ConfigID 12345 -Feature AAG_TUNING_REC -Subscribers "email@example.com, email2@example.com" -EdgeRCFile $SafeEdgeRcFile -Section $Section } | Should -Not -Throw
+    }
+
+    #************************************************#
+    #             Tuning Recommendations             #
+    #************************************************#
     
+    ### Get-AppSecPolicyTuningRecommendations
+    $Script:Recommendations = Get-AppSecPolicyTuningRecommendations -ConfigID 12345 -VersionNumber 1 -PolicyID EX01_123456 -EdgeRCFile $SafeEdgeRcFile -Section $Section
+    it 'Get-AppSecPolicyTuningRecommendations returns a list' {
+        $Recommendations.ruleRecommendations | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-AppSecPolicyTuningRecommendations
+    it 'Set-AppSecPolicyTuningRecommendations completes successfully' {
+        { Set-AppSecPolicyTuningRecommendations -ConfigID 12345 -VersionNumber 1 -PolicyID EX01_123456 -Action ACCEPT -SelectorID 84220 -EdgeRCFile $SafeEdgeRcFile -Section $Section } | Should -Not -Throw
+    }
+
+    ### Get-AppSecPolicyAttackGroupRecommendations
+    $Script:AttackGroupRecommendations = Get-AppSecPolicyAttackGroupRecommendations -ConfigID 12345 -VersionNumber 1 -PolicyID EX01_123456 -AttackGroupID CMD -EdgeRCFile $SafeEdgeRcFile -Section $Section
+    it 'Get-AppSecPolicyAttackGroupRecommendations returns a list' {
+        $AttackGroupRecommendations.group | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-AppSecPolicyRuleRecommendations
+    $Script:RuleRecommendations = Get-AppSecPolicyRuleRecommendations -ConfigID 12345 -VersionNumber 1 -PolicyID EX01_123456 -RuleID 12345 -EdgeRCFile $SafeEdgeRcFile -Section $Section
+    it 'Get-AppSecPolicyRuleRecommendations returns a list' {
+        $RuleRecommendations.id | Should -Not -BeNullOrEmpty
+    }
+
 }

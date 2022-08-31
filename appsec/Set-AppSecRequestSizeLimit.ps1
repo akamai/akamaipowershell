@@ -4,7 +4,7 @@ function Set-AppSecRequestSizeLimit
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  [string] $RequestBodyInspectionLimitInKB,
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  [ValidateSet('8','16','32','default')] [string] $RequestSizeLimit,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -28,7 +28,7 @@ function Set-AppSecRequestSizeLimit
         }
     
         $BodyObj = @{
-            requestBodyInspectionLimitInKB = $RequestBodyInspectionLimitInKB
+            requestBodyInspectionLimitInKB = $RequestSizeLimit
         }
         $Body = $BodyObj | ConvertTo-Json
     
