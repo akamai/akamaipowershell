@@ -17,7 +17,7 @@ function List-ChinaCDNHoldingEntities
         return $Result.icpHoldingEntities
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

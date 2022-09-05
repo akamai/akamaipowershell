@@ -14,7 +14,7 @@ function Get-ErrorStringTranslation
         return $Result.translatedError
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

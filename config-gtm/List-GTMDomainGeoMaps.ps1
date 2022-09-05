@@ -14,7 +14,7 @@ function List-GTMDomainGeoMaps
         return $Result.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }  
 }
 # SIG # Begin signature block

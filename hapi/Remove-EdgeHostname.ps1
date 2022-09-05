@@ -17,7 +17,7 @@ function Remove-EdgeHostname
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

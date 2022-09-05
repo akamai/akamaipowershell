@@ -26,7 +26,7 @@ function Set-APIEndpointVersionResource
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

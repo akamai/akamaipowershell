@@ -14,7 +14,7 @@ function Get-EdgeHostnameChangeRequest
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

@@ -21,7 +21,7 @@ function Get-EdgeWorker
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -32,7 +32,7 @@ function Get-EdgeWorker
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

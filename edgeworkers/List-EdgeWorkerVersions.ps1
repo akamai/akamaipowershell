@@ -21,7 +21,7 @@ function List-EdgeWorkerVersions
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -32,7 +32,7 @@ function List-EdgeWorkerVersions
         return $Result.versions
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

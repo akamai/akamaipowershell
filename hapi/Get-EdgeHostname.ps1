@@ -36,7 +36,7 @@ function Get-EdgeHostname
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

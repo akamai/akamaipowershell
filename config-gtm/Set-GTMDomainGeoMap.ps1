@@ -24,7 +24,7 @@ function Set-GTMDomainGeoMap
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         } 
     }
 

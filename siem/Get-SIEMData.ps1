@@ -45,7 +45,7 @@ function Get-SIEMData
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 
     $Events = New-Object -TypeName System.Collections.ArrayList

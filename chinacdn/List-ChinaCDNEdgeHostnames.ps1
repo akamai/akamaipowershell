@@ -17,7 +17,7 @@ function List-ChinaCDNEdgeHostnames
         return $Result.edgeHostnames
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

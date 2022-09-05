@@ -20,7 +20,7 @@ function List-MSLCPCodes
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

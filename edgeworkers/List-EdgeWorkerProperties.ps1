@@ -26,7 +26,7 @@ function List-EdgeWorkerProperties
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -37,7 +37,7 @@ function List-EdgeWorkerProperties
         return $Result.properties
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

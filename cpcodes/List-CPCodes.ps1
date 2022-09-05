@@ -25,7 +25,7 @@ function List-CPCodes
         return $Result.cpcodes
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

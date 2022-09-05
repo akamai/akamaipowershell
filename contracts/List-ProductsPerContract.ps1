@@ -21,7 +21,7 @@ function List-ProductsPerContract
         return $Result.products.'marketing-products'
     }
     catch {
-        throw $_.Exception
+        throw $_
     }  
 }
 # SIG # Begin signature block

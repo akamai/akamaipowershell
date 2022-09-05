@@ -13,7 +13,7 @@ function List-LDSDeliveryFrequencies
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

@@ -30,7 +30,7 @@ function List-TCMSets
         return $Result.sets
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

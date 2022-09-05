@@ -1,4 +1,4 @@
-﻿function List-IDMAccountSwitchKeys
+function List-IDMAccountSwitchKeys
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $SearchString,
@@ -17,7 +17,7 @@
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 

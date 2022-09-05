@@ -14,7 +14,7 @@ function Get-IPGeoLocation
         return $Result.geolocation
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

@@ -13,6 +13,6 @@ function List-AccessKeys
         return $Result.accessKeys
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }

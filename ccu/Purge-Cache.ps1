@@ -72,7 +72,7 @@ function Purge-Cache
     }
     catch
     {
-       throw $_.Exception 
+       throw $_ 
     }
 }
 

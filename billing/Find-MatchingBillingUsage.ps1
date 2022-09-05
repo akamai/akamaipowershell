@@ -22,7 +22,7 @@ function Find-MatchinBillingUsage
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

@@ -16,7 +16,7 @@ function Get-GTMLoadData
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

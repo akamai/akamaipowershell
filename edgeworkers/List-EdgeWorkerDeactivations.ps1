@@ -22,7 +22,7 @@ function List-EdgeWorkerDeactivations
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -33,7 +33,7 @@ function List-EdgeWorkerDeactivations
         return $Result.deactivations
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

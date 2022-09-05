@@ -31,7 +31,7 @@ function Get-AMDRealTimeData
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

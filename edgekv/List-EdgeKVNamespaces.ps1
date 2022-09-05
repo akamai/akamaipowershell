@@ -14,7 +14,7 @@ function List-EdgeKVNamespaces
         return $Result.namespaces
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

@@ -23,7 +23,7 @@ function Set-TestSuite
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

@@ -13,7 +13,7 @@ function List-AMDDAtaStores
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

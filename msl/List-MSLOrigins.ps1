@@ -15,7 +15,7 @@ function List-MSLOrigins
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

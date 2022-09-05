@@ -22,7 +22,7 @@ function Get-EdgeWorkerActivation
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -32,7 +32,7 @@ function Get-EdgeWorkerActivation
             $ActivationID = $Activations[0].activationId
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -43,7 +43,7 @@ function Get-EdgeWorkerActivation
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

@@ -23,7 +23,7 @@ function Set-MSLStream
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

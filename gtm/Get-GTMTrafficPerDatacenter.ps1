@@ -22,7 +22,7 @@ function Get-GTMTrafficPerDatacenter
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

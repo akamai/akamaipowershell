@@ -23,7 +23,7 @@ function Set-TestDefinition
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

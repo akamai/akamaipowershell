@@ -17,7 +17,7 @@ function List-ChinaCDNICPNumbers
         return $Result.icpNumbers
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

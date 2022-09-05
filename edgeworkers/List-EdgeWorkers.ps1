@@ -14,7 +14,7 @@ function List-EdgeWorkers
         return $Result.edgeWorkerIds
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

@@ -24,7 +24,7 @@ function Get-ImageManagerImageCollectionHistory
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

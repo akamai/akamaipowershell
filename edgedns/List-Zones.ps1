@@ -24,7 +24,7 @@ function List-Zones
         return $Result.zones
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

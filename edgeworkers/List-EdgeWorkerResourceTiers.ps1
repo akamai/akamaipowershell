@@ -14,7 +14,7 @@ function List-EdgeWorkerResourceTiers
         return $Result.resourceTiers
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

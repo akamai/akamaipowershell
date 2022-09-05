@@ -23,7 +23,7 @@ function Remove-ImageManagerImageCollection
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

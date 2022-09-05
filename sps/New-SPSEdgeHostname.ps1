@@ -16,7 +16,7 @@ function New-SPSRequest
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

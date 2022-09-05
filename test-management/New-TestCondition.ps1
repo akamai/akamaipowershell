@@ -22,7 +22,7 @@ function New-TestCondition
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

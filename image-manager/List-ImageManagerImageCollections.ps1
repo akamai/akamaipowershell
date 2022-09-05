@@ -23,7 +23,7 @@ function List-ImageManagerImageCollections
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

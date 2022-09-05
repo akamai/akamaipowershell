@@ -53,7 +53,7 @@ function Delete-CachedObjects
     }
     catch
     {
-       throw $_.Exception 
+       throw $_ 
     }
 }
 

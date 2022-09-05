@@ -23,7 +23,7 @@ function Get-GTMLivenessPerProperty
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

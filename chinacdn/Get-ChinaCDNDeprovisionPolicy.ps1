@@ -18,7 +18,7 @@ function Get-ChinaCDNDeprovisionPolicy
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

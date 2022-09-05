@@ -24,7 +24,7 @@ function Set-CPCode
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

@@ -24,7 +24,7 @@ function New-LDSLogConfiguration
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

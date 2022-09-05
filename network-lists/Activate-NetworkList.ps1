@@ -32,7 +32,7 @@ function Activate-NetworkList
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

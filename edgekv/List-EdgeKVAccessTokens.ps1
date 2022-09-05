@@ -13,7 +13,7 @@ function List-EdgeKVAccessTokens
         return $Result.tokens
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

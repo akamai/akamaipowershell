@@ -14,7 +14,7 @@ function Remove-MSLOrigin
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

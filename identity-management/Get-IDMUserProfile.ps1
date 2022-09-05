@@ -1,4 +1,4 @@
-﻿function Get-IDMUserProfile
+function Get-IDMUserProfile
 {
     Param(
         [Parameter(Mandatory=$false)] [switch] $Actions,
@@ -23,7 +23,7 @@
         return $Result
     }
     catch {
-        throw $_.Exception  
+        throw $_  
     }
 }
 

@@ -19,7 +19,7 @@ function Restore-TestSuite
         return $Result
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

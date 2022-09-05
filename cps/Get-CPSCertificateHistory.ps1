@@ -17,7 +17,7 @@ function Get-CPSCertificateHistory
         return $Result.certificates
     }
     catch {
-        throw $_.Exception
+        throw $_
     }  
 }
 # SIG # Begin signature block

@@ -27,7 +27,7 @@ function Set-EdgeHostname
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

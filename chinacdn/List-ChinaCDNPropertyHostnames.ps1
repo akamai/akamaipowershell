@@ -17,7 +17,7 @@ function List-ChinaCDNPropertyHostnames
         return $Result.propertyHostnames
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

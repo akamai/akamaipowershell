@@ -14,7 +14,7 @@ function List-GTMDomainProperties
         return $Result.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }  
 }
 # SIG # Begin signature block

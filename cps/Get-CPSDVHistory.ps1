@@ -17,7 +17,7 @@ function Get-CPSDVHistory
         return $Result.results
     }
     catch {
-        throw $_.Exception
+        throw $_
     }  
 }
 # SIG # Begin signature block

@@ -47,7 +47,7 @@ function New-ChinaCDNPropertyHostname
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

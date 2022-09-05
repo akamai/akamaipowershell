@@ -59,7 +59,7 @@ function Get-EdgeWorkerAuthToken
         return $Result.akamaiEwTrace
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

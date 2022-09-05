@@ -17,7 +17,7 @@ function Get-CPSChangeHistory
         return $Result.changes
     }
     catch {
-        throw $_.Exception
+        throw $_
     }  
 }
 # SIG # Begin signature block

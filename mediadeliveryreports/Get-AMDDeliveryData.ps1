@@ -39,7 +39,7 @@ function Get-AMDDeliveryData
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

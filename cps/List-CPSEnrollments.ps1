@@ -17,7 +17,7 @@ function List-CPSEnrollments
         return $Result.enrollments
     }
     catch {
-        throw $_.Exception
+        throw $_
     }  
 }
 # SIG # Begin signature block

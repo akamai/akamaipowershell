@@ -27,7 +27,7 @@ function New-EdgeWorkerVersion
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -62,7 +62,7 @@ function New-EdgeWorkerVersion
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

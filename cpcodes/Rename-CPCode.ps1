@@ -18,7 +18,7 @@ function Rename-CPCode
     }
     catch {
         Write-Host "Error updating CP Code $CPCode"
-        throw $_.Exception
+        throw $_
     }
 }
 

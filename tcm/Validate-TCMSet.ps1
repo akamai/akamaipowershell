@@ -30,7 +30,7 @@ function Validate-TCMSet
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

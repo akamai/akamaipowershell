@@ -33,7 +33,7 @@ function Verify-Auth
         $Grants
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

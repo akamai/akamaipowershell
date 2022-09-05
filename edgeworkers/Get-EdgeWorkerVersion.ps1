@@ -22,7 +22,7 @@ function Get-EdgeWorkerVersion
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -32,7 +32,7 @@ function Get-EdgeWorkerVersion
             $Version = $Versions[-1].version
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -43,7 +43,7 @@ function Get-EdgeWorkerVersion
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

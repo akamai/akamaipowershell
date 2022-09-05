@@ -26,7 +26,7 @@ function List-SPSRequests
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

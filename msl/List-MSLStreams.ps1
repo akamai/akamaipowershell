@@ -17,7 +17,7 @@ function List-MSLStreams
         return $Result.streams
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

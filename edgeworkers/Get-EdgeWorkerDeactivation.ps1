@@ -22,7 +22,7 @@ function Get-EdgeWorkerDeactivation
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -32,7 +32,7 @@ function Get-EdgeWorkerDeactivation
             $DeactivationID = $Deactivations[0].deactivationId
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -43,7 +43,7 @@ function Get-EdgeWorkerDeactivation
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

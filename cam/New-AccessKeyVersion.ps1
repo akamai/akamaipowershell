@@ -22,6 +22,6 @@ function New-AccessKeyVersion
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }

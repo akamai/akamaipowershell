@@ -25,7 +25,7 @@ function List-ImageManagerImages
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

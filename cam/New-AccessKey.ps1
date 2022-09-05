@@ -21,7 +21,7 @@ function New-AccessKey
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

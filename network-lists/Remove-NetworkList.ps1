@@ -14,7 +14,7 @@ function Remove-NetworkList
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

@@ -22,7 +22,7 @@ function Get-CPCode
         }
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

@@ -14,6 +14,6 @@ function Get-AccessKeyCreateRequest
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }

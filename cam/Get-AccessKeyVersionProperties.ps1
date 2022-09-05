@@ -15,6 +15,6 @@ function Get-AccessKeyVersionProperties
         return $Result.properties
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }

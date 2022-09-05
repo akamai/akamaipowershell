@@ -73,7 +73,7 @@ function Invalidate-CachedObjects
     }
     catch
     {
-       throw $_.Exception 
+       throw $_ 
     }
 }
 

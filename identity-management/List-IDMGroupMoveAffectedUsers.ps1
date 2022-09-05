@@ -16,7 +16,7 @@ function List-IDMGroupMoveAffectedUsers
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

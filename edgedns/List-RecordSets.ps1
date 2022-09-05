@@ -24,7 +24,7 @@ function List-RecordSets
         return $Result.recordSets
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

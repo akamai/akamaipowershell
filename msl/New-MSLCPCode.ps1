@@ -22,7 +22,7 @@ function New-MSLCPCode
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

@@ -13,7 +13,7 @@ function List-SiteShieldMaps
         return $Result.SiteShieldMaps
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

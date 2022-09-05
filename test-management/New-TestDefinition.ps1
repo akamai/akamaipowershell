@@ -22,7 +22,7 @@ function New-TestDefinition
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

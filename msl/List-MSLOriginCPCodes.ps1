@@ -14,7 +14,7 @@ function List-MSLOriginCPCodes
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

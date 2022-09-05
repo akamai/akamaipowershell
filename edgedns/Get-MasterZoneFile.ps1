@@ -17,7 +17,7 @@ function Get-MasterZoneFile
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

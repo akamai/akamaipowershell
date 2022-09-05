@@ -14,7 +14,7 @@ function Get-GTMLivenessTestError
         return $Result.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

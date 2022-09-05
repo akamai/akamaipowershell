@@ -14,6 +14,6 @@ function List-AccessKeyVersions
         return $Result.accessKeyVersions
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }

@@ -14,7 +14,7 @@ function Get-MSLStream
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

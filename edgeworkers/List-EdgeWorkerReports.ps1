@@ -13,7 +13,7 @@ function List-EdgeWorkerReports
         return $Result.reports
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

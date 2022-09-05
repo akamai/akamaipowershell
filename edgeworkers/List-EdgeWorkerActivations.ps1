@@ -22,7 +22,7 @@ function List-EdgeWorkerActivations
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -33,7 +33,7 @@ function List-EdgeWorkerActivations
         return $Result.activations
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

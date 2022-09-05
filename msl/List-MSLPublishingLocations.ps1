@@ -13,7 +13,7 @@ function List-MSLPublishingLocations
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

@@ -18,7 +18,7 @@ function List-ChinaCDNProvisionStates
         return $Result.provisionStates
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

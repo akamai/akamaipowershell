@@ -13,7 +13,7 @@ function List-MSLCDNs
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
               
 }

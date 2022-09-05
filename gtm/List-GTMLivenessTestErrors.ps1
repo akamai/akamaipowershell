@@ -13,7 +13,7 @@ function List-GTMLivenessTestErrors
         return $Result.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

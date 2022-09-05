@@ -14,6 +14,6 @@ function Get-AccessKeyVersionStatus
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }

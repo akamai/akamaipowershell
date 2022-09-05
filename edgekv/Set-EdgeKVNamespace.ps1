@@ -33,7 +33,7 @@ function Set-EdgeKVNamespace
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

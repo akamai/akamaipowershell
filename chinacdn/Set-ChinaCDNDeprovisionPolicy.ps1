@@ -27,7 +27,7 @@ function Set-ChinaCDNDeprovisionPolicy
             return $Result
         }
         catch {
-            throw $_.Exception 
+            throw $_ 
         }
     }
 

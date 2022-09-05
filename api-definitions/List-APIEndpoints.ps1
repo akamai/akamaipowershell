@@ -23,7 +23,7 @@ function List-APIEndpoints
         return $Result.apiEndpoints
     }
     catch {
-        throw $_.Exception 
+        throw $_ 
     }
 }
 # SIG # Begin signature block

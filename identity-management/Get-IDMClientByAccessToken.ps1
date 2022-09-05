@@ -13,7 +13,7 @@ function Get-IDMClientByAccessToken
         return $Result.identity
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 
