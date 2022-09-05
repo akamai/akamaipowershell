@@ -1,6 +1,18 @@
 # AkamaiPowershell PowerShell Module
 # Changelog
 
+## 1.8.0 - (05/09/2022)
+
+### AppSec, DataStream, Cloudlets & more
+- Updated support for AppSec API 2021 and 2022 features
+- (BREAKING) Datastream functions now default to Datastream 2. DS1 functions now with specific function names
+- New Shared cloudlet functions for Cloudlets API v3
+- Support for PM Includes feature, currently in beta
+- (Potentially BREAKING) Errors thrown are now complete, without the ErrorDetails child object. This was only partially implemented previously, which caused thrown errors to be masked and generally of no use.
+- Support for API Key Manager API, which handles API Key Collections and Throttling for API Gateway
+- Support for Cloud Access Manager API
+- Bugfixes for Netstorage and various other functions
+
 ## 1.7.0 - (24/03/2022)
 
 ### Signing, testing and general improvements
