@@ -1,7 +1,8 @@
 function List-PropertyActivations
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(Mandatory=$true)]  [string] $PropertyID,
+        [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -9,14 +10,22 @@ function List-PropertyActivations
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/properties/$PropertyId/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    if($PropertyName){
+        $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+        $PropertyID = $Property.propertyId
+        if($PropertyID -eq ''){
+            throw "Property '$PropertyName' not found"
+        }
+    }
+
+    $Path = "/papi/v1/properties/$PropertyID/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result.activations.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

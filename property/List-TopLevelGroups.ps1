@@ -11,7 +11,7 @@ function List-TopLevelGroups
         return $Groups 
     }
     catch {
-        throw $_.Exception
+        throw $_
     }           
 }
 # SIG # Begin signature block

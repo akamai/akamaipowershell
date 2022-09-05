@@ -21,6 +21,9 @@ function Sanitise-FileName
     foreach($BadCharacter in $BadCharacters){
         $SanitisedFilename = $SanitisedFilename.Replace($BadCharacter, [System.Web.HttpUtility]::UrlEncode($BadCharacter))
     }
+
+    #Special Handling for asterisk, which the HttpUtility doesn't encode
+    $SanitisedFilename = $SanitisedFilename.Replace('*','%2A')
     
     return $SanitisedFilename
 }

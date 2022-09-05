@@ -14,7 +14,7 @@ function Get-CustomBehavior
         return $Result.customBehaviors.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

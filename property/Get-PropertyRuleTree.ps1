@@ -2,7 +2,7 @@ function Get-PropertyRuleTree
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyID,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
@@ -25,7 +25,7 @@ function Get-PropertyRuleTree
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -35,16 +35,16 @@ function Get-PropertyRuleTree
                 $PropertyVersion = $Property.propertyVersion
             }
             else{
-                $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                $Property = Get-Property -PropertyID $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
                 $PropertyVersion = $Property.latestVersion
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
-    $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/rules?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
     if($RuleFormat){
         $AdditionalHeaders = @{
@@ -56,7 +56,7 @@ function Get-PropertyRuleTree
         $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 
     if($OutputToFile){

@@ -1,8 +1,8 @@
 function Set-PropertyHostnames
 {
     Param(
-        [Parameter(Mandatory=$false)]  [string] $PropertyName,
-        [Parameter(Mandatory=$false)]  [string] $PropertyId,
+        [Parameter(Mandatory=$false)] [string] $PropertyName,
+        [Parameter(Mandatory=$false)] [string] $PropertyID,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [array] $PropertyHostnames,
         [Parameter(Mandatory=$true,ParameterSetName='postbody')] [string] $Body,
@@ -33,20 +33,20 @@ function Set-PropertyHostnames
                 }
             }
             catch{
-                throw $_.Exception
+                throw $_
             }
         }
 
         if($PropertyVersion -eq "latest")
         {
-            $PropertyVersion = (Get-Property -PropertyId $PropertyId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).latestVersion
+            $PropertyVersion = (Get-Property -PropertyID $PropertyID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).latestVersion
         }
 
         # Nullify false switches
         $ValidateHostnamesString = $ValidateHostnames.IsPresent.ToString().ToLower()
         if(!$ValidateHostnames){ $ValidateHostnamesString = '' }
 
-        $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&accountSwitchKey=$AccountSwitchKey"
         if($PSCmdlet.ParameterSetName -eq 'pipeline'){
             $CombinedHostnameArray = New-Object -TypeName System.Collections.ArrayList
         }
@@ -71,7 +71,7 @@ function Set-PropertyHostnames
             return $Result.hostnames.items
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 }

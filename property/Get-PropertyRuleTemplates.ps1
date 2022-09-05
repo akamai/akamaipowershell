@@ -54,12 +54,12 @@ Akamai Powershell - Splitting out properties to snippets
 Pulls a property rule tree from PAPI and breaks it down into json snippets, to a specified depth
 .PARAMETER PropertyName
 Property name to read from PAPI. Either this or PropertyID is required
-.PARAMETER PropertyId
+.PARAMETER PropertyID
 Property ID to read from PAPI. Either this or PropertyName is required
 .PARAMETER PropertyVersion
-Version of property to read from PAPI. Can be integer of 'latest'
+Version of property to read from PAPI. Can be integer or 'latest'
 .PARAMETER OutputDir
-FOlder to write snippets to. OPTIONAL
+Folder to write snippets to. Defaults to the property name. OPTIONAL
 .PARAMETER MaxDepth
 Depth of recursion. Defaults to 100, which is effectively unlimited. OPTIONAL
 .PARAMETER GroupID
@@ -73,7 +73,7 @@ Path to .edgerc file, defaults to ~/.edgerc. OPTIONAL
 .PARAMETER AccountSwitchKey
 Account switch key if applying to an account external to yoru API user. Only usable by Akamai staff and partners. OPTIONAL
 .EXAMPLE
-Merge-PropertyRuleTemplates -SourceDirectory /property -OutputToFile -OutputFileName rules.json
+Get-PropertyRuleTemplates -PropertyName MyProperty -PropertyVersion latest -OutputDir MyProperty
 .LINK
 developer.akamai.com
 #>
@@ -81,7 +81,7 @@ developer.akamai.com
 function Get-PropertyRuleTemplates {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyID,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$false)] [string] $OutputDir,
         [Parameter(Mandatory=$false)] [int]    $MaxDepth = 100,
@@ -101,11 +101,23 @@ function Get-PropertyRuleTemplates {
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
-    $Rules = Get-PropertyRuleTree -PropertyId $PropertyId -PropertyVersion $PropertyVersion -GroupID $GroupId -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+    if($PropertyVersion.ToLower() -eq "latest"){
+        try{
+            if($PropertyName -eq ''){
+                $Property = Find-Property -PropertyName $PropertyName -Latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            }
+            $PropertyVersion = $Property.propertyVersion
+        }
+        catch{
+            throw $_
+        }
+    }
+
+    $Rules = Get-PropertyRuleTree -PropertyID $PropertyID -PropertyVersion $PropertyVersion -GroupID $GroupId -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 
     if($OutputDir -eq ''){
         $OutputDir = $Rules.propertyName

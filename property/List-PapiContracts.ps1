@@ -13,7 +13,7 @@ function List-PapiContracts
         return $Result.contracts.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }  
 }
 # SIG # Begin signature block

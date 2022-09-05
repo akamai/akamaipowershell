@@ -21,7 +21,7 @@ function List-Groups
         return $returnGroup 
     }
     catch {
-        throw $_.Exception
+        throw $_
     }           
 }
 # SIG # Begin signature block

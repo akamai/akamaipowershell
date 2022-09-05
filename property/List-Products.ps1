@@ -14,7 +14,7 @@ function List-Products
         return $Result.products.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

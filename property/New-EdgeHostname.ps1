@@ -40,7 +40,7 @@ function New-EdgeHostname
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

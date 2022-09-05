@@ -2,7 +2,7 @@ function List-PropertyVersions
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyID,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -20,18 +20,18 @@ function List-PropertyVersions
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
-    $Path = "/papi/v1/properties/$PropertyId/versions?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/versions?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result.versions.items 
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 
