@@ -15,7 +15,7 @@ function List-PapiCPCodes
         return $Result.cpcodes.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

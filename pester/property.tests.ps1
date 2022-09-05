@@ -6,6 +6,7 @@ $Script:Section = 'default'
 $Script:TestContract = '1-1NC95D'
 $Script:TestGroupName = 'AkamaiPowershell'
 $Script:TestPropertyName = 'akamaipowershell-testing'
+$Script:TestIncludeName = 'akamaipowershell-include'
 $Script:AdditionalHostname = 'new.host'
 
 Describe 'Safe PAPI Tests' {
@@ -18,7 +19,7 @@ Describe 'Safe PAPI Tests' {
     ### List-Contracts
     $Script:Contracts = List-PapiContracts -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-Contracts lists contracts' {
-        $Contracts.count | Should -BeGreaterThan 0
+        $Contracts[0].contractId | Should -Not -BeNullOrEmpty
     }
 
     $Script:Products = List-Products -ContractId $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
@@ -52,7 +53,7 @@ Describe 'Safe PAPI Tests' {
     ### List-TopLevelGroups
     $Script:TopLevelGroups = List-TopLevelGroups -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-TopLevelGroups lists groups' {
-        $TopLevelGroups.count | Should -BeGreaterThan 0
+        $TopLevelGroups[0].groupId | Should -Not -BeNullOrEmpty
     }
 
     ### List-PapiCPCodes
@@ -257,18 +258,97 @@ Describe 'Safe PAPI Tests' {
         $ActivationResult[0].activationId | Should -Be $ActivationID
     }
 
+    #************************************************#
+    #                    Includes                    #
+    #************************************************#
+
+    ### New-PropertyInclude
+    $Script:NewInclude = New-PropertyInclude -IncludeName $TestIncludeName -ProductID Fresca -GroupID $TestGroup.groupId -RuleFormat v2022-06-28 -IncludeType MICROSERVICES -ContractId $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-PropertyInclude creates an include' {
+        $NewInclude.includeLink | Should -Not -BeNullOrEmpty
+    }
+    $NewIncludeID = $NewInclude.includeLink.Replace('/papi/v1/includes/','')
+    $NewIncludeID = [int] ($NewIncludeID.SubString(0, $NewIncludeID.IndexOf('?')))
+
+    ### List-PropertyIncludes
+    $Script:Includes = List-PropertyIncludes -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-PropertyIncludes returns a list' {
+        $Includes[0].includeId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-PropertyInclude by ID
+    $Script:IncludeByID = Get-PropertyInclude -IncludeID $NewIncludeID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-PropertyInclude returns the correct data' {
+        $IncludeByID.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Get-PropertyInclude by name
+    $Script:Include = Get-PropertyInclude -IncludeName $TestIncludeName -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-PropertyInclude returns the correct data' {
+        $Include.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Get-PropertyIncludeRuleTree
+    $Script:IncludeRules = Get-PropertyIncludeRuleTree -IncludeName $TestIncludeName -IncludeVersion 1 -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-PropertyIncludeRuleTree returns the correct data' {
+        $IncludeRules.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Set-PropertyIncludeRuleTree by pipeline
+    $Script:SetIncludeRulesByPipeline = ( $IncludeRules | Set-PropertyIncludeRuleTree -IncludeName $TestIncludeName -IncludeVersion 1 -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-PropertyIncludeRuleTree by pipeline updates correctly' {
+        $SetIncludeRulesByPipeline.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Set-PropertyIncludeRuleTree by body
+    $Script:SetIncludeRulesByBody = Set-PropertyIncludeRuleTree -IncludeId $NewIncludeID -IncludeVersion 1 -Body (ConvertTo-Json $IncludeRules -Depth 100) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-PropertyIncludeRuleTree by body updates correctly' {
+        $SetIncludeRulesByBody.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Get-PropertyIncludeRuleTemplates
+    Get-PropertyIncludeRuleTemplates -IncludeName $TestIncludeName -IncludeVersion latest -OutputDir inputtemplates -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-PropertyIncludeRuleTemplates creates expected files' {
+        'inputtemplates\main.json' | Should -Exist
+    }
+
+    ### Set-PropertyIncludeRuleTemplates
+    $Script:SetIncludeRulesTemplate = Set-PropertyIncludeRuleTemplates -IncludeName $TestIncludeName -IncludeVersion 1 -SourceDirectory inputtemplates -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-PropertyIncludeRuleTemplates updates successfully' {
+        $SetIncludeRulesTemplate.includeName | Should -Be $TestIncludeName
+    }
+
+    ### List-PropertyIncludeVersions
+    $Script:IncludeVersions = List-PropertyIncludeVersions -IncludeID $NewIncludeID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-PropertyIncludeVersions returns the correct data' {
+        $IncludeVersions[0].includeVersion | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-PropertyIncludeVersion
+    $Script:NewIncludeVersion = New-PropertyIncludeVersion -IncludeID $NewIncludeID -CreateFromVersion 1 -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-PropertyIncludeVersion creates a new version' {
+        $NewIncludeVersion.versionLink | Should -Match $NewIncludeID
+    }
+
+    ### Remove-PropertyInclude
+    $Script:RemoveInclude = Remove-PropertyInclude -IncludeID $NewIncludeID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-PropertyInclude completes successfully' {
+        $RemoveInclude.message | Should -Be "Deletion Successful."
+    }
+
     AfterAll {
         ### Cleanup files
         Remove-Item rules.json -Force
         Remove-Item templates.json -Force
         Remove-Item templates -Recurse -Force
+        Remove-Item inputtemplates -Recurse -Force
     }
     
 }
 
 Describe 'Unsafe PAPI Tests' {
     ### New-Property
-    $Script:NewProperty = New-Property -PropertyName $TestPropertyName -ProductID SPM -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    $Script:NewProperty = New-Property -PropertyName $TestPropertyName -ProductID Fresca -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-Property creates a property' {
         $NewProperty.propertyLink | Should -Not -BeNullOrEmpty
     }
@@ -280,13 +360,13 @@ Describe 'Unsafe PAPI Tests' {
     }
 
     ### New-EdgeHostname
-    $Script:NewEdgeHostname = New-EdgeHostname -DomainPrefix test -DomainSuffix edgesuite.net -IPVersionBehavior IPV4 -ProductId SPM -SecureNetwork STANDARD_TLS -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    $Script:NewEdgeHostname = New-EdgeHostname -DomainPrefix test -DomainSuffix edgesuite.net -IPVersionBehavior IPV4 -ProductId Fresca -SecureNetwork STANDARD_TLS -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-Property creates a property' {
         $NewEdgeHostname.edgeHostnameLink | Should -Not -BeNullOrEmpty
     }
 
     ### New-CPCode
-    $Script:NewCPCode = New-CPCode -CPCodeName testCP -ProductId SPM -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    $Script:NewCPCode = New-CPCode -CPCodeName testCP -ProductId Fresca -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-Property creates a property' {
         $NewCPCode.cpcodeLink | Should -Not -BeNullOrEmpty
     }
@@ -295,6 +375,30 @@ Describe 'Unsafe PAPI Tests' {
     $Script:Deactivation = Deactivate-Property -PropertyID 123456 -PropertyVersion 1 -Network Staging -NotifyEmails "mail@example.com" -AcknowledgeAllWarnings -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Deactivate-Property returns activationlink' {
         $Deactivation.activationLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### Activate-PropertyInclude
+    $Script:ActivateInclude = Activate-PropertyInclude -IncludeID 123456 -IncludeVersion 1 -Network Staging -NotifyEmails 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Activate-PropertyInclude activates successfully' {
+        $ActivateInclude.activationLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### Deactivate-PropertyInclude
+    $Script:DeactivateInclude = Deactivate-PropertyInclude -IncludeID 123456 -IncludeVersion 1 -Network Staging -NotifyEmails 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Deactivate-PropertyInclude activates successfully' {
+        $DeactivateInclude.activationLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-PropertyIncludeActivation
+    $Script:IncludeActivation = Get-PropertyIncludeActivation -IncludeID 123456 -ActivationID 123456789 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-PropertyIncludeActivation returns the right data' {
+        $IncludeActivation.includeId | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-PropertyIncludeActivations
+    $Script:IncludeActivations = List-PropertyIncludeActivations -IncludeID 123456 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'List-PropertyIncludeActivations returns a list' {
+        $IncludeActivations[0].includeId | Should -Not -BeNullOrEmpty
     }
 }
 # SIG # Begin signature block

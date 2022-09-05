@@ -1,6 +1,6 @@
 function Get-PropertyTemplates {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(Mandatory=$true)]  [string] $PropertyID,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
@@ -9,7 +9,9 @@ function Get-PropertyTemplates {
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Rules = Get-PropertyRuleTree -PropertyId $PropertyId -PropertyVersion $PropertyVersion -GroupID $GroupId -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+    Write-Host -ForegroundColor Yellow "WARNING: This cmdlet is deprecated and will be removed in a future release. Use Get-PropertyRuleTemplates going forward"
+
+    $Rules = Get-PropertyRuleTree -PropertyID $PropertyID -PropertyVersion $PropertyVersion -GroupID $GroupId -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 
     # Make Property Directory
     $OutputDir = ".\$($Rules.propertyName)"

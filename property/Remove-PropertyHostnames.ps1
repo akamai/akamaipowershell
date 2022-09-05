@@ -2,7 +2,7 @@ function Remove-PropertyHostnames
 {
     Param(
         [Parameter(Mandatory=$false,ParameterSetName='name')] [string] $PropertyName,
-        [Parameter(Mandatory=$false,ParameterSetName='id')]   [string] $PropertyId,
+        [Parameter(Mandatory=$false,ParameterSetName='id')]   [string] $PropertyID,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$true)]  [string] $HostnamesToRemove,
         [Parameter(Mandatory=$false)] [string] $GroupID,
@@ -31,7 +31,7 @@ function Remove-PropertyHostnames
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -41,12 +41,12 @@ function Remove-PropertyHostnames
                 $PropertyVersion = $Property.propertyVersion
             }
             else{
-                $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                $Property = Get-Property -PropertyID $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
                 $PropertyVersion = $Property.latestVersion
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -61,7 +61,7 @@ function Remove-PropertyHostnames
         return $Result.hostnames.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 
 }

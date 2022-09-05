@@ -13,7 +13,7 @@ function List-CustomBehaviors
         return $Result.custombehaviors.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

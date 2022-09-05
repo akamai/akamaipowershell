@@ -2,7 +2,7 @@ function Activate-Property
 {
     Param(
         [Parameter(Mandatory=$false)]                                [string]   $PropertyName,
-        [Parameter(Mandatory=$false)]                                [string]   $PropertyId,
+        [Parameter(Mandatory=$false)]                                [string]   $PropertyID,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string]   $PropertyVersion,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string]   [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $Note,
@@ -37,7 +37,7 @@ function Activate-Property
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -47,12 +47,12 @@ function Activate-Property
                 $PropertyVersion = $Property.propertyVersion
             }
             else{
-                $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                $Property = Get-Property -PropertyID $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
                 $PropertyVersion = $Property.latestVersion
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -111,7 +111,7 @@ function Activate-Property
         $Body = $BodyObj | ConvertTo-Json -Depth 100
     }
 
-    $Path = "/papi/v1/properties/$PropertyId/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
     try
     {
@@ -120,7 +120,7 @@ function Activate-Property
     }
     catch
     {
-        throw $_.Exception
+        throw $_
     }
 }
 

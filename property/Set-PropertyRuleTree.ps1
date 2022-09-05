@@ -2,13 +2,13 @@ Function Set-PropertyRuleTree
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
-        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyId,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyID,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$false, ValueFromPipeline)] [System.Object] $RuleTree,
         [Parameter(Mandatory=$false)] [string] $InputFile,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $VersionNotes,
-        [Parameter(Mandatory=$false)] [string] $SetRuleFormat,
+        [Parameter(Mandatory=$false)] [string] [Alias('SetRuleFormat')] $RuleFormat,
         [Parameter(Mandatory=$false)] [switch] $DryRun,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('fast','full')]  $ValidateMode,
         [Parameter(Mandatory=$false)] [switch] $ValidateRules,
@@ -31,9 +31,9 @@ Function Set-PropertyRuleTree
         $ValidateRulesString = $ValidateRules.IsPresent.ToString().ToLower()
         if(!$ValidateRules){ $ValidateRulesString = '' }
 
-        if($SetRuleFormat){
+        if($RuleFormat){
             $AdditionalHeaders = @{
-                'Content-Type' = "application/vnd.akamai.papirules.$SetRuleFormat+json"
+                'Content-Type' = "application/vnd.akamai.papirules.$RuleFormat+json"
             }
         }
 
@@ -81,7 +81,7 @@ Function Set-PropertyRuleTree
                 }
             }
             catch{
-                throw $_.Exception
+                throw $_
             }
         }
 
@@ -94,16 +94,16 @@ Function Set-PropertyRuleTree
                     $PropertyVersion = $Property.propertyVersion
                 }
                 else{
-                    $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                    $Property = Get-Property -PropertyID $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
                     $PropertyVersion = $Property.latestVersion
                 }
             }
             catch{
-                throw $_.Exception
+                throw $_
             }
         }
 
-        $Path = "/papi/v1/properties/$PropertyId/versions/$PropertyVersion/rules?validateRules=$ValidateRulesString&validateMode=$ValidateMode&dryRun=$DryRunString&contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/rules?validateRules=$ValidateRulesString&validateMode=$ValidateMode&dryRun=$DryRunString&contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
 
         try
         {
@@ -112,7 +112,7 @@ Function Set-PropertyRuleTree
         }
         catch
         {
-            throw $_.Exception
+            throw $_
         }
     }
     

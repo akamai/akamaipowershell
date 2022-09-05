@@ -17,7 +17,7 @@ function Get-PapiEdgeHostname
         return $Result.edgehostnames.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

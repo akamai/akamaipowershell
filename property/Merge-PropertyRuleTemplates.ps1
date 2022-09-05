@@ -79,12 +79,8 @@ function Merge-PropertyRuleTemplates {
     
 
     ## Get Variables
-    $VariablesFileName = $Rules.variables.Replace("#include:","")
-    if($PSVersionTable.PSVersion.Major -gt 5){
-        $Rules.variables = Get-Content -Raw "$($Source.FullName)$OSSlashChar$VariablesFileName" | ConvertFrom-Json -Depth 100
-    }
-    else{
-        # PS 5 does odd things with array-based json files so we have to trick it
+    if($null -ne $Rules.variables){
+        $VariablesFileName = $Rules.variables.Replace("#include:","")
         $Rules.variables = @()
         $Variables = Get-Content -Raw "$($Source.FullName)$OSSlashChar$VariablesFileName" | ConvertFrom-Json
         $Rules.variables += $Variables

@@ -15,7 +15,7 @@ function List-Properties
         return $Result.properties.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

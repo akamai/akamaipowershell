@@ -4,6 +4,7 @@ function Find-Property
         [Parameter(ParameterSetName='Name', Mandatory=$false)] [string] $PropertyName,
         [Parameter(ParameterSetName='Host', Mandatory=$false)] [string] $PropertyHostname,
         [Parameter(ParameterSetName='Edge', Mandatory=$false)] [string] $EdgeHostname,
+        [Parameter(ParameterSetName='Include', Mandatory=$false)] [string] $IncludeName,
         [Parameter(Mandatory=$false)] [switch] $Latest,
         [Parameter(Mandatory=$false)] [switch] $JustProductionActive,
         [Parameter(Mandatory=$false)] [switch] $JustStagingActive,
@@ -24,13 +25,21 @@ function Find-Property
     elseif($EdgeHostname) {
         $BodyObj["edgeHostname"] = $EdgeHostname
     }
+    elseif($IncludeName) {
+        $BodyObj["includeName"] = $IncludeName
+    }
 
     $Body = $BodyObj | ConvertTo-Json -Depth 10 
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
         if($Latest){
-            $SortedResult = $Result.versions.items | Sort-Object -Property propertyVersion -Descending
+            if($IncludeName){
+                $SortedResult = $Result.versions.items | Sort-Object -Property includeVersion -Descending
+            }
+            else{
+                $SortedResult = $Result.versions.items | Sort-Object -Property propertyVersion -Descending
+            }
             if($null -ne $SortedResult -and $SortedResult.GetType().Name -eq "Object[]") {
                 return $SortedResult[0]
             }
@@ -49,7 +58,7 @@ function Find-Property
         }
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

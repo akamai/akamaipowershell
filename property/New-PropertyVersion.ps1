@@ -2,7 +2,7 @@ function New-PropertyVersion
 {
     Param(
         [Parameter(Mandatory=$false)] [string] $PropertyName,    
-        [Parameter(Mandatory=$false)] [string] $PropertyId,
+        [Parameter(Mandatory=$false)] [string] $PropertyID,
         [Parameter(ParameterSetName='attributes-version', Mandatory=$true)]  [string] $CreateFromVersion,
         [Parameter(ParameterSetName='attributes-etag', Mandatory=$true)]  [string] $CreateFromEtag,
         [Parameter(ParameterSetName='postbody', Mandatory=$true)]  [string] $Body,
@@ -13,7 +13,7 @@ function New-PropertyVersion
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
-    if($PropertyName -eq '' -and $PropertyId -eq ''){
+    if($PropertyName -eq '' -and $PropertyID -eq ''){
         throw "You must specify either a PropertyName or a PropertyID"
     }
 
@@ -26,7 +26,7 @@ function New-PropertyVersion
             }
         }
         catch{
-            throw $_.Exception
+            throw $_
         }
     }
 
@@ -39,12 +39,12 @@ function New-PropertyVersion
                         $CreateFromVersion = $Property.propertyVersion
                     }
                     else{
-                        $Property = Get-Property -PropertyId $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+                        $Property = Get-Property -PropertyID $PropertyID -GroupID $GroupID -ContractId $ContractId -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
                         $CreateFromVersion = $Property.latestVersion
                     }
                 }
                 catch{
-                    throw $_.Exception
+                    throw $_
                 }
             }
     
@@ -58,14 +58,14 @@ function New-PropertyVersion
         $Body = $PostObject | ConvertTo-json
     }
     
-    $Path = "/papi/v1/properties/$PropertyId/versions?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/versions?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
     
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 

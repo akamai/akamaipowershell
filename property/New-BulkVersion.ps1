@@ -24,7 +24,7 @@ function New-BulkVersion
             return $Result
         }
         catch {
-            throw $_.Exception
+            throw $_
         }
     }
 

@@ -15,7 +15,7 @@ function Get-GroupByName
         return $Result.groups.items | where {$_.groupName -eq $GroupName} 
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 # SIG # Begin signature block

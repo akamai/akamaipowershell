@@ -16,7 +16,7 @@ function List-PapiEdgeHostnames
         return $Result.edgeHostnames.items
     }
     catch {
-        throw $_.Exception
+        throw $_
     }
 }
 
