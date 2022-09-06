@@ -24,15 +24,13 @@ function List-AllProperties
         {
             try {
                 $PropertiesToAdd = List-Properties -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0] -AccountSwitchKey $AccountSwitchKey
-                if($PropertiesToAdd.Count -gt 1)
-                {
-                    $Properties.AddRange($PropertiesToAdd) | Out-Null
-                }
-                elseif($PropertiesToAdd.Count -eq 1) {
-                    $Properties.Add($PropertiesToAdd) | Out-Null
-                }
-                else {
-                    continue
+                if($null -ne $PropertiesToAdd){
+                    if($PropertiesToAdd.Count -gt 1) {
+                        $Properties.AddRange($PropertiesToAdd) | Out-Null
+                    }
+                    else {
+                        $Properties.Add($PropertiesToAdd) | Out-Null
+                    }
                 }
             }
             catch {
