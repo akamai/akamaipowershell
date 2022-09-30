@@ -6,6 +6,7 @@ $Script:Section = 'default'
 $Script:TestContract = '1-1NC95D'
 $Script:TestGroupName = 'AkamaiPowershell'
 $Script:TestPropertyName = 'akamaipowershell-testing'
+$Script:TestIncludeName = 'akamaipowershell-include'
 $Script:AdditionalHostname = 'new.host'
 
 Describe 'Safe PAPI Tests' {
@@ -18,7 +19,7 @@ Describe 'Safe PAPI Tests' {
     ### List-Contracts
     $Script:Contracts = List-PapiContracts -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-Contracts lists contracts' {
-        $Contracts.count | Should -BeGreaterThan 0
+        $Contracts[0].contractId | Should -Not -BeNullOrEmpty
     }
 
     $Script:Products = List-Products -ContractId $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
@@ -52,7 +53,7 @@ Describe 'Safe PAPI Tests' {
     ### List-TopLevelGroups
     $Script:TopLevelGroups = List-TopLevelGroups -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-TopLevelGroups lists groups' {
-        $TopLevelGroups.count | Should -BeGreaterThan 0
+        $TopLevelGroups[0].groupId | Should -Not -BeNullOrEmpty
     }
 
     ### List-PapiCPCodes
@@ -257,18 +258,97 @@ Describe 'Safe PAPI Tests' {
         $ActivationResult[0].activationId | Should -Be $ActivationID
     }
 
+    #************************************************#
+    #                    Includes                    #
+    #************************************************#
+
+    ### New-PropertyInclude
+    $Script:NewInclude = New-PropertyInclude -IncludeName $TestIncludeName -ProductID Fresca -GroupID $TestGroup.groupId -RuleFormat v2022-06-28 -IncludeType MICROSERVICES -ContractId $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-PropertyInclude creates an include' {
+        $NewInclude.includeLink | Should -Not -BeNullOrEmpty
+    }
+    $NewIncludeID = $NewInclude.includeLink.Replace('/papi/v1/includes/','')
+    $NewIncludeID = [int] ($NewIncludeID.SubString(0, $NewIncludeID.IndexOf('?')))
+
+    ### List-PropertyIncludes
+    $Script:Includes = List-PropertyIncludes -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-PropertyIncludes returns a list' {
+        $Includes[0].includeId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-PropertyInclude by ID
+    $Script:IncludeByID = Get-PropertyInclude -IncludeID $NewIncludeID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-PropertyInclude returns the correct data' {
+        $IncludeByID.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Get-PropertyInclude by name
+    $Script:Include = Get-PropertyInclude -IncludeName $TestIncludeName -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-PropertyInclude returns the correct data' {
+        $Include.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Get-PropertyIncludeRuleTree
+    $Script:IncludeRules = Get-PropertyIncludeRuleTree -IncludeName $TestIncludeName -IncludeVersion 1 -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-PropertyIncludeRuleTree returns the correct data' {
+        $IncludeRules.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Set-PropertyIncludeRuleTree by pipeline
+    $Script:SetIncludeRulesByPipeline = ( $IncludeRules | Set-PropertyIncludeRuleTree -IncludeName $TestIncludeName -IncludeVersion 1 -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-PropertyIncludeRuleTree by pipeline updates correctly' {
+        $SetIncludeRulesByPipeline.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Set-PropertyIncludeRuleTree by body
+    $Script:SetIncludeRulesByBody = Set-PropertyIncludeRuleTree -IncludeId $NewIncludeID -IncludeVersion 1 -Body (ConvertTo-Json $IncludeRules -Depth 100) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-PropertyIncludeRuleTree by body updates correctly' {
+        $SetIncludeRulesByBody.includeName | Should -Be $TestIncludeName
+    }
+
+    ### Get-PropertyIncludeRuleTemplates
+    Get-PropertyIncludeRuleTemplates -IncludeName $TestIncludeName -IncludeVersion latest -OutputDir inputtemplates -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-PropertyIncludeRuleTemplates creates expected files' {
+        'inputtemplates\main.json' | Should -Exist
+    }
+
+    ### Set-PropertyIncludeRuleTemplates
+    $Script:SetIncludeRulesTemplate = Set-PropertyIncludeRuleTemplates -IncludeName $TestIncludeName -IncludeVersion 1 -SourceDirectory inputtemplates -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-PropertyIncludeRuleTemplates updates successfully' {
+        $SetIncludeRulesTemplate.includeName | Should -Be $TestIncludeName
+    }
+
+    ### List-PropertyIncludeVersions
+    $Script:IncludeVersions = List-PropertyIncludeVersions -IncludeID $NewIncludeID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-PropertyIncludeVersions returns the correct data' {
+        $IncludeVersions[0].includeVersion | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-PropertyIncludeVersion
+    $Script:NewIncludeVersion = New-PropertyIncludeVersion -IncludeID $NewIncludeID -CreateFromVersion 1 -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-PropertyIncludeVersion creates a new version' {
+        $NewIncludeVersion.versionLink | Should -Match $NewIncludeID
+    }
+
+    ### Remove-PropertyInclude
+    $Script:RemoveInclude = Remove-PropertyInclude -IncludeID $NewIncludeID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-PropertyInclude completes successfully' {
+        $RemoveInclude.message | Should -Be "Deletion Successful."
+    }
+
     AfterAll {
         ### Cleanup files
         Remove-Item rules.json -Force
         Remove-Item templates.json -Force
         Remove-Item templates -Recurse -Force
+        Remove-Item inputtemplates -Recurse -Force
     }
     
 }
 
 Describe 'Unsafe PAPI Tests' {
     ### New-Property
-    $Script:NewProperty = New-Property -PropertyName $TestPropertyName -ProductID SPM -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    $Script:NewProperty = New-Property -PropertyName $TestPropertyName -ProductID Fresca -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-Property creates a property' {
         $NewProperty.propertyLink | Should -Not -BeNullOrEmpty
     }
@@ -280,13 +360,13 @@ Describe 'Unsafe PAPI Tests' {
     }
 
     ### New-EdgeHostname
-    $Script:NewEdgeHostname = New-EdgeHostname -DomainPrefix test -DomainSuffix edgesuite.net -IPVersionBehavior IPV4 -ProductId SPM -SecureNetwork STANDARD_TLS -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    $Script:NewEdgeHostname = New-EdgeHostname -DomainPrefix test -DomainSuffix edgesuite.net -IPVersionBehavior IPV4 -ProductId Fresca -SecureNetwork STANDARD_TLS -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-Property creates a property' {
         $NewEdgeHostname.edgeHostnameLink | Should -Not -BeNullOrEmpty
     }
 
     ### New-CPCode
-    $Script:NewCPCode = New-CPCode -CPCodeName testCP -ProductId SPM -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    $Script:NewCPCode = New-CPCode -CPCodeName testCP -ProductId Fresca -GroupID $TestGroup.groupId -ContractId $TestContract -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-Property creates a property' {
         $NewCPCode.cpcodeLink | Should -Not -BeNullOrEmpty
     }
@@ -296,12 +376,37 @@ Describe 'Unsafe PAPI Tests' {
     it 'Deactivate-Property returns activationlink' {
         $Deactivation.activationLink | Should -Not -BeNullOrEmpty
     }
+
+    ### Activate-PropertyInclude
+    $Script:ActivateInclude = Activate-PropertyInclude -IncludeID 123456 -IncludeVersion 1 -Network Staging -NotifyEmails 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Activate-PropertyInclude activates successfully' {
+        $ActivateInclude.activationLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### Deactivate-PropertyInclude
+    $Script:DeactivateInclude = Deactivate-PropertyInclude -IncludeID 123456 -IncludeVersion 1 -Network Staging -NotifyEmails 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Deactivate-PropertyInclude activates successfully' {
+        $DeactivateInclude.activationLink | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-PropertyIncludeActivation
+    $Script:IncludeActivation = Get-PropertyIncludeActivation -IncludeID 123456 -ActivationID 123456789 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-PropertyIncludeActivation returns the right data' {
+        $IncludeActivation.includeId | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-PropertyIncludeActivations
+    $Script:IncludeActivations = List-PropertyIncludeActivations -IncludeID 123456 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'List-PropertyIncludeActivations returns a list' {
+        $IncludeActivations[0].includeId | Should -Not -BeNullOrEmpty
+    }
 }
+
 # SIG # Begin signature block
-# MIIgEwYJKoZIhvcNAQcCoIIgBDCCIAACAQExDzANBglghkgBZQMEAgEFADB5Bgor
+# MIIp0gYJKoZIhvcNAQcCoIIpwzCCKb8CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDY6KKAvfd8RUKP
-# i5C0txMk6oWaduSj6105gvXY94kF3aCCDsEwggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCLuqmTX1JXYcgj
+# HEScDITpagVhj8SJZ6R9Rm6DFCJ82KCCDsEwggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -380,94 +485,146 @@ Describe 'Unsafe PAPI Tests' {
 # QrEa8S8pYG/675jxqjEXwTt5WoCCWDoSfYkku9qANLxkg1f6ZM5v612w8PEdbJpo
 # FtwmfLRA57KZ50IcxCk/yUWyFQkvSyupfRurRTjVFDD0OLYr4JdQVpFzZj8z6Quh
 # pxbUv+GUtlRIRe4sfyam/VRhblyXMA3Uea8cveWiwjuEDppEPgsIs4G4WBn7RuFV
-# mKw3mUwz0p7xjQIxghCoMIIQpAIBATB9MGkxCzAJBgNVBAYTAlVTMRcwFQYDVQQK
+# mKw3mUwz0p7xjQIxghpnMIIaYwIBATB9MGkxCzAJBgNVBAYTAlVTMRcwFQYDVQQK
 # Ew5EaWdpQ2VydCwgSW5jLjFBMD8GA1UEAxM4RGlnaUNlcnQgVHJ1c3RlZCBHNCBD
 # b2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAcizMh6w/je5qGZ
 # As4SxO0wDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG
 # 9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIB
-# FTAvBgkqhkiG9w0BCQQxIgQgeJzBNnDIXExcKece7b9A2lKJ68g6tQx1xmx5YUSH
-# +UwwDQYJKoZIhvcNAQEBBQAEggIAXA6mf/LCWgFk1Wq8RuiHLa06CWt1oscKrRRk
-# GtMR9Pe4oWEIiPfI3WDJ6PoZ4VF3/gmKl89yN/5FNdoFUcdUI1N1i0SsnKunmDK2
-# XtUjisMxv2bUsjiCewYfYhP1C4g/4PnekN7HoX0/DW5tU0sR4BQVS7UIaWuzWKw0
-# NSoSfDRQ0YqInFFgLzBLSFMAD/3gvjvFu/Hmul8Dkbu/W03AhK1b/F1+/ur/hBnV
-# kgFOwp8dTxDTg89bYQA4vV8i5M+CyXEpgiOmPwGQiMxrsR4oZkgo6OYNc0F78Fr6
-# 3/XdPvhCVUWl+qiW2zoHDxD7MnyYoTesi+NErQdVbYOg//1mWSJwUXZfpjK2IMoZ
-# DezSw2zY4+529KDTOoYn0ef6tpjs2r4tUxQGPrwS4lWi0op350jZxT5+RR8phOuQ
-# 7lToTZvomO7MeZMQySoHoCWUjGxhpZjQC5Vwgi/vQ8EX83zATsMrheuafAFj3c1x
-# itnsbc1WZKRPhM1g5lfnyr9f1nzEiN6DhUOM8YPQqu4JXsSmd+GFkZYsRqggEA6w
-# x9c9CdOCJVT/xakt4NSuN9crh3qIfJA/6RmLIQmMJyQuET6s6JAQFPpwW+K0KIRs
-# i5pxtul5H08zifij7oIdKKqq5SqmvdkTKUi7NmBWkj8+fJOI9FrRtT14NGLKvhOl
-# OZ59Z6Shgg1+MIINegYKKwYBBAGCNwMDATGCDWowgg1mBgkqhkiG9w0BBwKggg1X
-# MIINUwIBAzEPMA0GCWCGSAFlAwQCAQUAMHgGCyqGSIb3DQEJEAEEoGkEZzBlAgEB
-# BglghkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgXdhKg73VUZKmWcn+J9tBSG3g
-# EnuZG8ebxr0bTrp12dkCEQD2yzxcubXwOez6eQYCD5Y/GA8yMDIyMDMyMzE4NDMz
-# Mlqgggo3MIIE/jCCA+agAwIBAgIQDUJK4L46iP9gQCHOFADw3TANBgkqhkiG9w0B
-# AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
-# VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
-# c3VyZWQgSUQgVGltZXN0YW1waW5nIENBMB4XDTIxMDEwMTAwMDAwMFoXDTMxMDEw
-# NjAwMDAwMFowSDELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMu
-# MSAwHgYDVQQDExdEaWdpQ2VydCBUaW1lc3RhbXAgMjAyMTCCASIwDQYJKoZIhvcN
-# AQEBBQADggEPADCCAQoCggEBAMLmYYRnxYr1DQikRcpja1HXOhFCvQp1dU2UtAxQ
-# tSYQ/h3Ib5FrDJbnGlxI70Tlv5thzRWRYlq4/2cLnGP9NmqB+in43Stwhd4CGPN4
-# bbx9+cdtCT2+anaH6Yq9+IRdHnbJ5MZ2djpT0dHTWjaPxqPhLxs6t2HWc+xObTOK
-# fF1FLUuxUOZBOjdWhtyTI433UCXoZObd048vV7WHIOsOjizVI9r0TXhG4wODMSlK
-# XAwxikqMiMX3MFr5FK8VX2xDSQn9JiNT9o1j6BqrW7EdMMKbaYK02/xWVLwfoYer
-# vnpbCiAvSwnJlaeNsvrWY4tOpXIc7p96AXP4Gdb+DUmEvQECAwEAAaOCAbgwggG0
-# MA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMBYGA1UdJQEB/wQMMAoGCCsG
-# AQUFBwMIMEEGA1UdIAQ6MDgwNgYJYIZIAYb9bAcBMCkwJwYIKwYBBQUHAgEWG2h0
-# dHA6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAfBgNVHSMEGDAWgBT0tuEgHf4prtLk
-# YaWyoiWyyBc1bjAdBgNVHQ4EFgQUNkSGjqS6sGa+vCgtHUQ23eNqerwwcQYDVR0f
-# BGowaDAyoDCgLoYsaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL3NoYTItYXNzdXJl
-# ZC10cy5jcmwwMqAwoC6GLGh0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9zaGEyLWFz
-# c3VyZWQtdHMuY3JsMIGFBggrBgEFBQcBAQR5MHcwJAYIKwYBBQUHMAGGGGh0dHA6
-# Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBPBggrBgEFBQcwAoZDaHR0cDovL2NhY2VydHMu
-# ZGlnaWNlcnQuY29tL0RpZ2lDZXJ0U0hBMkFzc3VyZWRJRFRpbWVzdGFtcGluZ0NB
-# LmNydDANBgkqhkiG9w0BAQsFAAOCAQEASBzctemaI7znGucgDo5nRv1CclF0CiNH
-# o6uS0iXEcFm+FKDlJ4GlTRQVGQd58NEEw4bZO73+RAJmTe1ppA/2uHDPYuj1UUp4
-# eTZ6J7fz51Kfk6ftQ55757TdQSKJ+4eiRgNO/PT+t2R3Y18jUmmDgvoaU+2QzI2h
-# F3MN9PNlOXBL85zWenvaDLw9MtAby/Vh/HUIAHa8gQ74wOFcz8QRcucbZEnYIpp1
-# FUL1LTI4gdr0YKK6tFL7XOBhJCVPst/JKahzQ1HavWPWH1ub9y4bTxMd90oNcX6X
-# t/Q/hOvB46NJofrOp79Wz7pZdmGJX36ntI5nePk2mOHLKNpbh6aKLzCCBTEwggQZ
-# oAMCAQICEAqhJdbWMht+QeQF2jaXwhUwDQYJKoZIhvcNAQELBQAwZTELMAkGA1UE
-# BhMCVVMxFTATBgNVBAoTDERpZ2lDZXJ0IEluYzEZMBcGA1UECxMQd3d3LmRpZ2lj
-# ZXJ0LmNvbTEkMCIGA1UEAxMbRGlnaUNlcnQgQXNzdXJlZCBJRCBSb290IENBMB4X
-# DTE2MDEwNzEyMDAwMFoXDTMxMDEwNzEyMDAwMFowcjELMAkGA1UEBhMCVVMxFTAT
-# BgNVBAoTDERpZ2lDZXJ0IEluYzEZMBcGA1UECxMQd3d3LmRpZ2ljZXJ0LmNvbTEx
-# MC8GA1UEAxMoRGlnaUNlcnQgU0hBMiBBc3N1cmVkIElEIFRpbWVzdGFtcGluZyBD
-# QTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL3QMu5LzY9/3am6gpnF
-# OVQoV7YjSsQOB0UzURB90Pl9TWh+57ag9I2ziOSXv2MhkJi/E7xX08PhfgjWahQA
-# OPcuHjvuzKb2Mln+X2U/4Jvr40ZHBhpVfgsnfsCi9aDg3iI/Dv9+lfvzo7oiPhis
-# EeTwmQNtO4V8CdPuXciaC1TjqAlxa+DPIhAPdc9xck4Krd9AOly3UeGheRTGTSQj
-# MF287DxgaqwvB8z98OpH2YhQXv1mblZhJymJhFHmgudGUP2UKiyn5HU+upgPhH+f
-# MRTWrdXyZMt7HgXQhBlyF/EXBu89zdZN7wZC/aJTKk+FHcQdPK/P2qwQ9d2srOlW
-# /5MCAwEAAaOCAc4wggHKMB0GA1UdDgQWBBT0tuEgHf4prtLkYaWyoiWyyBc1bjAf
-# BgNVHSMEGDAWgBRF66Kv9JLLgjEtUYunpyGd823IDzASBgNVHRMBAf8ECDAGAQH/
-# AgEAMA4GA1UdDwEB/wQEAwIBhjATBgNVHSUEDDAKBggrBgEFBQcDCDB5BggrBgEF
-# BQcBAQRtMGswJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBD
-# BggrBgEFBQcwAoY3aHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0
-# QXNzdXJlZElEUm9vdENBLmNydDCBgQYDVR0fBHoweDA6oDigNoY0aHR0cDovL2Ny
-# bDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9vdENBLmNybDA6oDig
-# NoY0aHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9v
-# dENBLmNybDBQBgNVHSAESTBHMDgGCmCGSAGG/WwAAgQwKjAoBggrBgEFBQcCARYc
-# aHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzALBglghkgBhv1sBwEwDQYJKoZI
-# hvcNAQELBQADggEBAHGVEulRh1Zpze/d2nyqY3qzeM8GN0CE70uEv8rPAwL9xafD
-# DiBCLK938ysfDCFaKrcFNB1qrpn4J6JmvwmqYN92pDqTD/iy0dh8GWLoXoIlHsS6
-# HHssIeLWWywUNUMEaLLbdQLgcseY1jxk5R9IEBhfiThhTWJGJIdjjJFSLK8pieV4
-# H9YLFKWA1xJHcLN11ZOFk362kmf7U2GJqPVrlsD0WGkNfMgBsbkodbeZY4UijGHK
-# eZR+WfyMD+NvtQEmtmyl7odRIeRYYJu6DC0rbaLEfrvEJStHAgh8Sa4TtuF8QkIo
-# xhhWz0E0tmZdtnR79VYzIi8iNrJLokqV2PWmjlIxggKGMIICggIBATCBhjByMQsw
-# CQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cu
-# ZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQg
-# VGltZXN0YW1waW5nIENBAhANQkrgvjqI/2BAIc4UAPDdMA0GCWCGSAFlAwQCAQUA
-# oIHRMBoGCSqGSIb3DQEJAzENBgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcN
-# MjIwMzIzMTg0MzMyWjArBgsqhkiG9w0BCRACDDEcMBowGDAWBBTh14Ko4ZG+72vK
-# FpG1qrSUpiSb8zAvBgkqhkiG9w0BCQQxIgQgopH21g67+OXAAkOGiu9wH/1h1bUW
-# zO58Ifa8E3YJuggwNwYLKoZIhvcNAQkQAi8xKDAmMCQwIgQgsxCQBrwK2YMHkVcp
-# 4EQDQVyD4ykrYU8mlkyNNXHs9akwDQYJKoZIhvcNAQEBBQAEggEAP6O6JbxLAih4
-# F0lfHGVbX9WnKmo8kZ4xEx+Y/eY8VnpoJSmu6/qowt/ehqG473DWIAE+M2I3tRrY
-# lnk4/DDfxu8e7weEO1GkYssXHlyvJuYmmCBZGwyErmlI9x5ahGftaVY07KwjzrOn
-# Tm/Uj/SMEH1KegonQWRhfWfPU3hHkoufFjbWd+1gKbKr91UcnpZr3qhimgX/c1Oz
-# FZztXj9/p7KdzoAxm289j+kktO+5zBbmCbw2EDxCUpTcz4q2m0VSedIuRASW7ine
-# 3cYXP8INV/qJ0wEePcH3HNITqhShqFd8cYngh8yPgF65IFed8r8uCE0hi8VPqGzH
-# UOmcamvnfQ==
+# FTAvBgkqhkiG9w0BCQQxIgQg1pTi2IYVGgEwzEcriknaT+gKri4P2jd3EGK5IveI
+# bRowDQYJKoZIhvcNAQEBBQAEggIApNXgPm87EpuFzmoxiD6DI6DNj5J1MvgANsdP
+# 4NGT2wXki6xL9207n6Z1kCB4ZnDpSs+3gDRk27GWfBvxifS6uuhHbOCa3Vcl+L9H
+# hmJRXuF4N33eAC+qZDxMb9aWb/B43bdjPsxmyWUdhLIyBcaTBE0ETLMmXnBDTp0T
+# ddGApkoaJCIHOodPcD0Xp6gR3w3OeX5HM6qtajakvh1sl3TlT2+s1igUOHLAbXKR
+# +NLQjculnfpHhKxNGw0SqSlxm2+OlJ82FxhIvxSXX0GPaThGa4qdBh6/qX9FLax5
+# yntIfJyKmBqaJzOKECRI7yX+KzTDEmZmFJGIGroKGdS13aq0ad8S6ePTbtXcpnwO
+# DBeJCBiFXEWpriOfCYzjEVsM5mXh32AT30wVsMRQ1bgSj0ShnnRRIVu+PLedsmCG
+# 1cJio/2E5JKJh2oJHkLHoNhlkewqhrGt9nr0z5ViV8AgAp1oIR9vmA8O28uh8lfP
+# lpXU+NtWygDj385kB6bCTCHcD728vJdhVGDWAABBub17G6fJnlqEYmnbxGbgCEg9
+# SLn+KXOPKHQU/1Vq5DVE//HP7NerxW05h0UwhC/FQNVsMcHXNswwYWcrDSMKqkTo
+# TOamR3I36Zp05QKtQFvRWKp0UK5hrkAkkviIKCvdFMFhYd4Y5RIoo874Z9sbN8jk
+# a8kKTnihghc9MIIXOQYKKwYBBAGCNwMDATGCFykwghclBgkqhkiG9w0BBwKgghcW
+# MIIXEgIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEB
+# BglghkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgSfqXjUQBiqAOSB4evyBclyt/
+# cE4zdHoGkZQvXESNuIgCEDXGK0bOBfDLvFoRKRwHKXAYDzIwMjIwOTE1MTg0NjQw
+# WqCCEwcwggbAMIIEqKADAgECAhADyzT9Pf8SETOf8HxLIVfHMA0GCSqGSIb3DQEB
+# CwUAMGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkG
+# A1UEAxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3Rh
+# bXBpbmcgQ0EwHhcNMjIwODMwMDAwMDAwWhcNMjMwODI5MjM1OTU5WjBGMQswCQYD
+# VQQGEwJVUzERMA8GA1UEChMIRGlnaUNlcnQxJDAiBgNVBAMTG0RpZ2lDZXJ0IFRp
+# bWVzdGFtcCAyMDIyIC0gMjCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIB
+# AM/spSY6xqnya7uNwQ2a26HoFIV0MxomrNAcVR4eNm28klUMYfSdCXc9FZYIL2tk
+# pP0GgxbXkZI4HDEClvtysZc6Va8z7GGK6aYo25BjXL2JU+A6LYyHQq4mpOS7eHi5
+# ehbhVsbAumRTuyoW51BIu4hpDIjG8b7gL307scpTjUCDHufLckkoHkyAHoVW54Xt
+# 8mG8qjoHffarbuVm3eJc9S/tjdRNlYRo44DLannR0hCRRinrPibytIzNTLlmyLuq
+# UDgN5YyUXRlav/V7QG5vFqianJVHhoV5PgxeZowaCiS+nKrSnLb3T254xCg/oxwP
+# UAY3ugjZNaa1Htp4WB056PhMkRCWfk3h3cKtpX74LRsf7CtGGKMZ9jn39cFPcS6J
+# AxGiS7uYv/pP5Hs27wZE5FX/NurlfDHn88JSxOYWe1p+pSVz28BqmSEtY+VZ9U0v
+# kB8nt9KrFOU4ZodRCGv7U0M50GT6Vs/g9ArmFG1keLuY/ZTDcyHzL8IuINeBrNPx
+# B9ThvdldS24xlCmL5kGkZZTAWOXlLimQprdhZPrZIGwYUWC6poEPCSVT8b876asH
+# DmoHOWIZydaFfxPZjXnPYsXs4Xu5zGcTB5rBeO3GiMiwbjJ5xwtZg43G7vUsfHuO
+# y2SJ8bHEuOdTXl9V0n0ZKVkDTvpd6kVzHIR+187i1Dp3AgMBAAGjggGLMIIBhzAO
+# BgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAWBgNVHSUBAf8EDDAKBggrBgEF
+# BQcDCDAgBgNVHSAEGTAXMAgGBmeBDAEEAjALBglghkgBhv1sBwEwHwYDVR0jBBgw
+# FoAUuhbZbU2FL3MpdpovdYxqII+eyG8wHQYDVR0OBBYEFGKK3tBh/I8xFO2XC809
+# KpQU31KcMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNv
+# bS9EaWdpQ2VydFRydXN0ZWRHNFJTQTQwOTZTSEEyNTZUaW1lU3RhbXBpbmdDQS5j
+# cmwwgZAGCCsGAQUFBwEBBIGDMIGAMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5k
+# aWdpY2VydC5jb20wWAYIKwYBBQUHMAKGTGh0dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0
+# LmNvbS9EaWdpQ2VydFRydXN0ZWRHNFJTQTQwOTZTSEEyNTZUaW1lU3RhbXBpbmdD
+# QS5jcnQwDQYJKoZIhvcNAQELBQADggIBAC0UyaEGSS3dimxaHgXjrMnYnjeKsKYh
+# Ij9EyjE9ywwM33xT5ZRqdiX3Isk7nEIElPWCRN5u4oTo7k5EGGktx3ZsrHpzf0si
+# EEmEdDfygtNBlXYxLvlZab8HVrslWfexM+66XRCFK19PgSnudu0gC3XaxWbC6eAe
+# WmgBTLRktDRpqbY9fj1d6REtuXxf4RNrN0MDT+kVDdt1BVTHDTlfGDbA6HAXR1Vc
+# +khF8cv4RMJ8vvP3p6z05qFttPe3RMWPCC+d8hKtJI+2C3hBwdKChzJizkfq60Vr
+# qqj+dEeBnrUYhUcYIIz6WeVYk72r/31a9SowYPuTzNCktU59LF6Y2/bMPIpHeHhs
+# BAvg2RMxDzH4TfzgKkGM8F8VDpTAKUXe8vlzzsNjJ4m+oeGi72Kj6if/M07iiT4k
+# MEQV5Fg8BotKdIqx7a1Cf+aqpZq5+DAcFhPwo4uoKtSLAWY0aIACxRKSFqIHngiu
+# c2t9n+vB/oM/rtlQNnnlt8E2hvC3yQl5+M/7sqzX4vI3BBv6ASmOsDaYOGrb90BA
+# 77kpxccgavKscb/UdmJ+yGZjMyuuUzjPpKpGxMG95S9ATieDVuDFi68taSY81PJV
+# mxBD/MrBbfTZ9JBLS5F1s0ecKEr6OOY1PvLIry+8TrgnFUP5KT019GjiRV2GVCOB
+# x9aBB9M+oTliMIIGrjCCBJagAwIBAgIQBzY3tyRUfNhHrP0oZipeWzANBgkqhkiG
+# 9w0BAQsFADBiMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkw
+# FwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSEwHwYDVQQDExhEaWdpQ2VydCBUcnVz
+# dGVkIFJvb3QgRzQwHhcNMjIwMzIzMDAwMDAwWhcNMzcwMzIyMjM1OTU5WjBjMQsw
+# CQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRp
+# Z2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENB
+# MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAxoY1BkmzwT1ySVFVxyUD
+# xPKRN6mXUaHW0oPRnkyibaCwzIP5WvYRoUQVQl+kiPNo+n3znIkLf50fng8zH1AT
+# CyZzlm34V6gCff1DtITaEfFzsbPuK4CEiiIY3+vaPcQXf6sZKz5C3GeO6lE98NZW
+# 1OcoLevTsbV15x8GZY2UKdPZ7Gnf2ZCHRgB720RBidx8ald68Dd5n12sy+iEZLRS
+# 8nZH92GDGd1ftFQLIWhuNyG7QKxfst5Kfc71ORJn7w6lY2zkpsUdzTYNXNXmG6jB
+# ZHRAp8ByxbpOH7G1WE15/tePc5OsLDnipUjW8LAxE6lXKZYnLvWHpo9OdhVVJnCY
+# Jn+gGkcgQ+NDY4B7dW4nJZCYOjgRs/b2nuY7W+yB3iIU2YIqx5K/oN7jPqJz+ucf
+# WmyU8lKVEStYdEAoq3NDzt9KoRxrOMUp88qqlnNCaJ+2RrOdOqPVA+C/8KI8ykLc
+# GEh/FDTP0kyr75s9/g64ZCr6dSgkQe1CvwWcZklSUPRR8zZJTYsg0ixXNXkrqPNF
+# YLwjjVj33GHek/45wPmyMKVM1+mYSlg+0wOI/rOP015LdhJRk8mMDDtbiiKowSYI
+# +RQQEgN9XyO7ZONj4KbhPvbCdLI/Hgl27KtdRnXiYKNYCQEoAA6EVO7O6V3IXjAS
+# vUaetdN2udIOa5kM0jO0zbECAwEAAaOCAV0wggFZMBIGA1UdEwEB/wQIMAYBAf8C
+# AQAwHQYDVR0OBBYEFLoW2W1NhS9zKXaaL3WMaiCPnshvMB8GA1UdIwQYMBaAFOzX
+# 44LScV1kTN8uZz/nupiuHA9PMA4GA1UdDwEB/wQEAwIBhjATBgNVHSUEDDAKBggr
+# BgEFBQcDCDB3BggrBgEFBQcBAQRrMGkwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3Nw
+# LmRpZ2ljZXJ0LmNvbTBBBggrBgEFBQcwAoY1aHR0cDovL2NhY2VydHMuZGlnaWNl
+# cnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZFJvb3RHNC5jcnQwQwYDVR0fBDwwOjA4oDag
+# NIYyaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZFJvb3RH
+# NC5jcmwwIAYDVR0gBBkwFzAIBgZngQwBBAIwCwYJYIZIAYb9bAcBMA0GCSqGSIb3
+# DQEBCwUAA4ICAQB9WY7Ak7ZvmKlEIgF+ZtbYIULhsBguEE0TzzBTzr8Y+8dQXeJL
+# Kftwig2qKWn8acHPHQfpPmDI2AvlXFvXbYf6hCAlNDFnzbYSlm/EUExiHQwIgqgW
+# valWzxVzjQEiJc6VaT9Hd/tydBTX/6tPiix6q4XNQ1/tYLaqT5Fmniye4Iqs5f2M
+# vGQmh2ySvZ180HAKfO+ovHVPulr3qRCyXen/KFSJ8NWKcXZl2szwcqMj+sAngkSu
+# mScbqyQeJsG33irr9p6xeZmBo1aGqwpFyd/EjaDnmPv7pp1yr8THwcFqcdnGE4AJ
+# xLafzYeHJLtPo0m5d2aR8XKc6UsCUqc3fpNTrDsdCEkPlM05et3/JWOZJyw9P2un
+# 8WbDQc1PtkCbISFA0LcTJM3cHXg65J6t5TRxktcma+Q4c6umAU+9Pzt4rUyt+8SV
+# e+0KXzM5h0F4ejjpnOHdI/0dKNPH+ejxmF/7K9h+8kaddSweJywm228Vex4Ziza4
+# k9Tm8heZWcpw8De/mADfIBZPJ/tgZxahZrrdVcA6KYawmKAr7ZVBtzrVFZgxtGIJ
+# Dwq9gdkT/r+k0fNX2bwE+oLeMt8EifAAzV3C+dAjfwAL5HYCJtnwZXZCpimHCUcr
+# 5n8apIUP/JiW9lVUKx+A+sDyDivl1vupL0QVSucTDh3bNzgaoSv27dZ8/DCCBY0w
+# ggR1oAMCAQICEA6bGI750C3n79tQ4ghAGFowDQYJKoZIhvcNAQEMBQAwZTELMAkG
+# A1UEBhMCVVMxFTATBgNVBAoTDERpZ2lDZXJ0IEluYzEZMBcGA1UECxMQd3d3LmRp
+# Z2ljZXJ0LmNvbTEkMCIGA1UEAxMbRGlnaUNlcnQgQXNzdXJlZCBJRCBSb290IENB
+# MB4XDTIyMDgwMTAwMDAwMFoXDTMxMTEwOTIzNTk1OVowYjELMAkGA1UEBhMCVVMx
+# FTATBgNVBAoTDERpZ2lDZXJ0IEluYzEZMBcGA1UECxMQd3d3LmRpZ2ljZXJ0LmNv
+# bTEhMB8GA1UEAxMYRGlnaUNlcnQgVHJ1c3RlZCBSb290IEc0MIICIjANBgkqhkiG
+# 9w0BAQEFAAOCAg8AMIICCgKCAgEAv+aQc2jeu+RdSjwwIjBpM+zCpyUuySE98orY
+# WcLhKac9WKt2ms2uexuEDcQwH/MbpDgW61bGl20dq7J58soR0uRf1gU8Ug9SH8ae
+# FaV+vp+pVxZZVXKvaJNwwrK6dZlqczKU0RBEEC7fgvMHhOZ0O21x4i0MG+4g1ckg
+# HWMpLc7sXk7Ik/ghYZs06wXGXuxbGrzryc/NrDRAX7F6Zu53yEioZldXn1RYjgwr
+# t0+nMNlW7sp7XeOtyU9e5TXnMcvak17cjo+A2raRmECQecN4x7axxLVqGDgDEI3Y
+# 1DekLgV9iPWCPhCRcKtVgkEy19sEcypukQF8IUzUvK4bA3VdeGbZOjFEmjNAvwjX
+# WkmkwuapoGfdpCe8oU85tRFYF/ckXEaPZPfBaYh2mHY9WV1CdoeJl2l6SPDgohIb
+# Zpp0yt5LHucOY67m1O+SkjqePdwA5EUlibaaRBkrfsCUtNJhbesz2cXfSwQAzH0c
+# lcOP9yGyshG3u3/y1YxwLEFgqrFjGESVGnZifvaAsPvoZKYz0YkH4b235kOkGLim
+# dwHhD5QMIR2yVCkliWzlDlJRR3S+Jqy2QXXeeqxfjT/JvNNBERJb5RBQ6zHFynIW
+# IgnffEx1P2PsIV/EIFFrb7GrhotPwtZFX50g/KEexcCPorF+CiaZ9eRpL5gdLfXZ
+# qbId5RsCAwEAAaOCATowggE2MA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFOzX
+# 44LScV1kTN8uZz/nupiuHA9PMB8GA1UdIwQYMBaAFEXroq/0ksuCMS1Ri6enIZ3z
+# bcgPMA4GA1UdDwEB/wQEAwIBhjB5BggrBgEFBQcBAQRtMGswJAYIKwYBBQUHMAGG
+# GGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBDBggrBgEFBQcwAoY3aHR0cDovL2Nh
+# Y2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9vdENBLmNydDBF
+# BgNVHR8EPjA8MDqgOKA2hjRodHRwOi8vY3JsMy5kaWdpY2VydC5jb20vRGlnaUNl
+# cnRBc3N1cmVkSURSb290Q0EuY3JsMBEGA1UdIAQKMAgwBgYEVR0gADANBgkqhkiG
+# 9w0BAQwFAAOCAQEAcKC/Q1xV5zhfoKN0Gz22Ftf3v1cHvZqsoYcs7IVeqRq7IviH
+# GmlUIu2kiHdtvRoU9BNKei8ttzjv9P+Aufih9/Jy3iS8UgPITtAq3votVs/59Pes
+# MHqai7Je1M/RQ0SbQyHrlnKhSLSZy51PpwYDE3cnRNTnf+hZqPC/Lwum6fI0POz3
+# A8eHqNJMQBk1RmppVLC4oVaO7KTVPeix3P0c2PR3WlxUjG/voVA9/HYJaISfb8rb
+# II01YBwCA8sgsKxYoA5AY8WYIsGyWfVVa88nq2x2zm8jLfR+cWojayL/ErhULSd+
+# 2DrZ8LaHlv1b0VysGMNNn3O3AamfV6peKOK5lDGCA3YwggNyAgEBMHcwYzELMAkG
+# A1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTswOQYDVQQDEzJEaWdp
+# Q2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVTdGFtcGluZyBDQQIQ
+# A8s0/T3/EhEzn/B8SyFXxzANBglghkgBZQMEAgEFAKCB0TAaBgkqhkiG9w0BCQMx
+# DQYLKoZIhvcNAQkQAQQwHAYJKoZIhvcNAQkFMQ8XDTIyMDkxNTE4NDY0MFowKwYL
+# KoZIhvcNAQkQAgwxHDAaMBgwFgQUXAu8gBXmzhMVxQvjwcb0K+uJlP8wLwYJKoZI
+# hvcNAQkEMSIEIHJC86ULVggYi6FZDmmHee/h3HAvsvc3JgJNVKAJkWj/MDcGCyqG
+# SIb3DQEJEAIvMSgwJjAkMCIEIFvV45PbHr8/M63HzaV6L1IyKAtY3e4ApXmwzqMi
+# jCP/MA0GCSqGSIb3DQEBAQUABIICAANY2HUaMt9bxUcZZ+RhEf/o2XxZYFGHOVE2
+# P1TGmnHTFT75FrWqORLcxwUBryg6SYVzriPuO8kKO+moQVJC6nrUFSg+PgxaNWcp
+# 7uVXe9JADGTiudU/+YoF/iS8xJP3R2E7dzPRUl3PDG0VPe0UuD9+lhgIaNuz3JaX
+# 5ytvG2Kmua33dsdgQH/Iu5veWmRDkUG1EEggBz2beT6scsJZ+3P5GeS6SB7tYCY2
+# sDI/aasHEwY0RVhDuRfErqBu6lwlO93S2r4GbAgVOdp2OBSWBdNpAMsLs0m6rwSa
+# /77U1FXItIm3I0YSJmuEH0cmHh85hjBFbec/eQcv2YmflIqJsn/QB+3jW/s8+//m
+# zAOyBXClj76yfSk/aj7p92ODynry19Ke0Rs1/UykM9vFfZAnTLA4Ge+qYnkP9Eio
+# nUSnAk9HPicFhzX2sbPJoc4uIUy9LtjseLAeOD9PvRvAeuyF+wOgGRU9kyWTyo4O
+# sl3a1Lv50PRZ79mrc/qhvC2VESC6rHzEIhvVjrCbBO7RnsMBBkOmKV5FSENbP96G
+# SwljU55aOBK2JlTM+HQPqyaGhe/PW9XTRuRhuy58sgWs7ZHiP8a7JTrDMc70yJ3/
+# GX4vYTbULiaatcJV7pXicHaR3NVyFnDEF7W+h10B/dHYc039QoXhlt4Udwb1DIso
+# W0+iE1AE
 # SIG # End signature block
