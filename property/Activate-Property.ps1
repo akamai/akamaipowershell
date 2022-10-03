@@ -23,6 +23,10 @@ function Activate-Property
         [Parameter(Mandatory=$false)]                                [string]   $AccountSwitchKey
     )
 
+    if($AcknowledgeAllWarnings){
+        Write-Host -ForegroundColor Yellow "WARNING: This parameter is now added by default and is no longer required. It is maintained purely for backwards compatibility and will be removed in a future release"
+    }
+
     if($PropertyName -eq '' -and $PropertyID -eq ''){
         throw 'Either $PropertyName or $PropertyID must be specified'
     }
@@ -75,10 +79,7 @@ function Activate-Property
             note = $Note;
             useFastFallback = $useFastFallback.ToBool();
             notifyEmails = $NotifyEmails;
-        }
-
-        if($AcknowledgeAllWarnings){
-            $BodyObj['acknowledgeAllWarnings'] = $true
+            acknowledgeAllWarnings = $true
         }
 
         # Only add optional fields if they are present
