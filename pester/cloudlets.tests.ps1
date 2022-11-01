@@ -67,20 +67,38 @@ Describe 'Safe Cloudlets Tests' {
 
     ### New-SharedCloudletPolicyVersion by pipeline
     $Script:NewVersionByPipeline = ($Version | New-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'New-SharedCloudletPolicyVersion creates a new version' {
+    it 'New-SharedCloudletPolicyVersion by pipeline creates a new version' {
         $NewVersionByPipeline.version | Should -Be ($Version.version + 1)
     }
 
     ### New-SharedCloudletPolicyVersion by params
     $Script:NewVersionByParams = New-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Description $TestPolicyDescription -MatchRules $Version.matchRules -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-SharedCloudletPolicyVersion creates a new version' {
+    it 'New-SharedCloudletPolicyVersion by params creates a new version' {
         $NewVersionByParams.version | Should -Be ($NewVersionByPipeline.version + 1)
     }
 
-    ### New-SharedCloudletPolicyVersion by params
+    ### New-SharedCloudletPolicyVersion by body
     $Script:NewVersionByBody = New-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Body (ConvertTo-Json -depth 100 $Version) -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-SharedCloudletPolicyVersion creates a new version' {
+    it 'New-SharedCloudletPolicyVersion by body creates a new version' {
         $NewVersionByBody.version | Should -Be ($NewVersionByParams.version + 1)
+    }
+
+    ### Set-SharedCloudletPolicyVersion by pipeline
+    $Script:SetVersionByPipeline = ($Version | Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-SharedCloudletPolicyVersion by pipeline updates correctly' {
+        $SetVersionByPipeline.id | Should -Be $NewPolicy.id
+    }
+
+    ### Set-SharedCloudletPolicyVersion by params
+    $Script:SetVersionByParams = Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -Description $TestPolicyDescription -MatchRules $Version.matchRules -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-SharedCloudletPolicyVersion by params updates correctly' {
+        $SetVersionByParams.id | Should -Be $NewPolicy.id
+    }
+
+    ### Set-SharedCloudletPolicyVersion by body
+    $Script:SetVersionByBody = Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -Body (onvertTo-Json -depth 100 $Version) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-SharedCloudletPolicyVersion by body updates correctly' {
+        $SetVersionByBody.id | Should -Be $NewPolicy.id
     }
 
     ### Remove-SharedCloudletPolicy
