@@ -18,7 +18,7 @@ function List-CPReportingGroups
         $ContractID = $ContractID.replace("ctr_","")
     }
     
-    $Path = "/cprg/v1/reporting-groups?contractId=$ContractID&groupId=$GroupID&cpcodeId=$CPCodeID&name=$Name&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/reporting-groups?contractId=$ContractID&groupId=$GroupID&cpcodeId=$CPCodeID&reportingGroupName=$Name&accountSwitchKey=$AccountSwitchKey"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
