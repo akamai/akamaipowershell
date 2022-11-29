@@ -1,4 +1,4 @@
-function Remove-TestCondition
+function Restore-TestCondition
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $ConditionID,
