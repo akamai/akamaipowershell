@@ -16,9 +16,9 @@ function Generate-Report
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $DateTimeMatch = '[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
-    if($Start -notmatch $DateTimeMatch -or $End -notmatch $DateTimeMatch){
-        throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
+    $ISO8601Match = '[\d]{4}-[\d]{2}-[\d]{2}(T[\d]{2}:[\d]{2}(:[\d]{2})?(Z|[+-]{1}[\d]{2}[:][\d]{2})?)?'
+    if($Start -notmatch $ISO8601Match -or $End -notmatch $ISO8601Match){
+        throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm(:ss optional) and (optionally) end with: 'Z' for UTC or '+/-XX:XX' to specify another timezone"
     }
 
     $Params = "start=$Start&end=$End&interval=$Interval&limit=$Limit&accountSwitchKey=$AccountSwitchKey"
