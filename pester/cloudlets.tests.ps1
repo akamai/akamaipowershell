@@ -86,19 +86,19 @@ Describe 'Safe Cloudlets Tests' {
     ### Set-SharedCloudletPolicyVersion by pipeline
     $Script:SetVersionByPipeline = ($Version | Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -EdgeRCFile $EdgeRCFile -Section $Section)
     it 'Set-SharedCloudletPolicyVersion by pipeline updates correctly' {
-        $SetVersionByPipeline.id | Should -Be $NewPolicy.id
+        $SetVersionByPipeline.policyId | Should -Be $NewPolicy.id
     }
 
     ### Set-SharedCloudletPolicyVersion by params
     $Script:SetVersionByParams = Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -Description $TestPolicyDescription -MatchRules $Version.matchRules -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Set-SharedCloudletPolicyVersion by params updates correctly' {
-        $SetVersionByParams.id | Should -Be $NewPolicy.id
+        $SetVersionByParams.policyId | Should -Be $NewPolicy.id
     }
 
     ### Set-SharedCloudletPolicyVersion by body
-    $Script:SetVersionByBody = Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -Body (onvertTo-Json -depth 100 $Version) -EdgeRCFile $EdgeRCFile -Section $Section
+    $Script:SetVersionByBody = Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -Body (ConvertTo-Json -depth 100 $Version) -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Set-SharedCloudletPolicyVersion by body updates correctly' {
-        $SetVersionByBody.id | Should -Be $NewPolicy.id
+        $SetVersionByBody.policyId | Should -Be $NewPolicy.id
     }
 
     ### Remove-SharedCloudletPolicy

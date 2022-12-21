@@ -17,8 +17,7 @@ function Set-SharedCloudletPolicyVersion
 
     process{
         if($Version -eq 'latest'){
-            $Version = (List-SharedCloudletPolicyVersions -PolicyID $PolicyID -Pagesize 10 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).Version
-            Write-Debug "Found latest version = $Version"
+            $Version = (List-SharedCloudletPolicyVersions -PolicyID $PolicyID -Size 10 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey)[0].Version
         }
 
         $Path = "/cloudlets/v3/policies/$PolicyID/versions/$Version`?accountSwitchKey=$AccountSwitchKey"
