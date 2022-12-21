@@ -242,7 +242,7 @@ Describe 'Safe PAPI Tests' {
     }
 
     ### Activate-Property
-    $Script:Activation = Activate-Property -PropertyName $TestPropertyName -PropertyVersion latest -Network Staging -NotifyEmails "mail@example.com" -AcknowledgeAllWarnings -EdgeRCFile $EdgeRCFile -Section $Section
+    $Script:Activation = Activate-Property -PropertyName $TestPropertyName -PropertyVersion latest -Network Staging -NotifyEmails "mail@example.com" -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Activate-Property returns activationlink' {
         $Activation.activationLink | Should -Not -BeNullOrEmpty
     }
@@ -372,7 +372,7 @@ Describe 'Unsafe PAPI Tests' {
     }
 
     ### Deactivate-Property
-    $Script:Deactivation = Deactivate-Property -PropertyID 123456 -PropertyVersion 1 -Network Staging -NotifyEmails "mail@example.com" -AcknowledgeAllWarnings -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    $Script:Deactivation = Deactivate-Property -PropertyID 123456 -PropertyVersion 1 -Network Staging -NotifyEmails "mail@example.com" -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Deactivate-Property returns activationlink' {
         $Deactivation.activationLink | Should -Not -BeNullOrEmpty
     }

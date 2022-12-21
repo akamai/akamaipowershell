@@ -75,18 +75,9 @@ function Invoke-AkamaiRestMethod {
         $authSource = "$EdgeRCFile file" #Used in error messages
     }
 
-    # Validate auth contents
-    if ($null -eq $Auth.$Section) {
-        throw "Error: Config section [$Section] not found in the $authSource"
-    }
-    if ($null -eq $Auth.$Section.ClientToken -or $null -eq $Auth.$Section.ClientAccessToken -or $null -eq $Auth.$Section.ClientSecret -or $null -eq $Auth.$Section.Host) {
-        throw "Error: Some necessary auth elements missing from section $Section. Please check the $authSource"
-    }
-   Write-Debug "Obtained credentials from section '$Section'"
-
     # Set IM staging host if switch present
-    if ($Auth.$Section.Host.Contains('.imaging.') -and $Staging) {
-        $Auth.$Section.Host = $Auth.$Section.Host.Replace(".imaging.", ".imaging-staging.")
+    if ($Auth.Host.Contains('.imaging.') -and $Staging) {
+        $Auth.Host = $Auth.Host.Replace(".imaging.", ".imaging-staging.")
     }
 
     # Sanitise query string
@@ -106,8 +97,20 @@ function Invoke-AkamaiRestMethod {
         }
     }
 
+    # Add account switch key if it is not contained in query already, but present in $Auth
+    if($Auth.AccountKey -and !$Path.Contains('accountSwitchKey')){
+        if($Path.Contains("?")){
+            $Path += '&'
+        }
+        else{
+            $Path += '?'
+        }
+        $Path += "accountSwitchKey=$($Auth.AccountKey)"
+    }
+    
+
     # Set ReqURL from host and provided path
-    $ReqURL = "https://" + $Auth.$Section.Host + $Path
+    $ReqURL = "https://" + $Auth.Host + $Path
 
     # ReqURL Verification
     If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net") {
@@ -126,7 +129,7 @@ function Invoke-AkamaiRestMethod {
 
     # Build data string for signature generation
     $SignatureData = $Method + "`thttps`t"
-    $SignatureData += $Auth.$Section.Host + "`t" + $Path
+    $SignatureData += $Auth.Host + "`t" + $Path
 
     # Add body to signature. Truncate if body is greater than max-body (Akamai default is 131072). PUT Method does not require adding to signature.
     if ($Method -eq "POST") {
@@ -162,23 +165,23 @@ function Invoke-AkamaiRestMethod {
     }
 
     $SignatureData += "EG1-HMAC-SHA256 "
-    $SignatureData += "client_token=" + $Auth.$Section.ClientToken + ";"
-    $SignatureData += "access_token=" + $Auth.$Section.ClientAccessToken + ";"
+    $SignatureData += "client_token=" + $Auth.ClientToken + ";"
+    $SignatureData += "access_token=" + $Auth.ClientAccessToken + ";"
     $SignatureData += "timestamp=" + $TimeStamp + ";"
     $SignatureData += "nonce=" + $Nonce + ";"
 
     Write-Debug "SignatureData = $SignatureData"
 
     # Generate SigningKey
-    $SigningKey = Crypto -secret $Auth.$Section.ClientSecret -message $TimeStamp
+    $SigningKey = Crypto -secret $Auth.ClientSecret -message $TimeStamp
 
     # Generate Auth Signature
     $Signature = Crypto -secret $SigningKey -message $SignatureData
 
     # Create AuthHeader
     $AuthorizationHeader = "EG1-HMAC-SHA256 "
-    $AuthorizationHeader += "client_token=" + $Auth.$Section.ClientToken + ";"
-    $AuthorizationHeader += "access_token=" + $Auth.$Section.ClientAccessToken + ";"
+    $AuthorizationHeader += "client_token=" + $Auth.ClientToken + ";"
+    $AuthorizationHeader += "access_token=" + $Auth.ClientAccessToken + ";"
     $AuthorizationHeader += "timestamp=" + $TimeStamp + ";"
     $AuthorizationHeader += "nonce=" + $Nonce + ";"
     $AuthorizationHeader += "signature=" + $Signature

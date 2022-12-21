@@ -7,7 +7,7 @@ function List-AllProperties
     )
 
     $Properties = New-Object System.Collections.ArrayList
-    $Groups = List-Groups -Section $Section -AccountSwitchKey $AccountSwitchKey    
+    $Groups = List-Groups -Section $Section -AccountSwitchKey $AccountSwitchKey -EdgeRCFile $EdgeRCFile
     if($PSCmdlet.MyInvocation.BoundParameters["Verbose"] -eq $true)
     {
         Write-Host "Found $($Groups.Count) groups"
@@ -23,7 +23,7 @@ function List-AllProperties
         if($Group.contractIds.length -gt 0)
         {
             try {
-                $PropertiesToAdd = List-Properties -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0] -AccountSwitchKey $AccountSwitchKey
+                $PropertiesToAdd = List-Properties -Section $Section -GroupID $Group.groupID -ContractId $group.ContractIDs[0] -AccountSwitchKey $AccountSwitchKey  -EdgeRCFile $EdgeRCFile
                 if($null -ne $PropertiesToAdd){
                     if($PropertiesToAdd.Count -gt 1) {
                         $Properties.AddRange($PropertiesToAdd) | Out-Null
