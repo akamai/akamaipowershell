@@ -1,4 +1,4 @@
-function List-TestRuns
+function New-TestRun
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $Body,
