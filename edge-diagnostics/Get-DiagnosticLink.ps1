@@ -26,7 +26,7 @@ function Get-DiagnosticLink
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.groups
+        return $Result
     }
     catch {
         throw $_

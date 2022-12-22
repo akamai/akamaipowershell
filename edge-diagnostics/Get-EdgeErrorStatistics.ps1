@@ -30,7 +30,7 @@ function Get-EdgeErrorStatistics
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result.results
+        return $Result
     }
     catch {
         throw $_
