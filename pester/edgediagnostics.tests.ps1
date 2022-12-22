@@ -105,7 +105,7 @@ Describe 'Safe Edge Diagnostics Tests' {
     
 }
 
-Describe 'Unsafe Cloud Access Manager Tests' {
+Describe 'Unsafe Edge Diagnostics Tests' {
     
     ## Get-EdgeErrorStatistics
     $Script:EStats = Get-EdgeErrorStatistics -CPCode 123456 -ErrorType EDGE_ERRORS -Delivery ENHANCED_TLS -EdgeRCFile $SafeEdgeRCFile -Section $Section
