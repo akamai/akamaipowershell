@@ -11,7 +11,7 @@ function List-EdgeHostnameChangeRequests
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
-        return $Result
+        return $Result.changeRequests
     }
     catch {
         throw $_

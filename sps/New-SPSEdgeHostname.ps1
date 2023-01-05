@@ -1,4 +1,4 @@
-function New-SPSRequest
+function New-SPSEdgeHostname
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $GroupID,

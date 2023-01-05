@@ -2,7 +2,7 @@ function New-EdgeWorker
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $Name,
-        [Parameter(Mandatory=$true)]  [string] $GroupID,
+        [Parameter(Mandatory=$true)]  [int]    $GroupID,
         [Parameter(Mandatory=$true)]  [int] [ValidateSet(100,200)] $ResourceTierID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',

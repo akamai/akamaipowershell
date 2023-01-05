@@ -1,4 +1,4 @@
-function New-TestRequest
+function New-TestRequests
 {
     Param(
         [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object[]] $TestRequests,
