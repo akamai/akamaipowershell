@@ -1,4 +1,4 @@
-function Set-AppSecCustomDefinedBot
+function Set-AppSecChallengeInterceptionRules
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,

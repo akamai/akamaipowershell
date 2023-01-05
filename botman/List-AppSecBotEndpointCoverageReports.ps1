@@ -1,4 +1,4 @@
-function Update-AppSecBotAnalyticsCookieValues
+function List-AppSecBotEndpointCoverageReports
 {
     Param(
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -6,10 +6,10 @@ function Update-AppSecBotAnalyticsCookieValues
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/appsec/v1/bot-analytics-cookie/values?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/bot-endpoint-coverage-report?accountSwitchKey=$AccountSwitchKey"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
         return $Result
     }
     catch {

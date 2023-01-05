@@ -33,7 +33,7 @@ function Set-AppSecCustomBotCategory
             $Body = ConvertTo-Json -Depth 100 $Category
         }
     
-        $Path = "/appsec/v1/configs/$CconfigID/versions/$VersionNumber/custom-bot-categories/$CategoryID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-bot-categories/$CategoryID`?accountSwitchKey=$AccountSwitchKey"
     
         try {
             $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section

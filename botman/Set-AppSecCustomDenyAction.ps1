@@ -36,7 +36,7 @@ function Set-AppSecCustomDenyAction
         $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/response-actions/custom-deny-actions/$ActionID`?accountSwitchKey=$AccountSwitchKey"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
             return $Result
         }
         catch {

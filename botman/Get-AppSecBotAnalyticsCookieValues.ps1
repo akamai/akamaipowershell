@@ -10,7 +10,7 @@ function Get-AppSecBotAnalyticsCookieValues
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.cookieValues
     }
     catch {
         throw $_

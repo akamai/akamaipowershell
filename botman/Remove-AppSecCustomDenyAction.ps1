@@ -1,4 +1,4 @@
-function Remove-AppSecCustomDenyActions
+function Remove-AppSecCustomDenyAction
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,

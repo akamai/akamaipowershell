@@ -6,7 +6,7 @@ function New-AppSecPolicyTransactionalEndpoint
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
-        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [string] $Endpoint,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Endpoint,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',

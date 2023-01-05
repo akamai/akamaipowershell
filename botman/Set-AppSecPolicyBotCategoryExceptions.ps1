@@ -6,7 +6,7 @@ function Set-AppSecPolicyBotCategoryExceptions
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
-        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [string] $Exceptions,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Exceptions,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',

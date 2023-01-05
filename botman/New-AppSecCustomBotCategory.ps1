@@ -4,8 +4,9 @@ function New-AppSecCustomBotCategory
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Category,
-        [Parameter(Mandatory=$false)] [string] $Body,
+        [Parameter(Mandatory=$true)]  [string] $CategoryName,
+        [Parameter(Mandatory=$false)] [string] $Description,
+        [Parameter(Mandatory=$false)] [string] $Notes,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
@@ -28,11 +29,19 @@ function New-AppSecCustomBotCategory
             $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
         }
 
-        if($Category){
-            $Body = ConvertTo-Json -Depth 100 $Category
+        $BodyObj = @{
+            categoryName = $CategoryName
         }
+        if($Description){
+            $BodyObj['description'] = $Description
+        }
+        if($Notes){
+            $BodyObj['notes'] = $Notes
+        }
+
+        $Body = ConvertTo-Json $BodyObj
     
-        $Path = "/appsec/v1/configs/$CconfigID/versions/$VersionNumber/custom-bot-categories?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-bot-categories?accountSwitchKey=$AccountSwitchKey"
     
         try {
             $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section

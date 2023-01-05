@@ -6,7 +6,7 @@ function Set-AppSecPolicyJavascriptInjection
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
-        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [string] $Rules,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Rules,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',

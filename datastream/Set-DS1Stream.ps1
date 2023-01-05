@@ -2,7 +2,7 @@ function Set-DS1Stream
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
-        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [string] $Stream,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [object] $Stream,
         [Parameter(Mandatory=$true,ParameterSetName='postbody')]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -15,7 +15,7 @@ function Set-DS1Stream
         $Path = "/datastream-config-api/v1/datastream1/streams/$StreamID`?groupId=$GroupID&streamStatus=$StreamStatus&accountSwitchKey=$AccountSwitchKey"
 
         if($Stream){
-            $Body = $Stream | ConvertTo-Json -Depth 100
+            $Body = ConvertTo-Json -Depth 100 $Stream
         }
 
         try {

@@ -1,4 +1,4 @@
-function Get-AppSecBotAnalyticsCookie
+function Get-AppSecBotAnalyticsCookieSettings
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,

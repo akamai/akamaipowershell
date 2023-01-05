@@ -7,7 +7,7 @@ function Set-AppSecPolicyBotDetectionAction
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $DetectionID,
-        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [string] $DetectionAction,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $DetectionAction,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',

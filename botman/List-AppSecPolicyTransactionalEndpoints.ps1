@@ -33,7 +33,7 @@ function List-AppSecPolicyTransactionalEndpoints
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.operations
     }
     catch {
         throw $_

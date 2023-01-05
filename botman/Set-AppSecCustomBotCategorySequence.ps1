@@ -4,7 +4,6 @@ function Set-AppSecCustomBotCategorySequence
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$true)]  [string] $CategoryID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Sequence,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',

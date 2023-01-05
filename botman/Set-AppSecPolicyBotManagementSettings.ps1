@@ -6,8 +6,7 @@ function Set-AppSecPolicyBotManagementSettings
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
-        [Parameter(Mandatory=$true)]  [string] $DetectionID,
-        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [string] $Settings,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Settings,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -39,7 +38,7 @@ function Set-AppSecPolicyBotManagementSettings
             $Body = ConvertTo-Json -depth 100 $Settings
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/bot-detection-actions/$DetectionID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/bot-management-settings?accountSwitchKey=$AccountSwitchKey"
     
         try {
             $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section

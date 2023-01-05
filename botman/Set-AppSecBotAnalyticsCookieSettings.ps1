@@ -1,10 +1,10 @@
-function Get-AppSecBotAnalyticsCookieSettings
+function Set-AppSecBotAnalyticsCookieSettings
 {
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [string] $CookieSettings,
+        [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $CookieSettings,
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',

@@ -33,7 +33,7 @@ function List-AppSecPolicyBotDetectionActions
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
-        return $Result
+        return $Result.actions
     }
     catch {
         throw $_
