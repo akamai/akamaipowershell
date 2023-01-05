@@ -2,7 +2,7 @@ function Set-ChinaCDNDeprovisionPolicy
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $EdgeHostname,
-        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [string] $DeprovisionPolicy,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [object] $DeprovisionPolicy,
         [Parameter(Mandatory=$true,ParameterSetName='body')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -19,7 +19,7 @@ function Set-ChinaCDNDeprovisionPolicy
         }
 
         if($DeprovisionPolicy){
-            $Body = $DeprovisionPolicy | ConvertTo-Json -Depth 100
+            $Body = ConvertTo-Json -Depth 100 $DeprovisionPolicy
         }
 
         try {

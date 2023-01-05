@@ -1,7 +1,7 @@
 function New-TCMSet
 {
     Param(
-        [Parameter(Mandatory=$true, ParameterSetName='attributes', ValueFromPipeline=$true)] [string] $Set,
+        [Parameter(Mandatory=$true, ParameterSetName='attributes', ValueFromPipeline=$true)] [object] $Set,
         [Parameter(Mandatory=$true, ParameterSetName='postbody')]   [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -22,7 +22,7 @@ function New-TCMSet
         $Path = "/trust-chain-manager/v1/sets"
     
         if($Set){
-            $Body = $Set | ConvertTo-Json -Depth 100
+            $Body = ConvertTo-Json -Depth 100 $Set
         }
     
         try {

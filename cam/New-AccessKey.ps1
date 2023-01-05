@@ -1,7 +1,7 @@
 function New-AccessKey
 {
     Param(
-        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [string] $AccessKey,
+        [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [object] $AccessKey,
         [Parameter(Mandatory=$true,ParameterSetName='body')]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
