@@ -39,15 +39,15 @@ Describe 'Safe Botman Tests' {
     #             Akamai Bot Categories              #
     #------------------------------------------------#
 
-    ### List-AppSecAkamaiBotCategories
-    $Script:AkamaiBotCategories = List-AppSecAkamaiBotCategories -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecAkamaiBotCategories returns a list' {
+    ### List-BotManAkamaiBotCategories
+    $Script:AkamaiBotCategories = List-BotManAkamaiBotCategories -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManAkamaiBotCategories returns a list' {
         $AkamaiBotCategories.count | Should -Not -Be 0
     }
 
-    ### Get-AppSecAkamaiBotCategory
-    $Script:AkamaiBotCategory = Get-AppSecAkamaiBotCategory -CategoryID $AkamaiBotCategories[0].categoryId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecAkamaiBotCategory returns the correct data' {
+    ### Get-BotManAkamaiBotCategory
+    $Script:AkamaiBotCategory = Get-BotManAkamaiBotCategory -CategoryID $AkamaiBotCategories[0].categoryId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManAkamaiBotCategory returns the correct data' {
         $AkamaiBotCategory.categoryId | Should -Be $AkamaiBotCategories[0].categoryId
     }
 
@@ -55,15 +55,15 @@ Describe 'Safe Botman Tests' {
     #              Akamai Defined Bots               #
     #------------------------------------------------#
 
-    ### List-AppSecAkamaiDefinedBots
-    $Script:AkamaiDefinedBots = List-AppSecAkamaiDefinedBots -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecAkamaiDefinedBots returns a list' {
+    ### List-BotManAkamaiDefinedBots
+    $Script:AkamaiDefinedBots = List-BotManAkamaiDefinedBots -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManAkamaiDefinedBots returns a list' {
         $AkamaiDefinedBots.count | Should -Not -Be 0
     }
 
-    ### Get-AppSecAkamaiDefinedBot
-    $Script:AkamaiDefinedBot = Get-AppSecAkamaiDefinedBot -BotID $AkamaiDefinedBots[0].botId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecAkamaiDefinedBot returns a list' {
+    ### Get-BotManAkamaiDefinedBot
+    $Script:AkamaiDefinedBot = Get-BotManAkamaiDefinedBot -BotID $AkamaiDefinedBots[0].botId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManAkamaiDefinedBot returns a list' {
         $AkamaiDefinedBot.botId | Should -Be $AkamaiDefinedBots[0].botId
     }
 
@@ -93,27 +93,27 @@ Describe 'Safe Botman Tests' {
     #             Custom Bot Categories              #
     #------------------------------------------------#
 
-    ### New-AppSecCustomBotCategory
-    $Script:NewCustomBotCategory = New-AppSecCustomBotCategory -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CategoryName $TestCustomBotCategoryName -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-AppSecCustomBotCategory returns the correct data' {
+    ### New-BotManCustomBotCategory
+    $Script:NewCustomBotCategory = New-BotManCustomBotCategory -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CategoryName $TestCustomBotCategoryName -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-BotManCustomBotCategory returns the correct data' {
         $NewCustomBotCategory.categoryName | Should -Be $TestCustomBotCategoryName
     }
 
-    ### List-AppSecCustomBotCategories
-    $Script:CustomBotCategories = List-AppSecCustomBotCategories -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecCustomBotCategories returns a list' {
+    ### List-BotManCustomBotCategories
+    $Script:CustomBotCategories = List-BotManCustomBotCategories -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManCustomBotCategories returns a list' {
         $CustomBotCategories | Should -Not -BeNullOrEmpty
     }
 
-    ### Get-AppSecCustomBotCategory
-    $Script:CustomBotCategory = Get-AppSecCustomBotCategory -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CategoryID $NewCustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecCustomBotCategory returns the correct data' {
+    ### Get-BotManCustomBotCategory
+    $Script:CustomBotCategory = Get-BotManCustomBotCategory -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CategoryID $NewCustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManCustomBotCategory returns the correct data' {
         $CustomBotCategory.categoryId | Should -Be $NewCustomBotCategory.categoryId
     }
 
-    ### Set-AppSecCustomBotCategory
-    $Script:SetCustomBotCategory = ($CustomBotCategory | Set-AppSecCustomBotCategory -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CategoryID $NewCustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecCustomBotCategory updates successfully' {
+    ### Set-BotManCustomBotCategory
+    $Script:SetCustomBotCategory = ($CustomBotCategory | Set-BotManCustomBotCategory -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CategoryID $NewCustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManCustomBotCategory updates successfully' {
         $SetCustomBotCategory.categoryId | Should -Be $NewCustomBotCategory.categoryId
     }
 
@@ -121,67 +121,67 @@ Describe 'Safe Botman Tests' {
     #       Recategorized Akamai-defined Bots        #
     #------------------------------------------------#
 
-    ### Move-AppSecAkamaiDefinedBot
-    $Script:RecategorizedBot = Move-AppSecAkamaiDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $AkamaiDefinedBots[0].botId -CustomBotCategoryID $CustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Move-AppSecAkamaiDefinedBot moves successfully' {
+    ### Move-BotManAkamaiDefinedBot
+    $Script:RecategorizedBot = Move-BotManAkamaiDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $AkamaiDefinedBots[0].botId -CustomBotCategoryID $CustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Move-BotManAkamaiDefinedBot moves successfully' {
         $RecategorizedBot.customBotCategoryId | Should -Be $CustomBotCategory.categoryId
     }
 
-    ### List-AppSecRecategorizedAkamaiDefinedBots
-    $Script:RecategorizedBots = List-AppSecRecategorizedAkamaiDefinedBots -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecRecategorizedAkamaiDefinedBots returns a list with the correct data' {
+    ### List-BotManRecategorizedAkamaiDefinedBots
+    $Script:RecategorizedBots = List-BotManRecategorizedAkamaiDefinedBots -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManRecategorizedAkamaiDefinedBots returns a list with the correct data' {
         $RecategorizedBots[0].botId | Should -Not -BeNullOrEmpty
     }
 
-    ### Get-AppSecRecategorizedAkamaiDefinedBot
-    $Script:RecategorizedBot = Get-AppSecRecategorizedAkamaiDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $RecategorizedBots[0].botId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecRecategorizedAkamaiDefinedBot returns the correct bot ID' {
+    ### Get-BotManRecategorizedAkamaiDefinedBot
+    $Script:RecategorizedBot = Get-BotManRecategorizedAkamaiDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $RecategorizedBots[0].botId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManRecategorizedAkamaiDefinedBot returns the correct bot ID' {
         $RecategorizedBot.botId | Should -Be $RecategorizedBots[0].botId
     }
 
-    ### Move-AppSecRecategorizedAkamaiDefinedBot
-    $Script:MovedRecategorizedBot = Move-AppSecRecategorizedAkamaiDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $RecategorizedBots[0].botId -CustomBotCategoryID $CustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Move-AppSecRecategorizedAkamaiDefinedBot returns the correct category' {
+    ### Move-BotManRecategorizedAkamaiDefinedBot
+    $Script:MovedRecategorizedBot = Move-BotManRecategorizedAkamaiDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $RecategorizedBots[0].botId -CustomBotCategoryID $CustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Move-BotManRecategorizedAkamaiDefinedBot returns the correct category' {
         $MovedRecategorizedBot.customBotCategoryId | Should -Be $CustomBotCategory.categoryId
     }
 
-    ### Remove-AppSecRecategorizedAkamaiDefinedBot
-    it 'Remove-AppSecRecategorizedAkamaiDefinedBot removes successfully' {
-        { Remove-AppSecRecategorizedAkamaiDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $RecategorizedBot.botId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    ### Remove-BotManRecategorizedAkamaiDefinedBot
+    it 'Remove-BotManRecategorizedAkamaiDefinedBot removes successfully' {
+        { Remove-BotManRecategorizedAkamaiDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $RecategorizedBot.botId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
     }
 
     #------------------------------------------------#
     #             Custom-Defined Bots                #
     #------------------------------------------------#
 
-    ### New-AppSecCustomDefinedBot
+    ### New-BotManCustomDefinedBot
     $TestCustomBot.categoryId = $NewCustomBotCategory.categoryId
-    $Script:NewCustomBot = New-AppSecCustomDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Bot $TestCustomBot -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-AppSecCustomDefinedBot returns the correct name' {
+    $Script:NewCustomBot = New-BotManCustomDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Bot $TestCustomBot -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-BotManCustomDefinedBot returns the correct name' {
         $NewCustomBot.botName | Should -Be $TestCustomBotName
     }
 
-    ### List-AppSecCustomDefinedBots
-    $Script:CustomBots = List-AppSecCustomDefinedBots -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecCustomBotCategories returns a list' {
+    ### List-BotManCustomDefinedBots
+    $Script:CustomBots = List-BotManCustomDefinedBots -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManCustomBotCategories returns a list' {
         $CustomBots[0].botId | Should -Not -BeNullOrEmpty
     }
 
-    ### Get-AppSecCustomDefinedBot
-    $Script:CustomBot = Get-AppSecCustomDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $NewCustomBot.botID -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecCustomDefinedBot returns the correct bot' {
+    ### Get-BotManCustomDefinedBot
+    $Script:CustomBot = Get-BotManCustomDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $NewCustomBot.botID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManCustomDefinedBot returns the correct bot' {
         $CustomBot.botId | Should -Be $NewCustomBot.botID
     }
 
-    ### Set-AppSecCustomDefinedBot
-    $Script:SetCustomBot = ($NewCustomBot | Set-AppSecCustomDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $NewCustomBot.botID -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecCustomDefinedBot updates correctly' {
+    ### Set-BotManCustomDefinedBot
+    $Script:SetCustomBot = ($NewCustomBot | Set-BotManCustomDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $NewCustomBot.botID -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManCustomDefinedBot updates correctly' {
         $SetCustomBot.botId | Should -Be $NewCustomBot.botID
     }
 
-    ### Remove-AppSecCustomDefinedBot
-    it 'Remove-AppSecCustomDefinedBot removes successfully' {
-        { Remove-AppSecCustomDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $NewCustomBot.botID -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    ### Remove-BotManCustomDefinedBot
+    it 'Remove-BotManCustomDefinedBot removes successfully' {
+        { Remove-BotManCustomDefinedBot -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -BotID $NewCustomBot.botID -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
     }
 
     #------------------------------------------------#
@@ -210,15 +210,15 @@ Describe 'Safe Botman Tests' {
     #          Custom Bot Category Sequence          #
     #------------------------------------------------#
 
-    ### Get-AppSecCustomBotCategorySequence
-    $Script:CustomBotCategorySequence = Get-AppSecCustomBotCategorySequence -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecCustomBotCategorySequence returns the correct data' {
+    ### Get-BotManCustomBotCategorySequence
+    $Script:CustomBotCategorySequence = Get-BotManCustomBotCategorySequence -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManCustomBotCategorySequence returns the correct data' {
         $CustomBotCategorySequence.sequence | Should -Not -BeNullOrEmpty
     }
 
-    ### Set-AppSecCustomBotCategorySequence
-    $Script:SetCustomBotCategorySequence = ($CustomBotCategorySequence | Set-AppSecCustomBotCategorySequence -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecCustomBotCategorySequence updates correctly' {
+    ### Set-BotManCustomBotCategorySequence
+    $Script:SetCustomBotCategorySequence = ($CustomBotCategorySequence | Set-BotManCustomBotCategorySequence -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManCustomBotCategorySequence updates correctly' {
         $CustomBotCategorySequence.sequence | Should -Not -BeNullOrEmpty
     }
 
@@ -226,48 +226,48 @@ Describe 'Safe Botman Tests' {
     #                Custom Clients                  #
     #------------------------------------------------#
 
-    ### New-AppSecCustomClient
-    $Script:NewCustomClient = New-AppSecCustomClient -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CustomClient $TestCustomClient -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-AppSecCustomClient returns the correct data' {
+    ### New-BotManCustomClient
+    $Script:NewCustomClient = New-BotManCustomClient -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CustomClient $TestCustomClient -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-BotManCustomClient returns the correct data' {
         $NewCustomClient.customClientName | Should -Be $TestCustomClientName
     }
 
-    ### List-AppSecCustomClients
-    $Script:CustomClients = List-AppSecCustomClients -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecCustomClients returns a list' {
+    ### List-BotManCustomClients
+    $Script:CustomClients = List-BotManCustomClients -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManCustomClients returns a list' {
         $CustomClients | Should -Not -BeNullOrEmpty
     }
 
-    ### Get-AppSecCustomClient
-    $Script:CustomClient = Get-AppSecCustomClient -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CustomClientID $NewCustomClient.customClientId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecCustomClient returns the correct data' {
+    ### Get-BotManCustomClient
+    $Script:CustomClient = Get-BotManCustomClient -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CustomClientID $NewCustomClient.customClientId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManCustomClient returns the correct data' {
         $CustomClient.customClientId | Should -Be $NewCustomClient.customClientId
     }
 
-    ### Set-AppSecCustomClient
-    $Script:SetCustomClient = ($CustomClient | Set-AppSecCustomClient -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CustomClientID $NewCustomClient.customClientId -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecCustomClient updates successfully' {
+    ### Set-BotManCustomClient
+    $Script:SetCustomClient = ($CustomClient | Set-BotManCustomClient -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CustomClientID $NewCustomClient.customClientId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManCustomClient updates successfully' {
         $SetCustomClient.customClientId | Should -Be $NewCustomClient.customClientId
     }
 
-    ### Remove-AppSecCustomClient
-    it 'Remove-AppSecCustomClient removes successfully' {
-        { Remove-AppSecCustomClient -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CustomClientID $NewCustomClient.customClientId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+    ### Remove-BotManCustomClient
+    it 'Remove-BotManCustomClient removes successfully' {
+        { Remove-BotManCustomClient -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CustomClientID $NewCustomClient.customClientId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
     }
 
     #------------------------------------------------#
     #             Client Side Security               #
     #------------------------------------------------#
 
-    ### Get-AppSecClientSideSecurity
-    $Script:ClientSideSecurity = Get-AppSecClientSideSecurity -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecClientSideSecurity returns the correct data' {
+    ### Get-BotManClientSideSecurity
+    $Script:ClientSideSecurity = Get-BotManClientSideSecurity -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManClientSideSecurity returns the correct data' {
         $ClientSideSecurity.useSameSiteCookies | Should -Not -BeNullOrEmpty
     }
 
-    ### Set-AppSecClientSideSecurity
-    $Script:SetClientSideSecurity = ($ClientSideSecurity | Set-AppSecClientSideSecurity -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecClientSideSecurity updates correctly' {
+    ### Set-BotManClientSideSecurity
+    $Script:SetClientSideSecurity = ($ClientSideSecurity | Set-BotManClientSideSecurity -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManClientSideSecurity updates correctly' {
         $SetClientSideSecurity.useSameSiteCookies | Should -Be $ClientSideSecurity.useSameSiteCookies
     }
 
@@ -275,15 +275,15 @@ Describe 'Safe Botman Tests' {
     #        Bot Analytics Cookie Settings           #
     #------------------------------------------------#
 
-    # ### Get-AppSecBotAnalyticsCookieSettings
-    # $Script:BotAnalyticsCookieSettings = Get-AppSecBotAnalyticsCookieSettings -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    # it 'Get-AppSecBotAnalyticsCookieSettings returns the correct data' {
+    # ### Get-BotManBotAnalyticsCookieSettings
+    # $Script:BotAnalyticsCookieSettings = Get-BotManBotAnalyticsCookieSettings -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    # it 'Get-BotManBotAnalyticsCookieSettings returns the correct data' {
     #     $BotAnalyticsCookieSettings.enableBotSignal | Should -Not -BeNullOrEmpty
     # }
 
-    # ### Set-AppSecBotAnalyticsCookieSettings
-    # $Script:SetBotAnalyticsCookieSettings = ($BotAnalyticsCookieSettings | Set-AppSecBotAnalyticsCookieSettings -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
-    # it 'Set-AppSecBotAnalyticsCookieSettings updates correctly' {
+    # ### Set-BotManBotAnalyticsCookieSettings
+    # $Script:SetBotAnalyticsCookieSettings = ($BotAnalyticsCookieSettings | Set-BotManBotAnalyticsCookieSettings -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
+    # it 'Set-BotManBotAnalyticsCookieSettings updates correctly' {
     #     $SetBotAnalyticsCookieSettings.enableBotSignal | Should -Be $BotAnalyticsCookieSettings.enableBotSignal
     # }
 
@@ -291,15 +291,15 @@ Describe 'Safe Botman Tests' {
     #         Bot Analytics Cookie Values            #
     #------------------------------------------------#
 
-    # ### Get-AppSecBotAnalyticsCookieValues
-    # $Script:BotAnalyticsCookieValues = Get-AppSecBotAnalyticsCookieValues -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    # it 'Get-AppSecBotAnalyticsCookieValues returns the correct data' {
+    # ### Get-BotManBotAnalyticsCookieValues
+    # $Script:BotAnalyticsCookieValues = Get-BotManBotAnalyticsCookieValues -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    # it 'Get-BotManBotAnalyticsCookieValues returns the correct data' {
     #     $BotAnalyticsCookieValues.count | Should -Not -Be 0
     # }
 
-    # ### Update-AppSecBotAnalyticsCookieValues
-    # $Script:NewBotAnalyticsCookieValues = Update-AppSecBotAnalyticsCookieValues -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    # it 'Update-AppSecBotAnalyticsCookieValues returns the correct data' {
+    # ### Update-BotManBotAnalyticsCookieValues
+    # $Script:NewBotAnalyticsCookieValues = Update-BotManBotAnalyticsCookieValues -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    # it 'Update-BotManBotAnalyticsCookieValues returns the correct data' {
     #     $NewBotAnalyticsCookieValues.count | Should -Not -Be 0
     # }
 
@@ -324,15 +324,15 @@ Describe 'Safe Botman Tests' {
     #               Bot Detections                   #
     #------------------------------------------------#
 
-    ### List-AppSecBotDetections
-    $Script:BotDetections = List-AppSecBotDetections -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecBotDetections returns a list' {
+    ### List-BotManBotDetections
+    $Script:BotDetections = List-BotManBotDetections -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManBotDetections returns a list' {
         $BotDetections.count | Should -Not -Be 0
     }
 
-    ### Get-AppSecBotDetection
-    $Script:BotDetection = Get-AppSecBotDetection -DetectionID $BotDetections[0].detectionId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecBotDetection returns the correct data' {
+    ### Get-BotManBotDetection
+    $Script:BotDetection = Get-BotManBotDetection -DetectionID $BotDetections[0].detectionId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManBotDetection returns the correct data' {
         $BotDetection.detectionId | Should -Be $BotDetections[0].detectionId
     }
 
@@ -363,15 +363,15 @@ Describe 'Safe Botman Tests' {
     #        Bot Endpoint Coverage Reports           #
     #------------------------------------------------#
 
-    ### List-AppSecBotEndpointCoverageReports
-    $Script:BotEndpointCoverageReports = List-AppSecBotEndpointCoverageReports -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecBotEndpointCoverageReports returns the correct data' {
+    ### List-BotManBotEndpointCoverageReports
+    $Script:BotEndpointCoverageReports = List-BotManBotEndpointCoverageReports -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManBotEndpointCoverageReports returns the correct data' {
         $BotEndpointCoverageReports.validation | Should -Not -BeNullOrEmpty
     }
 
-    ### Get-AppSecConfigBotEndpointCoverageReport
-    $Script:BotEndpointCoverageReport = Get-AppSecConfigBotEndpointCoverageReport -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecConfigBotEndpointCoverageReport returns the correct data' {
+    ### Get-BotManConfigBotEndpointCoverageReport
+    $Script:BotEndpointCoverageReport = Get-BotManConfigBotEndpointCoverageReport -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManConfigBotEndpointCoverageReport returns the correct data' {
         $BotEndpointCoverageReport.validation | Should -Not -BeNullOrEmpty
     }
 
@@ -444,15 +444,15 @@ Describe 'Safe Botman Tests' {
     #       Transactional Endpoint Protection        #
     #------------------------------------------------#
 
-    ### List-AppSecTransactionalEndpointProtections
-    $Script:TransactionalEndpointProtections = List-AppSecTransactionalEndpointProtections -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecTransactionalEndpointProtections returns the correct data' {
+    ### List-BotManTransactionalEndpointProtections
+    $Script:TransactionalEndpointProtections = List-BotManTransactionalEndpointProtections -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManTransactionalEndpointProtections returns the correct data' {
         $TransactionalEndpointProtections.standardTelemetry | Should -Not -BeNullOrEmpty
     }
 
-    ### Set-AppSecTransactionalEndpointProtections
-    $Script:SetTransactionalEndpointProtections = ($TransactionalEndpointProtections |  Set-AppSecTransactionalEndpointProtections -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecTransactionalEndpointProtections updates correctly' {
+    ### Set-BotManTransactionalEndpointProtections
+    $Script:SetTransactionalEndpointProtections = ($TransactionalEndpointProtections |  Set-BotManTransactionalEndpointProtections -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManTransactionalEndpointProtections updates correctly' {
         $SetTransactionalEndpointProtections.standardTelemetry | Should -Not -BeNullOrEmpty
     }
 
@@ -460,9 +460,9 @@ Describe 'Safe Botman Tests' {
     #                Response Actions                #
     #------------------------------------------------#
 
-    ### List-AppSecResponseActions
-    $Script:ResponseActions = List-AppSecResponseActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecResponseActions returns the correct data' {
+    ### List-BotManResponseActions
+    $Script:ResponseActions = List-BotManResponseActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManResponseActions returns the correct data' {
         $ResponseActions.count | Should -Not -BeNullOrEmpty
     }
 
@@ -470,15 +470,15 @@ Describe 'Safe Botman Tests' {
     #          Challenge Interception Rules          #
     #------------------------------------------------#
 
-    ### List-AppSecChallengeInterceptionRules
-    $Script:ChallengeInterceptionRules = List-AppSecChallengeInterceptionRules -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecChallengeInterceptionRules returns the correct data' {
+    ### List-BotManChallengeInterceptionRules
+    $Script:ChallengeInterceptionRules = List-BotManChallengeInterceptionRules -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManChallengeInterceptionRules returns the correct data' {
         $ChallengeInterceptionRules.interceptAllRequests | Should -Not -BeNullOrEmpty
     }
 
-    ### Set-AppSecChallengeInterceptionRules
-    $Script:SetChallengeInterceptionRules = ($ChallengeInterceptionRules | Set-AppSecChallengeInterceptionRules -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecChallengeInterceptionRules returns the correct data' {
+    ### Set-BotManChallengeInterceptionRules
+    $Script:SetChallengeInterceptionRules = ($ChallengeInterceptionRules | Set-BotManChallengeInterceptionRules -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManChallengeInterceptionRules returns the correct data' {
         $SetChallengeInterceptionRules.interceptAllRequests | Should -Be $ChallengeInterceptionRules.interceptAllRequests
     }
 
@@ -487,140 +487,140 @@ Describe 'Safe Botman Tests' {
     #------------------------------------------------#
 
     ### New-AppSecPolicyTransactionalEndpoint
-    $Script:NewCustomDenyAction = New-AppSecCustomDenyAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Action $TestCustomDenyAction -EdgeRCFile $EdgeRCFile -Section $Section
+    $Script:NewCustomDenyAction = New-BotManCustomDenyAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Action $TestCustomDenyAction -EdgeRCFile $EdgeRCFile -Section $Section
     it 'New-AppSecPolicyTransactionalEndpoint returns the correct data' {
         $NewCustomDenyAction.actionId | Should -Not -BeNullOrEmpty
     }
 
-    ### List-AppSecCustomDenyActions
-    $Script:CustomDenyActions = List-AppSecCustomDenyActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecCustomDenyActions returns a list' {
+    ### List-BotManCustomDenyActions
+    $Script:CustomDenyActions = List-BotManCustomDenyActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManCustomDenyActions returns a list' {
         $CustomDenyActions.count | Should -Not -Be 0
     }
 
-    ### Get-AppSecCustomDenyAction
-    $Script:CustomDenyAction = Get-AppSecCustomDenyAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $NewCustomDenyAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecCustomDenyAction returns the correct data' {
+    ### Get-BotManCustomDenyAction
+    $Script:CustomDenyAction = Get-BotManCustomDenyAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $NewCustomDenyAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManCustomDenyAction returns the correct data' {
         $CustomDenyAction.actionId | Should -Be $NewCustomDenyAction.actionId
     }
 
-    ### Set-AppSecCustomDenyAction
-    $Script:SetCustomDenyAction = ($CustomDenyAction | Set-AppSecCustomDenyAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $CustomDenyAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecCustomDenyAction updates successfully' {
+    ### Set-BotManCustomDenyAction
+    $Script:SetCustomDenyAction = ($CustomDenyAction | Set-BotManCustomDenyAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $CustomDenyAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManCustomDenyAction updates successfully' {
         $SetCustomDenyAction.actionId | Should -Be $CustomDenyAction.actionId
     }
 
-    ### Remove-AppSecCustomDenyAction
-    it 'Remove-AppSecCustomDenyAction removes successfully' {
-        { Remove-AppSecCustomDenyAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $CustomDenyAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+    ### Remove-BotManCustomDenyAction
+    it 'Remove-BotManCustomDenyAction removes successfully' {
+        { Remove-BotManCustomDenyAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $CustomDenyAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
     }
 
     #------------------------------------------------#
     #              Conditional Actions               #
     #------------------------------------------------#
 
-    ### New-AppSecConditionalAction
-    $Script:NewConditionalAction = New-AppSecConditionalAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Action $TestConditionalAction -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-AppSecConditionalAction creates correctly' {
+    ### New-BotManConditionalAction
+    $Script:NewConditionalAction = New-BotManConditionalAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Action $TestConditionalAction -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-BotManConditionalAction creates correctly' {
         $NewConditionalAction.actionId | Should -Not -BeNullOrEmpty
     }
 
-    ### List-AppSecConditionalActions
-    $Script:ConditionalActions = List-AppSecConditionalActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecConditionalActions returns a list' {
+    ### List-BotManConditionalActions
+    $Script:ConditionalActions = List-BotManConditionalActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManConditionalActions returns a list' {
         $ConditionalActions.count | Should -Not -Be 0
     }
 
-    ### Get-AppSecConditionalAction
-    $Script:ConditionalAction = Get-AppSecConditionalAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $NewConditionalAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecConditionalAction returns the correct data' {
+    ### Get-BotManConditionalAction
+    $Script:ConditionalAction = Get-BotManConditionalAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $NewConditionalAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManConditionalAction returns the correct data' {
         $ConditionalAction.actionId | Should -Be $NewConditionalAction.actionId
     }
 
-    ### Set-AppSecConditionalAction
-    $Script:SetConditionalAction = ($ConditionalAction | Set-AppSecConditionalAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ConditionalAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecConditionalAction updates successfully' {
+    ### Set-BotManConditionalAction
+    $Script:SetConditionalAction = ($ConditionalAction | Set-BotManConditionalAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ConditionalAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManConditionalAction updates successfully' {
         $SetConditionalAction.actionId | Should -Be $ConditionalAction.actionId
     }
 
-    ### Remove-AppSecConditionalAction
-    it 'Remove-AppSecConditionalAction removes successfully' {
-        { Remove-AppSecConditionalAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ConditionalAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+    ### Remove-BotManConditionalAction
+    it 'Remove-BotManConditionalAction removes successfully' {
+        { Remove-BotManConditionalAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ConditionalAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
     }
 
     #------------------------------------------------#
     #            Serve Alternate Actions             #
     #------------------------------------------------#
 
-    ### New-AppSecServeAlternateAction
-    $Script:NewServeAlternateAction = New-AppSecServeAlternateAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Action $TestServeAlternateAction -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-AppSecServeAlternateAction creates correctly' {
+    ### New-BotManServeAlternateAction
+    $Script:NewServeAlternateAction = New-BotManServeAlternateAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Action $TestServeAlternateAction -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-BotManServeAlternateAction creates correctly' {
         $NewServeAlternateAction.actionId | Should -Not -BeNullOrEmpty
     }
 
-    ### List-AppSecServeAlternateActions
-    $Script:ServeAlternateActions = List-AppSecServeAlternateActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecServeAlternateActions returns a list' {
+    ### List-BotManServeAlternateActions
+    $Script:ServeAlternateActions = List-BotManServeAlternateActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManServeAlternateActions returns a list' {
         $ServeAlternateActions.count | Should -Not -Be 0
     }
 
-    ### Get-AppSecServeAlternateAction
-    $Script:ServeAlternateAction = Get-AppSecServeAlternateAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $NewServeAlternateAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecServeAlternateAction returns the correct data' {
+    ### Get-BotManServeAlternateAction
+    $Script:ServeAlternateAction = Get-BotManServeAlternateAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $NewServeAlternateAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManServeAlternateAction returns the correct data' {
         $ServeAlternateAction.actionId | Should -Be $NewServeAlternateAction.actionId
     }
 
-    ### Set-AppSecServeAlternateAction
-    $Script:SetServeAlternateAction = ($ServeAlternateAction | Set-AppSecServeAlternateAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ServeAlternateAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecServeAlternateAction updates successfully' {
+    ### Set-BotManServeAlternateAction
+    $Script:SetServeAlternateAction = ($ServeAlternateAction | Set-BotManServeAlternateAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ServeAlternateAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManServeAlternateAction updates successfully' {
         $SetServeAlternateAction.actionId | Should -Be $ServeAlternateAction.actionId
     }
 
-    ### Remove-AppSecConditionalAction
-    it 'Remove-AppSecConditionalAction removes successfully' {
-        { Remove-AppSecServeAlternateAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ServeAlternateAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+    ### Remove-BotManConditionalAction
+    it 'Remove-BotManConditionalAction removes successfully' {
+        { Remove-BotManServeAlternateAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ServeAlternateAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
     }
 
     #------------------------------------------------#
     #               Challenge Actions                #
     #------------------------------------------------#
 
-    ### New-AppSecChallengeAction
-    $Script:NewChallengeAction = New-AppSecChallengeAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Action $TestChallengeAction -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-AppSecChallengeAction creates correctly' {
+    ### New-BotManChallengeAction
+    $Script:NewChallengeAction = New-BotManChallengeAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -Action $TestChallengeAction -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-BotManChallengeAction creates correctly' {
         $NewChallengeAction.actionId | Should -Not -BeNullOrEmpty
     }
 
-    ### List-AppSecChallengeActions
-    $Script:ChallengeActions = List-AppSecChallengeActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-AppSecChallengeActions returns a list' {
+    ### List-BotManChallengeActions
+    $Script:ChallengeActions = List-BotManChallengeActions -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BotManChallengeActions returns a list' {
         $ChallengeActions.count | Should -Not -Be 0
     }
 
-    ### Get-AppSecChallengeAction
-    $Script:ChallengeAction = Get-AppSecChallengeAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $NewChallengeAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-AppSecChallengeAction returns the correct data' {
+    ### Get-BotManChallengeAction
+    $Script:ChallengeAction = Get-BotManChallengeAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $NewChallengeAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BotManChallengeAction returns the correct data' {
         $ChallengeAction.actionId | Should -Be $NewChallengeAction.actionId
     }
 
-    ### Set-AppSecChallengeAction
-    $Script:SetChallengeAction = ($ChallengeAction | Set-AppSecChallengeAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ChallengeAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section)
-    it 'Set-AppSecChallengeAction updates successfully' {
+    ### Set-BotManChallengeAction
+    $Script:SetChallengeAction = ($ChallengeAction | Set-BotManChallengeAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ChallengeAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-BotManChallengeAction updates successfully' {
         $SetChallengeAction.actionId | Should -Be $ChallengeAction.actionId
     }
 
-    ### Remove-AppSecChallengeAction
-    it 'Remove-AppSecChallengeAction removes successfully' {
-        { Remove-AppSecChallengeAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ChallengeAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+    ### Remove-BotManChallengeAction
+    it 'Remove-BotManChallengeAction removes successfully' {
+        { Remove-BotManChallengeAction -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -ActionID $ChallengeAction.actionId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
     }
 
     #------------------------------------------------#
     #                   Removals                     #
     #------------------------------------------------#
 
-    ### Remove-AppSecCustomBotCategory
-    it 'Remove-AppSecCustomBotCategory removes successfully' {
-        { Remove-AppSecCustomBotCategory -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CategoryID $NewCustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    ### Remove-BotManCustomBotCategory
+    it 'Remove-BotManCustomBotCategory removes successfully' {
+        { Remove-BotManCustomBotCategory -ConfigID $TestConfigID -VersionNumber $TestConfigVersion -CategoryID $NewCustomBotCategory.categoryId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
     }
 
     AfterAll {
