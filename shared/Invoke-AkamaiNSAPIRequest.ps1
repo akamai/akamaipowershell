@@ -24,7 +24,7 @@ function Invoke-AkamaiNSAPIRequest {
     }
 
     #Prepend path with / and add CP Code
-    $CPCode = $Auth.$Section.cpcode
+    $CPCode = $Auth.CPCode
     if(!($Path.StartsWith("/"))) {
         $Path = "/$Path"
     }
@@ -70,13 +70,13 @@ function Invoke-AkamaiNSAPIRequest {
     # Generate X-Akamai-ACS-Auth-Data variable
     $Version = 5
     $EpochTime = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
-    $AuthDataHeader = "$Version, 0.0.0.0, 0.0.0.0, $EpochTime, $Nonce, $($Auth.$Section.id)"
+    $AuthDataHeader = "$Version, 0.0.0.0, 0.0.0.0, $EpochTime, $Nonce, $($Auth.ID)"
     $Headers['X-Akamai-ACS-Auth-Data'] = $AuthDataHeader
 
     # Create sign-string for encrypting, reuse shared Crypto
     $SignString = "$Path`nx-akamai-acs-action:$ActionHeader`n"
     $EncryptMessage = $AuthDataHeader + $SignString
-    $Signature = Crypto -secret $Auth.$Section.key -message $EncryptMessage
+    $Signature = Crypto -secret $Auth.Key -message $EncryptMessage
     $Headers['X-Akamai-ACS-Auth-Sign'] = $Signature
 
     # Determine HTTP Method from Action
@@ -97,7 +97,7 @@ function Invoke-AkamaiNSAPIRequest {
     }
 
     # Set ReqURL from NSAPI hostname and supplied path
-    $ReqURL = "https://$($Auth.$Section.host)" + $Path
+    $ReqURL = "https://$($Auth.Host)" + $Path
 
     # Do it.
     if ($Method -eq "PUT" -or $Method -eq "POST") {

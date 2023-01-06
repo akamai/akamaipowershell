@@ -4,7 +4,7 @@ $Script:EdgeRCFile = $env:PesterEdgeRCFile
 $Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
 $Script:Section = 'default'
 $Script:TestContract = '1-1NC95D'
-$Script:TestGroupID = 131831
+$Script:TestGroupID = 209759
 $Script:TestCollectionName = "Akamai PowerShell"
 $Script:TestCollectionBody = "{
     `"contractId`": `"$TestContract`",

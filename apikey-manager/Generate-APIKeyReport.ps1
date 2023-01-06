@@ -19,12 +19,11 @@ function Generate-APIKeyReport
         throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
-    $Params = "start=$Start&end=$End&interval=$Interval&limit=$Limit&accountSwitchKey=$AccountSwitchKey"
-    $EncodedParams = [System.Web.HttpUtility]::UrlEncode($Params)
-    $EncodedParams = $EncodedParams.Replace("%3d","=") #Easier to read
-    $EncodedParams = $EncodedParams.Replace("%26","&")
+    # Encode specific params
+    $Start = [System.Uri]::EscapeDataString($Start)
+    $End   = [System.Uri]::EscapeDataString($End)
 
-    $Path = "/apikey-manager-api/v1/reports/$ReportType/versions/$Version/report-data?$EncodedParams"
+    $Path = "/apikey-manager-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&limit=$Limit&accountSwitchKey=$AccountSwitchKey"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes'){
         $BodyObj = @{ 

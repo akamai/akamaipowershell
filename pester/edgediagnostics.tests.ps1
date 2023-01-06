@@ -6,8 +6,10 @@ $Script:Section = 'default'
 $Script:TestContract = '1-1NC95D'
 $Script:TestIPAddress = '1.2.3.4'
 $Script:TestHostname = 'ion.stuartmacleod.net'
-$Script:TestErrorCode = '9.44ae3017.1671670066.38e4d065'
-$Script:TestDiagnosticsNote = 'AkamaiPowerShell testig. Please ignore'
+$Script:1HourAgo = (Get-Date).AddHours(-1)
+$Script:EpochTime = [Math]::Floor([decimal](Get-Date($1HourAgo).ToUniversalTime() -uformat "%s"))
+$Script:TestErrorCode = "9.44ae3017.$($EpochTime).38e4d065"
+$Script:TestDiagnosticsNote = 'AkamaiPowerShell testing. Please ignore'
 
 Describe 'Safe Edge Diagnostics Tests' {
 
