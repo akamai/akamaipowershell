@@ -12,17 +12,18 @@ $Script:NewTestElements = '2.2.2.2, 3.3.3.3'
 Describe 'Safe Network Lists Tests' {
 
     BeforeDiscovery {
-        ### New-NetworkList
-        $Script:NewList = New-NetworkList -Name $TestListName -Type IP -Description "testing" -ContractId $TestContract -GroupID $TestGroup -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'New-NetworkList creates a list successfully' {
-            $NewList.name | Should -Be $TestListName
-        }
+    }
 
-        ### AddTo-NetworkList
-        $Script:Add = AddTo-NetworkList -NetworkListID $NewList.uniqueId -Element $TestElement -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'AddTo-NetworkList adds element' {
-            $Add.list | Should -Contain $TestElement
-        }
+    ### New-NetworkList
+    $Script:NewList = New-NetworkList -Name $TestListName -Type IP -Description "testing" -ContractId $TestContract -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-NetworkList creates a list successfully' {
+        $NewList.name | Should -Be $TestListName
+    }
+
+    ### AddTo-NetworkList
+    $Script:Add = AddTo-NetworkList -NetworkListID $NewList.uniqueId -Element $TestElement -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'AddTo-NetworkList adds element' {
+        $Add.list | Should -Contain $TestElement
     }
 
     ### List-NetworkLists
@@ -56,18 +57,20 @@ Describe 'Safe Network Lists Tests' {
         $Append.list.count | Should -Be 3
     }
 
-    AfterAll {
-        ### RemoveFrom-NetworkList
-        $Script:Remove = RemoveFrom-NetworkList -NetworkListID $NewList.uniqueId -Element $TestElement -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'RemoveFrom-NetworkList removes element' {
-            $Remove.list | Should -Not -Contain $TestElement
-        }
+    ### RemoveFrom-NetworkList
+    $Script:Remove = RemoveFrom-NetworkList -NetworkListID $NewList.uniqueId -Element $TestElement -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'RemoveFrom-NetworkList removes element' {
+        $Remove.list | Should -Not -Contain $TestElement
+    }
 
-        ### Remove-NetworkList
-        $Script:Removal = Remove-NetworkList -NetworkListID $NewList.uniqueId -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'Remove-NetworkList removes given list' {
-            $Removal.status | Should -Be 200
-        }
+    ### Remove-NetworkList
+    $Script:Removal = Remove-NetworkList -NetworkListID $NewList.uniqueId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-NetworkList removes given list' {
+        $Removal.status | Should -Be 200
+    }
+
+    AfterAll {
+        
     }
     
 }

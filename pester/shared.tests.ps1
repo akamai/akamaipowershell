@@ -57,20 +57,20 @@ Describe 'Safe Shared Tests' {
     ### Parse-EdgercFile
     $Script:ParsedEdgeRc = Parse-EdgeRCFile -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Parse-EdgeRcFile parses correctly' {
-        $ParsedEdgeRc.$Section.clientToken | Should -Not -BeNullOrEmpty
-        $ParsedEdgeRc.$Section.clientAccessToken | Should -Not -BeNullOrEmpty
-        $ParsedEdgeRc.$Section.clientSecret | Should -Not -BeNullOrEmpty
-        $ParsedEdgeRc.$Section.Host | Should -Not -BeNullOrEmpty
+        $ParsedEdgeRc.clientToken | Should -Not -BeNullOrEmpty
+        $ParsedEdgeRc.clientAccessToken | Should -Not -BeNullOrEmpty
+        $ParsedEdgeRc.clientSecret | Should -Not -BeNullOrEmpty
+        $ParsedEdgeRc.Host | Should -Not -BeNullOrEmpty
     }
 
     ### Parse-NSAuthFile
     $Script:ParsedAuth = Parse-NSAuthFile -AuthFile $SafeAuthFile -Section $Section
     it 'Parse-NSAuthFile parses correctly' {
-        $ParsedAuth.$Section.cpcode | Should -Not -BeNullOrEmpty
-        $ParsedAuth.$Section.group | Should -Not -BeNullOrEmpty
-        $ParsedAuth.$Section.key | Should -Not -BeNullOrEmpty
-        $ParsedAuth.$Section.id | Should -Not -BeNullOrEmpty
-        $ParsedAuth.$Section.host | Should -Not -BeNullOrEmpty
+        $ParsedAuth.CPCode | Should -Not -BeNullOrEmpty
+        $ParsedAuth.Group | Should -Not -BeNullOrEmpty
+        $ParsedAuth.Key | Should -Not -BeNullOrEmpty
+        $ParsedAuth.ID | Should -Not -BeNullOrEmpty
+        $ParsedAuth.Host | Should -Not -BeNullOrEmpty
     }
 
     ### Sanitise-QueryString

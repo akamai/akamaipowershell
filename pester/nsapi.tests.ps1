@@ -53,38 +53,39 @@ Describe 'Safe NSAPI Tests' {
         $DownloadedContent | Should -Be $NewFileContent
     }
 
+    ### Set-NetstorageFileMTime
+    $Script:MTime = Set-NetstorageFileMTime -Path "/$TestDirectory/$NewDirName/$NewFileName" -mtime 0
+    it 'Set-NetstorageFileMTime sets mtime' {
+        $MTime | Should -Match 'successful'
+    }
+
+    ### Stat-NetstorageDirectory
+    $Script:Stat = Stat-NetstorageObject -Path "/$TestDirectory/$NewDirName/$NewFileName"
+    it 'Stat-NetstorageObject gets object stats' {
+        $Stat.name | Should -Be $NewFileName
+    }
+
+    ### Rename-NetstorageFile
+    $Script:Rename = Rename-NetstorageFile -Path "/$TestDirectory/$NewDirName/$NewFileName" -NewFilename $RenamedFileName
+    it 'Rename-NetstorageFile renames a file' {
+        $Rename | Should -Match 'renamed'
+    }
+
+    ### Remove-NetstorageFile
+    $Script:RemoveFile = Remove-NetstorageFile -Path "/$TestDirectory/$NewDirName/$SymlinkFileName"
+    it 'Remove-NetstorageFile removes a file' {
+        $RemoveFile | Should -Match 'deleted'
+        { Remove-NetstorageFile -Path "/$TestDirectory/$NewDirName/$RenamedFileName" } | Should -not -Throw
+    }
+
+    ### Remove-NetstorageDirectory
+    $Script:RemoveDir = Remove-NetstorageDirectory -Path "/$TestDirectory/$NewDirName" -ImReallyReallySure
+    it 'Remove-NetstorageDirectory removes a dir' {
+        $RemoveDir | Should -Match "quick-delete scheduled"
+    }
+
+
     AfterAll {
-        ### Set-NetstorageFileMTime
-        $Script:MTime = Set-NetstorageFileMTime -Path "/$TestDirectory/$NewDirName/$NewFileName" -mtime 0
-        it 'Set-NetstorageFileMTime sets mtime' {
-            $MTime | Should -Match 'successful'
-        }
-
-        ### Stat-NetstorageDirectory
-        $Script:Stat = Stat-NetstorageObject -Path "/$TestDirectory/$NewDirName/$NewFileName"
-        it 'Stat-NetstorageObject gets object stats' {
-            $Stat.name | Should -Be $NewFileName
-        }
-
-        ### Rename-NetstorageFile
-        $Script:Rename = Rename-NetstorageFile -Path "/$TestDirectory/$NewDirName/$NewFileName" -NewFilename $RenamedFileName
-        it 'Rename-NetstorageFile renames a file' {
-            $Rename | Should -Match 'renamed'
-        }
-
-        ### Remove-NetstorageFile
-        $Script:RemoveFile = Remove-NetstorageFile -Path "/$TestDirectory/$NewDirName/$SymlinkFileName"
-        it 'Remove-NetstorageFile removes a file' {
-            $RemoveFile | Should -Match 'deleted'
-            { Remove-NetstorageFile -Path "/$TestDirectory/$NewDirName/$RenamedFileName" } | Should -not -Throw
-        }
-
-        ### Remove-NetstorageDirectory
-        $Script:RemoveDir = Remove-NetstorageDirectory -Path "/$TestDirectory/$NewDirName" -ImReallyReallySure
-        it 'Remove-NetstorageDirectory removes a dir' {
-            $RemoveDir | Should -Match "quick-delete scheduled"
-        }
-
         Remove-Item $NewFileName -Force
     }
     

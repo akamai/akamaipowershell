@@ -19,6 +19,12 @@ function New-NetworkList
     if($Description -ne ''){
         $BodyObj['description'] = $Description
     }
+    if($GroupID -ne ''){
+        $BodyObj['groupId'] = $GroupID
+    }
+    if($ContractID -ne ''){
+        $BodyObj['contractId'] = $ContractID
+    }
 
     $Body = $BodyObj | ConvertTo-Json
 

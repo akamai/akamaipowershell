@@ -43,12 +43,6 @@ Describe 'Safe Datastream Tests' {
         $Products.count | Should -Not -BeNullOrEmpty
     }
 
-    ### List-DataStreamProperties
-    $Script:Properties = List-DataStreamProperties -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-DataStreamProperties returns a list' {
-        $Properties[0].propertyId | Should -Not -BeNullOrEmpty
-    }
-
     ### Get-DataStream
     $Script:Stream = Get-DataStream -StreamID $TestStreamID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-DataStream returns the correct stream' {
@@ -80,6 +74,12 @@ Describe 'Safe Datastream Tests' {
 }
 
 Describe 'Unsafe Datastream Tests' {
+    ### List-DataStreamProperties
+    $Script:Properties = List-DataStreamProperties -GroupID $TestGroupID -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'List-DataStreamProperties returns a list' {
+        $Properties[0].propertyId | Should -Not -BeNullOrEmpty
+    }
+
     ### New-DataStream
     $Script:NewStream = New-DataStream -Stream $Stream -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-DataStream creates successfully' {

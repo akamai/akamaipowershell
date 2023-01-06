@@ -8,6 +8,7 @@ $Script:TestNamespace = 'akamaipowershell-testing'
 $Script:TestNamespaceObj = [PSCustomObject] @{
     name = $TestNameSpace
     retentionInSeconds = 0
+    groupId = $TestGroupID
 }
 $Script:TestNamespaceBody = $Script:TestNamespaceObj | ConvertTo-Json
 $Script:TestTokenName = 'akamaipowershell-testing'
@@ -45,7 +46,7 @@ Describe 'Safe EdgeKV Tests' {
     }
 
     ### Set-EdgeKVNamespace with attributes
-    $Script:SetNamespaceByAttr = Set-EdgeKVNamespace -Network STAGING -NamespaceID $TestNamespace -Name $TestNameSpace -RetentionInSeconds 0 -EdgeRCFile $EdgeRCFile -Section $Section
+    $Script:SetNamespaceByAttr = Set-EdgeKVNamespace -Network STAGING -NamespaceID $TestNamespace -Name $TestNameSpace -RetentionInSeconds 0 -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Set-EdgeKVNamespace returns namespace' {
         $SetNamespaceByAttr.namespace | Should -Be $TestNamespace
     }
@@ -74,6 +75,12 @@ Describe 'Safe EdgeKV Tests' {
         $Token.name | Should -Be $TestTokenName
     }
 
+    ### New-EdgeKVItem
+    $Script:NewItem = New-EdgeKVItem -ItemID $NewItemID -Value $NewItemContent -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-EdgeKVItem creates successfully' {
+        $NewItem | Should -Match 'Item was upserted in database'
+    }
+
     ### List-EdgeKVItems
     $Script:Items = List-EdgeKVItems -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-EdgeKVItems returns list of items' {
@@ -81,29 +88,25 @@ Describe 'Safe EdgeKV Tests' {
     }
 
     ### Get-EdgeKVItem
-    $Script:Item = Get-EdgeKVItem -ItemID placeholder -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    $Script:Item = Get-EdgeKVItem -ItemID $NewItemID -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-EdgeKVItem returns item data' {
         $Item | Should -Not -BeNullOrEmpty
     }
 
-    ### New-EdgeKVItem
-    $Script:NewItem = New-EdgeKVItem -ItemID $NewItemID -Value $NewItemContent -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-EdgeKVItem creates successfully' {
-        $NewItem | Should -Match 'Item was upserted in database'
+    ### Remove-EdgeKVAccessToken
+    $Script:TokenRemoval = Remove-EdgeKVAccessToken -TokenName $TestTokenName -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-EdgeKVAccessToken removes token successfully' {
+        $TokenRemoval.name | Should -Be $TestTokenName
+    }
+
+    ### Remove-EdgeKVItem
+    $Script:Removal = Remove-EdgeKVItem -ItemID $NewItemID -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-EdgeKVItem creates successfully' {
+        $Removal | Should -Match 'Item was marked for deletion from database'
     }
 
     AfterAll {
-        ### Remove-EdgeKVAccessToken
-        $Script:TokenRemoval = Remove-EdgeKVAccessToken -TokenName $TestTokenName -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'Remove-EdgeKVAccessToken removes token successfully' {
-            $TokenRemoval.name | Should -Be $TestTokenName
-        }
-
-        ### Remove-EdgeKVItem
-        $Script:Removal = Remove-EdgeKVItem -ItemID $NewItemID -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'Remove-EdgeKVItem creates successfully' {
-            $NewItem | Should -Match 'Item was marked for deletion from database'
-        }
+        
     }
     
 }

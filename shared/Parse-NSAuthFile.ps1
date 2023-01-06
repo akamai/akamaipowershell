@@ -10,7 +10,8 @@ function Parse-NSAuthFile{
     }
     
     $AuthFileContent = Get-Content $AuthFile
-    $Auth = @{}
+    $Auth = New-Object -TypeName PSCustomObject
+    $SectionFound = $false
     for($i = 0; $i -lt $AuthFileContent.length; $i++){
         $line = $AuthFileContent[$i]
         $SanitisedLine = $line.Replace(" ","")
@@ -18,26 +19,35 @@ function Parse-NSAuthFile{
         if($line.contains("[") -and $line.contains("]")){
             $SectionHeader = $SanitisedLine.Substring($Line.indexOf('[')+1)
             $SectionHeader = $SectionHeader.SubString(0,$SectionHeader.IndexOf(']'))
-            $Auth[$SectionHeader] = @{}
-            $CurrentSection = $SectionHeader
+            if($SectionHeader -eq $Section){
+                $SectionFound = $true
+            }
         }
 
-        if($SanitisedLine.ToLower().StartsWith('key'))      { $Auth[$CurrentSection]['key'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith('id'))       { $Auth[$CurrentSection]['id'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith('group'))    { $Auth[$CurrentSection]['group'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith('host'))     { $Auth[$CurrentSection]['host'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith('cpcode'))   { $Auth[$CurrentSection]['cpcode'] = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitisedLine.ToLower().StartsWith('key'))      { $Key = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitisedLine.ToLower().StartsWith('id'))       { $ID = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitisedLine.ToLower().StartsWith('group'))    { $Group = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitisedLine.ToLower().StartsWith('host'))     { $AuthHost = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitisedLine.ToLower().StartsWith('cpcode'))   { $CPCode = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
     }
 
     # Validate auth contents
-    if($null -eq $Auth.$Section){
+    if($SectionFound){
+        $Auth | Add-Member -MemberType NoteProperty -Name 'Key' -Value $Key
+        $Auth | Add-Member -MemberType NoteProperty -Name 'ID' -Value $ID
+        $Auth | Add-Member -MemberType NoteProperty -Name 'Group' -Value $Group
+        $Auth | Add-Member -MemberType NoteProperty -Name 'Host' -Value $AuthHost
+        $Auth | Add-Member -MemberType NoteProperty -Name 'CPCode' -Value $CPCode
+    }
+    else{
         throw "Error: Config section [$Section] not found in $AuthFile"
     }
-    if($null -eq $Auth.$Section.key -or $null -eq $Auth.$Section.id -or $null -eq $Auth.$Section.group -or $null -eq $Auth.$Section.host -or $null -eq $Auth.$Section.cpcode){
+
+    if($null -eq $Auth.Key -or $null -eq $Auth.ID -or $null -eq $Auth.Group -or $null -eq $Auth.Host -or $null -eq $Auth.CPCOde){
         throw "Error: Some necessary auth elements missing from section $Section. Please check your auth file"
     }
 
-    Write-Debug "Obtained credentials from section '$Section' of EdgeRC file $AuthFile"
+    Write-Debug "Obtained credentials from section '$Section' of auth file $AuthFile"
 
     return $Auth
 }
