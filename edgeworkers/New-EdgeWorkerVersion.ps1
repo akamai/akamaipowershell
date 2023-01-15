@@ -15,13 +15,14 @@ function New-EdgeWorkerVersion
         throw "Specify only one of -CodeDirectory or -CodeBundle"
     }
 
-    if($Name){
+    if($Name -or $CodeDirectory){
         try{
             $EdgeWorker = (List-EdgeWorkers -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey) | Where {$_.name -eq $Name}
             if($EdgeWorker.count -gt 1){
                 throw "Found multiple EdgeWorkers with name $Name. Use -EdgeWorkerID to be more specific"
             }
             $EdgeWorkerID = $EdgeWorker.edgeWorkerId
+            $EdgeWorkerName = $EdgeWorker.name
             if(!$EdgeWorkerID){
                 throw "EdgeWorker $Name not found"
             }
@@ -34,14 +35,19 @@ function New-EdgeWorkerVersion
     if($CodeDirectory){
         if( Get-Command tar -ErrorAction SilentlyContinue){
             $Directory = Get-Item $CodeDirectory
-            $Bundle = Get-Content "$($Directory.FullName)\bundle.json" | ConvertFrom-Json
+            $Slash = Get-OSSlashCharacter
+            $Bundle = ConvertFrom-Json (Get-Content "$($Directory.FullName)$($Slash)bundle.json") 
             $Version = $Bundle.'edgeworker-version'
-            $CodeBundleFileName = "$($Directory.Name)-$Version.tgz"
-            $CodeBundle = "$($Directory.FullName)\$CodeBundleFileName"
+            $CodeBundleFileName = "$EdgeWorkerName-$Version.tgz"
+            
+            $CodeBundle = "$($Directory.FullName)$Slash$CodeBundleFileName"
 
             # Create bundle
             Write-Debug "Creating tarball $CodeBundle from directory $($Directory.fullName)"
-            tar -czf $CodeBundle -C $Directory.FullName --exclude=*.tgz * | Out-Null
+            $CurrentDir = Get-Location
+            Set-Location $Directory.FullName
+            tar -czf $CodeBundle --exclude=*.tgz * | Out-Null
+            Set-Location $CurrentDir
         }
         else{
             throw "tar command not found. Please create .tgz file manually and use -CodeBundle parameter"

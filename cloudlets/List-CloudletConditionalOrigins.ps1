@@ -7,6 +7,8 @@ function List-CloudletConditionalOrigins
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
+    Write-Host -ForegroundColor Yellow "WARNING: This cmdlet is deprecated and will be removed in a future release. Use List-CloudletLoadBalancers going forward"
+
     $Path = "/cloudlets/api/v2/origins?type=$Type&accountSwitchKey=$AccountSwitchKey"
 
     try {

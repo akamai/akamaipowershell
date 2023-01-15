@@ -2,7 +2,6 @@ Import-Module $PSScriptRoot\..\AkamaiPowershell.psm1 -DisableNameChecking -Force
 # Setup shared variables
 $Script:EdgeRCFile = $env:PesterEdgeRCFile
 $Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
-$Script:SafeAuthFile = $env:PesterSafeAuthFile
 $Script:Section = 'default'
 $Script:TestConfigID = 88541
 $Script:TestConfigVersion = 1
