@@ -335,7 +335,6 @@ Describe 'Safe Botman Tests' {
         $BotDetection.detectionId | Should -Be $BotDetections[0].detectionId
     }
 
-
     #------------------------------------------------#
     #            Bot Detection Actions               #
     #------------------------------------------------#

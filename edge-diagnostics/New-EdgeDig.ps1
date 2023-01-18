@@ -20,7 +20,6 @@ function New-EdgeDig
         isGtmHostname = $IsGTMHostname.IsPresent
     }
 
-
     if($EdgeIP -ne ''){
         $BodyObj['edgeIp'] = $EdgeIP 
     }

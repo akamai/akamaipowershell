@@ -8,7 +8,6 @@ $Script:TestEHN = 'akamaipowershell-testing.edgesuite.net'
 $Script:TestSecureEHN = 'akamaipowershell-testing.edgekey.net'
 $Script:TestEHNRecordName = 'akamaipowershell-testing'
 
-
 Describe 'Safe HAPI Tests' {
 
     BeforeDiscovery {

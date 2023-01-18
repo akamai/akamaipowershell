@@ -4,7 +4,7 @@ This module is designed to abstract the sometimes complex Akamai {OPEN} API comm
 
 The central function of the module is Invoke-AkamaiRestMethod, which is a heavily modified version of the deprecated Invoke-AkamaiOpen you can find [here](https://github.com/akamai/AkamaiOPEN-edgegrid-powershell).
 
-*Note: NO WARRANTY of any kind is offered, or should be inferred. These APIs are very powerful and this module will do little beyond basic syntax checking and will not prevent you doing unspeakable things to your infrastructure if you instruct it to do so.*
+_Note: NO WARRANTY of any kind is offered, or should be inferred. These APIs are very powerful and this module will do little beyond basic syntax checking and will not prevent you doing unspeakable things to your infrastructure if you instruct it to do so._
 
 ### Usage
 
@@ -12,24 +12,23 @@ The central function of the module is Invoke-AkamaiRestMethod, which is a heavil
 2. Install with command `Install-Module AkamaiPowershell` and accept the prompt
 3. Import the module using command `Import-Module AkamaiPowershell`
 
-
 ### Getting Started
 
 The module contains hundreds of functions from 30+ APIs, so there is a lot included. Here are some tips to help you:
 
-- All functions for a given API should contain the same keyword, which you can filter a `Get-Command` command with. For example, all Property API commands contain the word "Property" so you could list the relevant commands by typing `Get-Command *Property* -Module AkamaiPowershell`
-- Functions generally use standard Powershell verbs, with a few notable exceptions. Typically the commands break down like this
-    - `List-` functions list the assets you wish. You can use `List-` or `Get-` interchangeably, so long as the suffix is unchanged (it is generally plural) as each `List-` function has a `Get-` alias
-    - `Get-` (when singular, e.g. `Get-Property`) will find a single entity of an asset, and typically requires that asset's Name or ID. Name support is included in several APIs so you can issue commands such as `Get-Property -PropertyName MyProperty` without knowing the ID in advance
-    - If your command requires a version number, `Property`, `Cloudlet` and `AppSec` APIs allow for the word 'latest' for version. e.g. `Get-AppSecConfigurationVersion -ConfigName MyConfig -VersionNumber latest`
-    - `New-` functions create new assets, or versions. `Remove-` functions delete assets and `Set-` functions perform updates
-    - Many functions support pipelining. For example you might get the rules for a property with the command `$Rules = Get-PropertyRuleTree -PropertyName MyProperty -PropertyVersion latest`, then update an option on the `$Rules` object. Then when you are ready you can issue `$Rules | Set-PropertyRuleTree -PropertyName MyProperty -PropertyVersion latest`, which you will notice is exactly the same as the `Get-` command, but with only 2 characters changed.
-- If you need help with syntax you can use autocomplete or `Get-Help My-Function`. Detailed Help documentation has not yet been included but the `Get-Help` command will list the available options and which ones are required.
-- Whether installing the module via `Install-Module` or cloning this repo you will have access to the source code. If you can't figure out how a function works then it should be a simple matter to find the .ps1 file on disk and open it in your IDE. Most functions are very simple and shouldn't require much expertise to diagnose, and each function has its own file so most are quite short.
+-   All functions for a given API should contain the same keyword, which you can filter a `Get-Command` command with. For example, all Property API commands contain the word "Property" so you could list the relevant commands by typing `Get-Command *Property* -Module AkamaiPowershell`
+-   Functions generally use standard Powershell verbs, with a few notable exceptions. Typically the commands break down like this
+    -   `List-` functions list the assets you wish. You can use `List-` or `Get-` interchangeably, so long as the suffix is unchanged (it is generally plural) as each `List-` function has a `Get-` alias
+    -   `Get-` (when singular, e.g. `Get-Property`) will find a single entity of an asset, and typically requires that asset's Name or ID. Name support is included in several APIs so you can issue commands such as `Get-Property -PropertyName MyProperty` without knowing the ID in advance
+    -   If your command requires a version number, `Property`, `Cloudlet` and `AppSec` APIs allow for the word 'latest' for version. e.g. `Get-AppSecConfigurationVersion -ConfigName MyConfig -VersionNumber latest`
+    -   `New-` functions create new assets, or versions. `Remove-` functions delete assets and `Set-` functions perform updates
+    -   Many functions support pipelining. For example you might get the rules for a property with the command `$Rules = Get-PropertyRuleTree -PropertyName MyProperty -PropertyVersion latest`, then update an option on the `$Rules` object. Then when you are ready you can issue `$Rules | Set-PropertyRuleTree -PropertyName MyProperty -PropertyVersion latest`, which you will notice is exactly the same as the `Get-` command, but with only 2 characters changed.
+-   If you need help with syntax you can use autocomplete or `Get-Help My-Function`. Detailed Help documentation has not yet been included but the `Get-Help` command will list the available options and which ones are required.
+-   Whether installing the module via `Install-Module` or cloning this repo you will have access to the source code. If you can't figure out how a function works then it should be a simple matter to find the .ps1 file on disk and open it in your IDE. Most functions are very simple and shouldn't require much expertise to diagnose, and each function has its own file so most are quite short.
 
 ### Proxy Support
 
-If you wish to use an https proxy with your commands, simply set the *https_proxy* environment variable to your proxy address (e.g. http://localhost:8888). Once complete set the variable back to $null. Remember that this var might be persistent so could cause odd behaviours if left in place and the proxy disabled.
+If you wish to use an https proxy with your commands, simply set the _https_proxy_ environment variable to your proxy address (e.g. http://localhost:8888). Once complete set the variable back to $null. Remember that this var might be persistent so could cause odd behaviours if left in place and the proxy disabled.
 
 ### Contribution
 
@@ -45,14 +44,14 @@ If you find there are functions missing (and there are many missing) please cont
 
 ### Licensing
 
-Copyright 2019 Akamai Technologies 
- 
+Copyright 2019 Akamai Technologies
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
- 
+
     http://www.apache.org/licenses/LICENSE-2.0
- 
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

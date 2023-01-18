@@ -27,7 +27,6 @@ function New-EdgeMTR
         showLocations = $ShowLocations.IsPresent
     }
 
-
     if($Port){
         $BodyObj['port'] = $Port 
     }

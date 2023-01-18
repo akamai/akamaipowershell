@@ -21,7 +21,6 @@ function New-EdgeCurl
         ipVersion = $IPVersion
     }
 
-
     if($EdgeIP -ne ''){
         $BodyObj['edgeIp'] = $EdgeIP 
     }
