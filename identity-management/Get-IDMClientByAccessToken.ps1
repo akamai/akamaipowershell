@@ -6,7 +6,7 @@ function Get-IDMClientByAccessToken
     )
 
     $Auth = Parse-EdgeRCFile -EdgeRCFile $EdgeRCFile -Section $Section
-    $Path = "/identity-management/v1/open-identities/tokens/$($Auth.$Section.ClientAccessToken)"
+    $Path = "/identity-management/v1/open-identities/tokens/$($Auth.ClientAccessToken)"
     
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section

@@ -23,7 +23,7 @@ function Activate-CloudletLoadBalancingVersion
 
         $BodyObj = @{
             network = $Network.ToUpper()
-            version = $Version
+            version = [int] $Version
             dryrun = $DryRun.IsPresent
         }
         $Body = $BodyObj | ConvertTo-Json

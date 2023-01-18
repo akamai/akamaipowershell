@@ -61,17 +61,19 @@ $Details = Invoke-Expression $Exp
 $Env:AkamaiPowershellVersion = $Details.ModuleVersion
 
 $Modules = Get-Module AkamaiPowershell -ListAvailable | Sort-Object -Property Version -Descending
-if([System.Version]($Modules[0].Version) -gt [System.Version]($Details.ModuleVersion)){
-    $WindowWidth = (Get-Host).UI.RawUI.MaxWindowSize.Width
-    $MessageLength = 104
-    $Dashes = '--------------------------------------------------------------------------------------------------------'
-    if($WindowWidth -lt $MessageLength){ $Dashes = $Dashes.Substring(0,$WindowWidth)}
-    Write-Host -ForegroundColor Cyan $Dashes
-    Write-Host -ForegroundColor White 'Note: A newer version of this module is available (' -NoNewline
-    Write-Host -ForegroundColor Cyan  $Modules[0].Version -NoNewline
-    Write-Host -ForegroundColor White '). To install run ' -NoNewLine
-    Write-Host -ForegroundColor Cyan 'Update-Module AkamaiPowerShell'
-    Write-Host -ForegroundColor Cyan $Dashes
+if($null -ne $Modules){ # Update check only works with gallery-installed modules
+    if([System.Version]($Modules[0].Version) -gt [System.Version]($Details.ModuleVersion)){
+        $WindowWidth = (Get-Host).UI.RawUI.MaxWindowSize.Width
+        $MessageLength = 104
+        $Dashes = '--------------------------------------------------------------------------------------------------------'
+        if($WindowWidth -lt $MessageLength){ $Dashes = $Dashes.Substring(0,$WindowWidth)}
+        Write-Host -ForegroundColor Cyan $Dashes
+        Write-Host -ForegroundColor White 'Note: A newer version of this module is available (' -NoNewline
+        Write-Host -ForegroundColor Cyan  $Modules[0].Version -NoNewline
+        Write-Host -ForegroundColor White '). To install run ' -NoNewLine
+        Write-Host -ForegroundColor Cyan 'Update-Module AkamaiPowerShell'
+        Write-Host -ForegroundColor Cyan $Dashes
+    }
 }
 
 Remove-Variable $Exp
