@@ -26,7 +26,7 @@ Write-Host -ForegroundColor yellow "Found $($Properties.Count) properties"
 
 foreach($Property in $Properties)
 {
-    $PropHostnames = List-PropertyHostnames -GroupID $Property.groupId -ContractId $Property.contractId -PropertyId $Property.propertyId -PropertyVersion $Property.LatestVersion -Section $Section -AccountSwitchKey $AccountSwitchKey
+    $PropHostnames = @(List-PropertyHostnames -GroupID $Property.groupId -ContractId $Property.contractId -PropertyId $Property.propertyId -PropertyVersion $Property.LatestVersion -Section $Section -AccountSwitchKey $AccountSwitchKey)
     $PropHostnames | foreach {
         #$Results += @{ "Property" = $Property.propertyName; "Hostname" = $_.cnameFrom}
         $Result = New-Object -TypeName PSObject
