@@ -2,7 +2,7 @@
 
 # Changelog
 
-## 1.9.1 - (25/01/2023)
+## 1.9.2 - (25/01/2023)
 
 ### Removing .git contents from package
 
