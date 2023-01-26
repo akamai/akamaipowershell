@@ -2,7 +2,13 @@
 
 # Changelog
 
-## 1.9.0 - (06/01/2022)
+## 1.9.1 - (25/01/2023)
+
+### Removing .git contents from package
+
+Folder was un-hidden and mistakenly included in published module, greatly increasing its size.
+
+## 1.9.0 - (06/01/2023)
 
 ### Bot Manager, Edge Diagnostics & Assorted fixes
 
