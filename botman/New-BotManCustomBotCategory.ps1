@@ -41,10 +41,10 @@ function New-BotManCustomBotCategory
 
         $Body = ConvertTo-Json $BodyObj
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-bot-categories?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-bot-categories"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

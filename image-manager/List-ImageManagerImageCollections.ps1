@@ -11,7 +11,7 @@ function List-ImageManagerImageCollections
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v0/network/$Network/imagecollections/?limit=$limit&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/imaging/v0/network/$Network/imagecollections/?limit=$limit"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if($ContractID -ne ''){
@@ -19,7 +19,7 @@ function List-ImageManagerImageCollections
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

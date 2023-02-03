@@ -25,10 +25,10 @@ function List-AppSecConfigurationVersions
         }
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions?detail=$DetailString&page=$Page&pageSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions?detail=$DetailString&page=$Page&pageSize=$PageSize"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.versionList
     }
     catch {

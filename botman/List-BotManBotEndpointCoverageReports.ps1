@@ -6,10 +6,10 @@ function List-BotManBotEndpointCoverageReports
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/appsec/v1/bot-endpoint-coverage-report?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/bot-endpoint-coverage-report"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

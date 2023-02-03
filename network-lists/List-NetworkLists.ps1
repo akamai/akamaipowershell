@@ -16,10 +16,10 @@ function List-NetworkLists
     $IncludeElementsString = $IncludeElements.IsPresent.ToString().ToLower()
     if(!$IncludeElements){ $IncludeElementsString = '' }
 
-    $Path = "/network-list/v2/network-lists?extended=$ExtendedString&includeElements=$IncludeElementsString&listType=$ListType&search=$Search&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/network-list/v2/network-lists?extended=$ExtendedString&includeElements=$IncludeElementsString&listType=$ListType&search=$Search"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.networkLists
     }
     catch {

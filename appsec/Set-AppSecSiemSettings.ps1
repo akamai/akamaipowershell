@@ -32,10 +32,10 @@ function Set-AppSecSiemSettings
             $Body = $SiemSettings | ConvertTo-Json -Depth 100
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/siem?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/siem"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

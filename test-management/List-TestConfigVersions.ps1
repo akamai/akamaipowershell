@@ -11,10 +11,10 @@ function List-TestConfigVersions
     $IncludeRecentlyDeletedString = $IncludeRecentlyDeleted.IsPresent.ToString().ToLower()
     if(!$IncludeRecentlyDeleted){ $IncludeRecentlyDeletedString = '' }
 
-    $Path = "/test-management/v2/functional/config-versions?includeRecentlyDeleted=$IncludeRecentlyDeletedString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/config-versions?includeRecentlyDeleted=$IncludeRecentlyDeletedString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -7,10 +7,10 @@ function Get-SiteShieldMapByID
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/siteshield/v1/maps/$SiteShieldID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/siteshield/v1/maps/$SiteShieldID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -22,7 +22,7 @@ function Activate-AppSecConfiguration
         }
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/activations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/activations"
 
     $BodyObj = @{
         action = 'ACTIVATE'
@@ -46,7 +46,7 @@ function Activate-AppSecConfiguration
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -6,10 +6,10 @@ function Initialize-EdgeKV
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edgekv/v1/initialize?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgekv/v1/initialize"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

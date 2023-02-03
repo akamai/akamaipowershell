@@ -10,7 +10,7 @@ function Verify-Auth
     $Path = "/-/client-api/active-grants/implicit"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         if($ReturnObject)
         {
             return $Result

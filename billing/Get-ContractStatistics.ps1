@@ -14,10 +14,10 @@ function Get-ContractStatistics
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/billing-center-api/v2/contracts/$ContractID/products/$ProductID/statistics?fromMonth=$FromMonth&fromYear=$FromYear&toMonth=$ToMonth&toYear=$ToYear&month=$Month&year=$Year&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/billing-center-api/v2/contracts/$ContractID/products/$ProductID/statistics?fromMonth=$FromMonth&fromYear=$FromYear&toMonth=$ToMonth&toYear=$ToYear&month=$Month&year=$Year"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

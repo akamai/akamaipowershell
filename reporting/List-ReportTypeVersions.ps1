@@ -15,10 +15,10 @@ function List-ReportTypeVersions
     $ShowUnavailableString = $ShowUnavailable.IsPresent.ToString().ToLower()
     if(!$ShowUnavailable){ $ShowUnavailableString = '' }
 
-    $Path = "/reporting-api/v1/reports/$ReportType/versions?showDeprecated=$ShowDeprecatedString&showUnavailable=$ShowUnavailableString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/reporting-api/v1/reports/$ReportType/versions?showDeprecated=$ShowDeprecatedString&showUnavailable=$ShowUnavailableString"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

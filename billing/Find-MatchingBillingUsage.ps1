@@ -15,10 +15,10 @@ function Find-MatchingBillingUsage
             $Body = $Query | ConvertTo-Json -Depth 100
         }
 
-        $Path = "/billing-center-api/v2/measures/find?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/billing-center-api/v2/measures/find"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

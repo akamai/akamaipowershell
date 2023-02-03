@@ -6,10 +6,10 @@ function List-MSLPublishingLocations
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-media-live/v2/msl-origin/publishing-locations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-media-live/v2/msl-origin/publishing-locations"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

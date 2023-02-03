@@ -7,10 +7,10 @@ function Get-AccessKeyVersionCreateRequest
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cam/v1/access-key-version-create-requests/$RequestID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cam/v1/access-key-version-create-requests/$RequestID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

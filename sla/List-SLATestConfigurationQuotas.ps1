@@ -6,10 +6,10 @@ function List-SLATestConfigurationQuotas
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/sla-api/v1/test-quotas?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/sla-api/v1/test-quotas"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -23,7 +23,7 @@ function Generate-APIKeyReport
     $Start = [System.Uri]::EscapeDataString($Start)
     $End   = [System.Uri]::EscapeDataString($End)
 
-    $Path = "/apikey-manager-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&limit=$Limit&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&limit=$Limit"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes'){
         $BodyObj = @{ 
@@ -39,7 +39,7 @@ function Generate-APIKeyReport
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

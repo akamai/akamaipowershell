@@ -8,12 +8,12 @@ function Remove-TestCasesFromTestSuite
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v2/functional/test-suites/$TestSuiteID/associations/test-cases/dissociate?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/test-suites/$TestSuiteID/associations/test-cases/dissociate"
     $BodyObj = $TestCaseIDs -split ","
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

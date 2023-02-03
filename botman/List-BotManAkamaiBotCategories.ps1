@@ -6,10 +6,10 @@ function List-BotManAkamaiBotCategories
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/appsec/v1/akamai-bot-categories?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/akamai-bot-categories"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.categories
     }
     catch {

@@ -31,10 +31,10 @@ function Get-CacheableReport
     if($Filters)    { $Filters = [System.Uri]::EscapeDataString($Filters)   }
     if($Metrics)    { $Metrics = [System.Uri]::EscapeDataString($Metrics)   }
 
-    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&allObjectIds=$AllObjectIDsString&filters=$Filters&metrics=$Metrics&objectIds=$ObjectIds&limit=$Limit&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&allObjectIds=$AllObjectIDsString&filters=$Filters&metrics=$Metrics&objectIds=$ObjectIds&limit=$Limit"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

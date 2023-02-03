@@ -15,7 +15,7 @@ function Activate-CloudletPolicyVersion
         Write-Debug "Found latest version = $Version"
     }
 
-    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/activations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/activations"
 
     $Body = @{ network = $Network }
     if($AdditionalPropertyNames){
@@ -27,7 +27,7 @@ function Activate-CloudletPolicyVersion
     $JsonBody = $Body | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $JsonBody
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $JsonBody
         return $Result
     }
     catch {

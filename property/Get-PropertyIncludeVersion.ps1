@@ -26,10 +26,10 @@ function Get-PropertyIncludeVersion
         $IncludeVersion = $Include.includeVersion
     }
 
-    $Path = "/papi/v1/includes/$IncludeID/versions/$IncludeVersion`?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/includes/$IncludeID/versions/$IncludeVersion`?contractId=$ContractId&groupId=$GroupID"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.versions.items
     }
     catch {

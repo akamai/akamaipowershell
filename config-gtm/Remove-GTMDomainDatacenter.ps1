@@ -8,10 +8,10 @@ function Remove-GTMDomainDatacenter
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-gtm/v1/domains/$DomainName/datacenters/$DatacenterID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-gtm/v1/domains/$DomainName/datacenters/$DatacenterID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

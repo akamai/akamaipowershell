@@ -7,10 +7,10 @@ function Remove-MSLOrigin
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-media-live/v2/msl-origin/origins/$OriginID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-media-live/v2/msl-origin/origins/$OriginID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

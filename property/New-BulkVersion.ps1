@@ -13,14 +13,14 @@ function New-BulkVersion
     begin{}
 
     process{
-        $Path = "/papi/v1/bulk/property-version-creations?contractId=$ContractID&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/papi/v1/bulk/property-version-creations?contractId=$ContractID&groupId=$GroupID"
         
         if($Versions){
             $Body = $Versions | ConvertTo-Json -depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

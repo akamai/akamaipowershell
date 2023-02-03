@@ -23,14 +23,14 @@ function New-AppSecCustomRule
             }
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/custom-rules?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/custom-rules"
     
         if($CustomRule){
             $Body = $CustomRule | ConvertTo-Json -Depth 100
         }
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
             return $Result
         }
         catch {

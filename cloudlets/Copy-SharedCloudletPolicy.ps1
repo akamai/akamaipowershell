@@ -10,7 +10,7 @@ function Copy-SharedCloudletPolicy
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/v3/policies/$PolicyID/clone?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/v3/policies/$PolicyID/clone"
     $BodyObj = @{
         newName = $NewName
         groupId = $GroupID
@@ -22,7 +22,7 @@ function Copy-SharedCloudletPolicy
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

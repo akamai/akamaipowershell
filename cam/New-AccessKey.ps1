@@ -11,13 +11,13 @@ function New-AccessKey
     begin{}
 
     process{
-        $Path = "/cam/v1/access-keys?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/cam/v1/access-keys"
         if($AccessKey){
             $Body = ConvertTo-Json $AccessKey -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

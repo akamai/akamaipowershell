@@ -8,13 +8,13 @@ function Append-NetworkList
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/network-list/v2/network-lists/$NetworkListID/append?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/network-list/v2/network-lists/$NetworkListID/append"
 
     $ElementsArray = $Elements.Replace(" ","").Split(",")
     $Body = @{ list = $ElementsArray } | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Body $Body -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Body $Body -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -7,14 +7,14 @@ function Test-EdgeIP
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/verify-edge-ip?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/verify-edge-ip"
     $BodyObj = @{
         ipAddresses = ($IPAddresses -split ',')
     }
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.results
     }
     catch {

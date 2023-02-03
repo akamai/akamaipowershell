@@ -15,10 +15,10 @@ function Test-OpenAPI
     {
         if($Path.Contains("?"))
         {
-            $Path += "&accountSwitchKey=$AccountSwitchKey"
+            $Path += ""
         }
         else {
-            $Path += "?accountSwitchKey=$AccountSwitchKey"
+            $Path += ""
         }
     }
 
@@ -34,10 +34,10 @@ function Test-OpenAPI
 
     try {
         if($Body) {
-            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRcFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders
+            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -AdditionalHeaders $AdditionalHeaders
         }
         else {
-            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -EdgeRcFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders
+            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -AdditionalHeaders $AdditionalHeaders
         }
     }
     catch {

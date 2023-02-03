@@ -8,7 +8,7 @@ function New-ErrorTranslation
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/error-translator?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/error-translator"
     $BodyObj = @{
         errorCode = $ErrorCode
         traceForwardLogs = $TraceFormwardLogs.IsPresent
@@ -16,7 +16,7 @@ function New-ErrorTranslation
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

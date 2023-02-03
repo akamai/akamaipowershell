@@ -10,7 +10,7 @@ function Set-IDMProperty
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/identity-management/v2/user-admin/properties/$PropertyID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/properties/$PropertyID"
 
     if($PSCmdlet.ParameterSetName -eq "attributes"){
         $BodyObj = @{ 
@@ -21,7 +21,7 @@ function Set-IDMProperty
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

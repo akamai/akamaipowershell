@@ -9,10 +9,10 @@ function Get-GTMLoadData
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/gtm-load-data/v1/$Domain/$Resource/$DatacenterID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/gtm-load-data/v1/$Domain/$Resource/$DatacenterID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

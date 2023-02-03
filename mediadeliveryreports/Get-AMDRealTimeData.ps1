@@ -24,10 +24,10 @@ function Get-AMDRealTimeData
     $ReduceString = $Reduce.IsPresent.ToString().ToLower()
     if(!$Reduce){ $ReduceString = '' }
 
-    $Path = "/media-delivery-reports/v1/adaptive-media-delivery/realtime-data?startDate=$StartDate&endDate=$EndDate&dimensions=$Dimensions&metrics=$Metrics&aggregation=$Aggregation&limit=$Limit&offset=$Offset&reduce=$ReduceString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/media-delivery-reports/v1/adaptive-media-delivery/realtime-data?startDate=$StartDate&endDate=$EndDate&dimensions=$Dimensions&metrics=$Metrics&aggregation=$Aggregation&limit=$Limit&offset=$Offset&reduce=$ReduceString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch {

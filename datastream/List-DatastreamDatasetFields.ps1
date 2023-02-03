@@ -7,10 +7,10 @@ function List-DatastreamDatasetFields
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v2/log/datasets-fields?productId=$ProductID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v2/log/datasets-fields?productId=$ProductID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.datasetFields
     }
     catch {

@@ -17,14 +17,14 @@ function Set-DataStream
         $ActivateString = $Activate.IsPresent.ToString().ToLower()
         if(!$Activate){ $ActivateString = '' }
 
-        $Path = "/datastream-config-api/v2/log/streams/$StreamID`?activate=$ActivateString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/datastream-config-api/v2/log/streams/$StreamID`?activate=$ActivateString"
 
         if($Stream){
             $Body = $Stream | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

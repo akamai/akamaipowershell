@@ -17,10 +17,10 @@ function Get-GTMDatacenterLatency
         throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
-    $Path = "/gtm-api/v1/reports/latency/domains/{domain}/datacenters/$DatacenterID`?start=$Start&end=$End&latency=$Latency&loss=$Loss&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/gtm-api/v1/reports/latency/domains/{domain}/datacenters/$DatacenterID`?start=$Start&end=$End&latency=$Latency&loss=$Loss"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

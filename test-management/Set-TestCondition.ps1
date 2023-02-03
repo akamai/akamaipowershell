@@ -12,14 +12,14 @@ function Set-TestCondition
     begin{}
 
     process{
-        $Path = "/test-management/v2/functional/test-catalog/conditions/$ConditionID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/test-management/v2/functional/test-catalog/conditions/$ConditionID"
 
         if($Condition){
             $Body = $Condition | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

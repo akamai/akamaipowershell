@@ -6,10 +6,10 @@ function List-RuleFormats
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/rule-formats?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/rule-formats"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.ruleFormats.items
     }
     catch {

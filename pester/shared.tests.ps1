@@ -57,10 +57,10 @@ Describe 'Safe Shared Tests' {
     ### Parse-EdgercFile
     $Script:ParsedEdgeRc = Parse-EdgeRCFile -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Parse-EdgeRcFile parses correctly' {
-        $ParsedEdgeRc.clientToken | Should -Not -BeNullOrEmpty
-        $ParsedEdgeRc.clientAccessToken | Should -Not -BeNullOrEmpty
-        $ParsedEdgeRc.clientSecret | Should -Not -BeNullOrEmpty
-        $ParsedEdgeRc.Host | Should -Not -BeNullOrEmpty
+        $ParsedEdgeRc.client_token | Should -Not -BeNullOrEmpty
+        $ParsedEdgeRc.access_token | Should -Not -BeNullOrEmpty
+        $ParsedEdgeRc.client_secret | Should -Not -BeNullOrEmpty
+        $ParsedEdgeRc.host | Should -Not -BeNullOrEmpty
     }
 
     ### Parse-NSAuthFile

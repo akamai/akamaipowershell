@@ -12,14 +12,14 @@ function Set-MSLStream
     begin{}
 
     process{
-        $Path = "/config-media-live/v2/msl-origin/streams/$StreamID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/config-media-live/v2/msl-origin/streams/$StreamID"
 
         if($Stream){
             $Body = $Stream | ConvertTo-Json -depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

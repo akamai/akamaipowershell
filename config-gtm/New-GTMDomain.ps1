@@ -13,14 +13,14 @@ function New-GTMDomain
     begin{}
 
     process{
-        $Path = "/config-gtm/v1/domains/?contractId=$ContractID&gid=$GroupID&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/config-gtm/v1/domains/?contractId=$ContractID&gid=$GroupID"
 
         if($Domain){
             $Body = $Domain | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

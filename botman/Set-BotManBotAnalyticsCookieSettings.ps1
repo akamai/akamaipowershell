@@ -32,10 +32,10 @@ function Set-BotManBotAnalyticsCookieSettings
             $Body = ConvertTo-Json -Depth 10 $CookieSettings
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/advanced-settings/bot-analytics-cookie?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/advanced-settings/bot-analytics-cookie"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

@@ -6,10 +6,10 @@ function List-AccessKeys
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cam/v1/access-keys?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cam/v1/access-keys"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.accessKeys
     }
     catch {

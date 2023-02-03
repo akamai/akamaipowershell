@@ -8,10 +8,10 @@ function Get-BulkZoneDeleteStatus
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-dns/v2/zones/delete-requests/$($RequestID)?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones/delete-requests/$($RequestID)"
 
     try {
-        Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
     }
     catch { throw }
 

@@ -26,10 +26,10 @@ function Remove-EdgeWorkerVersion
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/versions/$Version`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/versions/$Version"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -InputFile $CodeBundle -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -InputFile $CodeBundle -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

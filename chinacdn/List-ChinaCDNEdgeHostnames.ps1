@@ -6,14 +6,14 @@ function List-ChinaCDNEdgeHostnames
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/chinacdn/v1/edge-hostnames?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/chinacdn/v1/edge-hostnames"
 
     $AdditionalHeaders = @{
         Accept = 'application/vnd.akamai.chinacdn.edge-hostnames.v2+json'
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.edgeHostnames
     }
     catch {

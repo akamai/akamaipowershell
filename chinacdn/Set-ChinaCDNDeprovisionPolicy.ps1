@@ -12,7 +12,7 @@ function Set-ChinaCDNDeprovisionPolicy
     begin{}
 
     process{
-        $Path = "/chinacdn/v1/edge-hostnames/$EdgeHostname/deprovision-policy?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/chinacdn/v1/edge-hostnames/$EdgeHostname/deprovision-policy"
 
         $AdditionalHeaders = @{
             Accept = 'application/vnd.akamai.chinacdn.deprovision-policy.v1+json'
@@ -23,7 +23,7 @@ function Set-ChinaCDNDeprovisionPolicy
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

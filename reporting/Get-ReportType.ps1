@@ -8,10 +8,10 @@ function Get-ReportType
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {
