@@ -9,7 +9,7 @@ $Script:TestCollectionName = "Akamai PowerShell"
 $Script:TestCollectionBody = "{
     `"contractId`": `"$TestContract`",
     `"groupId`": $TestGroupID,
-    `"name`": `"$TestCollectionName"
+    `"name`": `"$TestCollectionName`"
 }"
 $Script:TestAPIEndpointID = 817948
 $Script:TestKey = (New-Guid).Guid
@@ -21,7 +21,7 @@ $Script:TestCounterBody = "{
     `"name`": `"$TestCounterName`",
     `"throttling`": 1000,
     `"contractId`": `"$TestContract`",
-    `"onOverLimit`": `"DENY"
+    `"onOverLimit`": `"DENY`"
 }"
 
 Describe 'Safe API Key Manager Tests' {

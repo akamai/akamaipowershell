@@ -27,6 +27,10 @@ function Get-AkamaiCredentials{
     if($EdgeRCFile -eq ''){
         $EdgeRCFile = '~/.edgerc'
     }
+    else{
+        ## If EdgeRCFile is provided we use that, regardless of other auth types being available
+        $Mode = 'edgerc'
+    }
     if($Section -eq ''){
         $Section = 'default'
     }
@@ -35,12 +39,15 @@ function Get-AkamaiCredentials{
     #                              1. Check for existing session
     #----------------------------------------------------------------------------------------------
 
-    if ($null -ne $Script:AkamaiSession -and $null -ne $Script:AkamaiSession.Auth.$Section) {
-        #Use the script session auth instead of a file
-        $Auth = $Script:AkamaiSession.Auth.$Section
-        Write-Debug "Obtained credentials from existing session in section '$Section'"
-        return $Auth
-    }
+    if($Mode -ne 'edgerc'){
+        if ($null -ne $Script:AkamaiSession -and $null -ne $Script:AkamaiSession.Auth.$Section) {
+            #Use the script session auth instead of a file
+            $Auth = $Script:AkamaiSession.Auth.$Section
+            Write-Debug "Obtained credentials from existing session in section '$Section'"
+            return $Auth
+        }
+    }   
+    
 
     #----------------------------------------------------------------------------------------------
     #                             2. Set up auth object
@@ -65,30 +72,32 @@ function Get-AkamaiCredentials{
     #----------------------------------------------------------------------------------------------
     
     ## 'default' section is implicit. Otherwise env variable starts with section prefix
-    if($Section -eq 'default'){
-        $EnvPrefix = 'AKAMAI_'
-    }
-    else{
-        $EnvPrefix = "AKAMAI_$Section`_"
-    }
-
-    $AuthElements | foreach {
-        $UpperEnv = "$EnvPrefix$_".ToUpper()
-        if(Test-Path Env:\$UpperEnv){
-            $Auth.$_ = (Get-Item -Path Env:\$UpperEnv).Value
+    if($Mode -ne 'edgerc'){
+        if($Section -eq 'default'){
+            $EnvPrefix = 'AKAMAI_'
         }
-    }
+        else{
+            $EnvPrefix = "AKAMAI_$Section`_"
+        }
+    
+        $AuthElements | foreach {
+            $UpperEnv = "$EnvPrefix$_".ToUpper()
+            if(Test-Path Env:\$UpperEnv){
+                $Auth.$_ = (Get-Item -Path Env:\$UpperEnv).Value
+            }
+        }
 
-    ## Explicit ASK wins over env variable
-    if($AccountSwitchKey){
-        $Auth.account_key = $AccountSwitchKey
-    }
+        ## Explicit ASK wins over env variable
+        if($AccountSwitchKey){
+            $Auth.account_key = $AccountSwitchKey
+        }
 
-    ## Check essential elements and return
-    if($null -ne $Auth.host -and $null -ne $Auth.client_token -and $null -ne $Auth.access_token -and $null -ne $Auth.client_secret){
-        ## Env creds valid
-        Write-Debug "Obtained credentials from environment variables in section '$Section'"
-        return $Auth
+        ## Check essential elements and return
+        if($null -ne $Auth.host -and $null -ne $Auth.client_token -and $null -ne $Auth.access_token -and $null -ne $Auth.client_secret){
+            ## Env creds valid
+            Write-Debug "Obtained credentials from environment variables in section '$Section'"
+            return $Auth
+        }
     }
 
     #----------------------------------------------------------------------------------------------

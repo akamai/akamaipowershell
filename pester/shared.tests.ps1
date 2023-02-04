@@ -54,6 +54,30 @@ Describe 'Safe Shared Tests' {
         $RandomHex | Should -Match "[a-f0-9]{16}"
     }
 
+    ### Sanitise-QueryString
+    $Script:ParsedQuery = Sanitise-QueryString -QueryString $Script:UnsanitisedQuery
+    it 'Sanitise-QueryString strips empty query params' {
+        $ParsedQuery | Should -Be $SanitisedQuery
+    }
+
+    ### Sanitise-Filename
+    $Script:ParsedFileName = Sanitise-FileName -Filename $Script:UnsanitisedFileName
+    it 'Sanitise-Filename encodes invalid characters' {
+        $ParsedFileName | Should -Be $SanitisedFilename
+    }
+
+    ### Test-OpenAPI
+    $Script:APIResult = Test-OpenAPI -Path '/papi/v1/contracts' -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Test-OpenAPI returns data successfully' {
+        $APIResult.count | Should -Not -Be 0
+    }
+
+    ### Verify-Auth
+    $Script:Auth = Verify-Auth -ReturnObject -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Verify-Auth returns an object' {
+        $Auth.scope | Should -Not -BeNullOrEmpty
+    }
+
     ### Get-AkamaiCredentials from edgerc
     it 'Get-AkamaiCredentials from edgercFile parses correctly' {
         $Script:Auth = Get-AkamaiCredentials -EdgeRCFile $SafeEdgeRCFile -Section $Section
@@ -92,7 +116,7 @@ Describe 'Safe Shared Tests' {
     ### Get-AkamaiCredentials from session
     it 'Get-AkamaiCredentials from session parses correctly' {
         New-AkamaiSession -ClientSecret 'session-client_secret' -HostName 'session-host' -ClientAccessToken 'session-access_token' -ClientToken 'session-client_token'
-        $Script:SessionAuth = Get-AkamaiCredentials -Debug
+        $Script:SessionAuth = Get-AkamaiCredentials
         $SessionAuth.client_token | Should -Be 'session-client_token'
         $SessionAuth.access_token | Should -Be 'session-access_token'
         $SessionAuth.client_secret | Should -Be 'session-client_secret'
@@ -139,28 +163,9 @@ Describe 'Safe Shared Tests' {
         $CustomEnvNSAuth.host | Should -Be 'customenv-host'
     }
 
-    ### Sanitise-QueryString
-    $Script:ParsedQuery = Sanitise-QueryString -QueryString $Script:UnsanitisedQuery
-    it 'Sanitise-QueryString strips empty query params' {
-        $ParsedQuery | Should -Be $SanitisedQuery
-    }
-
-    ### Sanitise-Filename
-    $Script:ParsedFileName = Sanitise-FileName -Filename $Script:UnsanitisedFileName
-    it 'Sanitise-Filename encodes invalid characters' {
-        $ParsedFileName | Should -Be $SanitisedFilename
-    }
-
-    ### Test-OpenAPI
-    $Script:APIResult = Test-OpenAPI -Path '/papi/v1/contracts' -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Test-OpenAPI returns data successfully' {
-        $APIResult.count | Should -Not -Be 0
-    }
-
-    ### Verify-Auth
-    $Script:Auth = Verify-Auth -ReturnObject -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Verify-Auth returns an object' {
-        $Auth.scope | Should -Not -BeNullOrEmpty
+    ### Remove-AkamaiSession
+    it 'Remove-AkamaiSession should not throw an error' {
+        { Remove-AkamaiSession } | Should -Not -Throw
     }
 
     AfterAll {

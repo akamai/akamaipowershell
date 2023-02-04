@@ -263,7 +263,7 @@ function Invoke-AkamaiRestMethod {
                 # Redirects aren't well handled due to signatures needing regenerated
                 if ($null -ne ($Response.PSObject.members | where { $_.Name -eq "redirectLink" }) ) {
                     Write-Debug "Redirecting to $($Response.redirectLink)"
-                    $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -AccountSwitchKey $AccountSwitchKey
+                    $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
                 }
             }
             catch {
@@ -321,7 +321,7 @@ function Invoke-AkamaiRestMethod {
                     try {
                         $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
                         Write-Debug "Redirecting to $NewPath"
-                        $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -AccountSwitchKey $AccountSwitchKey -ResponseHeadersVariable $ResponseHeadersVariable
+                        $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                     catch {
                         throw $_
