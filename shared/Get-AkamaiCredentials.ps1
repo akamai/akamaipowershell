@@ -1,3 +1,21 @@
+<#
+.SYNOPSIS
+EdgeGrid Powershell - Core functions
+.DESCRIPTION
+Collect EdgeGrid credentials from session, environment variables, or auth file
+.PARAMETER EdgeRCFile
+Path to .edgerc file, defaults to ~/.edgerc. OPTIONAL
+.PARAMETER ContractId
+.edgerc Section name. Defaults to 'default'. OPTIONAL
+.PARAMETER AccountSwitchKey
+Account switch key if applying to an account external to yoru API user. Only usable by Akamai staff and partners. OPTIONAL
+.EXAMPLE
+Get-AkamaiCredentials
+Get-AkamaiCredentials -Section 'notdefault' -AccountSwitchKey my-ask
+.LINK
+techdocs.akamai.com
+#>
+
 function Get-AkamaiCredentials{
     param(
         [Parameter(Mandatory = $false)] [string] $EdgeRCFile,

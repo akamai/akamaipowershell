@@ -73,10 +73,12 @@ function Invoke-AkamaiRestMethod {
         Test-Auth -Auth $Auth
     }
 
-    # Add account switch key from $Auth
-    if($Path.Contains('?')){ $Path += '&' }
-    else{ $Path += '?' }
-    $Path += "accountSwitchKey=$($Auth.account_key)"
+    # Add account switch key from $Auth, if present
+    if($Auth.account_key){
+        if($Path.Contains('?')){ $Path += '&' }
+        else{ $Path += '?' }
+        $Path += "accountSwitchKey=$($Auth.account_key)"
+    }
 
     # Sanitise query string
     if ($Path.Contains('?')) {
@@ -99,10 +101,10 @@ function Invoke-AkamaiRestMethod {
     $ReqURL = "https://" + $Auth.host + $Path
 
     # ReqURL Verification
+    Write-Debug "Request URL = $ReqURL"
     If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net") {
         throw "Error: Invalid Request URI"
     }
-    Write-Debug "Request URL = $ReqURL"
 
     # Sanitize Method param
     $Method = $Method.ToUpper()
