@@ -7,10 +7,10 @@ function List-Groups
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/groups?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/groups"
 
     try {
-        $groups = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $groups = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         $returnGroup = $groups.groups.items
 
         if($Detail)

@@ -12,10 +12,10 @@ function Restore-TestSuite
     $RestoreChildResourcesString = $RestoreChildResources.IsPresent.ToString().ToLower()
     if(!$RestoreChildResources){ $RestoreChildResourcesString = '' }
 
-    $Path = "/test-management/v2/functional/test-suites/$TestSuiteID/restore?restoreChildResources=$RestoreChildResourcesString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/test-suites/$TestSuiteID/restore?restoreChildResources=$RestoreChildResourcesString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

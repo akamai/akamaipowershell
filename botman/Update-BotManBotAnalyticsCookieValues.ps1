@@ -6,10 +6,10 @@ function Update-BotManBotAnalyticsCookieValues
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/appsec/v1/bot-analytics-cookie/values?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/bot-analytics-cookie/values"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.cookieValues
     }
     catch {

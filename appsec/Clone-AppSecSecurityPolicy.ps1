@@ -12,7 +12,7 @@ function Clone-AppSecSecurityPolicy
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies"
 
     if($PSCmdlet.ParameterSetName -eq "attributes"){
         $BodyObj = @{ 
@@ -24,7 +24,7 @@ function Clone-AppSecSecurityPolicy
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch {

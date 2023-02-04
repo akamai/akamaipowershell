@@ -30,10 +30,10 @@ function List-EdgeWorkerProperties
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/properties?activeOnly=$ActiveOnlyString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/properties?activeOnly=$ActiveOnlyString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.properties
     }
     catch {

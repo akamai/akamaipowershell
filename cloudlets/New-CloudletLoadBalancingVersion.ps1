@@ -18,7 +18,7 @@ function New-CloudletLoadBalancingVersion
         $ValidateString = $Validate.IsPresent.ToString().ToLower()
         if(!$Validate){ $ValidateString = '' }
         
-        $Path = "/cloudlets/api/v2/origins/$OriginID/versions?validate=$ValidateString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/cloudlets/api/v2/origins/$OriginID/versions?validate=$ValidateString"
 
         $AdditionalHeaders = @{
             'Content-Type' = 'application/json'
@@ -29,7 +29,7 @@ function New-CloudletLoadBalancingVersion
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

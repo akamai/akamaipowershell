@@ -12,10 +12,10 @@ function List-APIEndpointVersions
         $APIEndpointID = (List-APIEndpoints -Contains $APIEndpointName -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).apiEndPointId
     }
 
-    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.apiVersions
     }
     catch {

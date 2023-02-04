@@ -6,10 +6,10 @@ function List-DiagnosticsGroups
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/user-diagnostic-data/groups?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/user-diagnostic-data/groups"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.groups
     }
     catch {

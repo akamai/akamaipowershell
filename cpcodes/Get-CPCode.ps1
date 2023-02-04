@@ -8,10 +8,10 @@ function Get-CPCode
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cprg/v1/cpcodes/$CPCode`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/cpcodes/$CPCode"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         if($JSON)
         {
             return $Result | ConvertTo-Json -Depth 10

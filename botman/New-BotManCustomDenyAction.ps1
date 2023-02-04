@@ -32,10 +32,10 @@ function New-BotManCustomDenyAction
             $Body = ConvertTo-Json -Depth 100 $Action
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/response-actions/custom-deny-actions?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/response-actions/custom-deny-actions"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

@@ -36,10 +36,10 @@ function Get-EdgeWorkerActivation
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations/$ActivationID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/activations/$ActivationID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

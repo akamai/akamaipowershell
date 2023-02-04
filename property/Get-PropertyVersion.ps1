@@ -41,16 +41,16 @@ function Get-PropertyVersion
         }
     }
 
-    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion`?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion`?contractId=$ContractId&groupId=$GroupID"
     
     try {
         if($XML)
         {
-            $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -XML
+            $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -XML
         }
         else
         {
-            $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         }
         return $Result.versions.items
     }

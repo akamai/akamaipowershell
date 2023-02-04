@@ -13,7 +13,7 @@ function New-APIKeys
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/keys/generate?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/keys/generate"
     $BodyObj = @{
         collectionId = $CollectionID
         count = $Count
@@ -36,7 +36,7 @@ function New-APIKeys
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

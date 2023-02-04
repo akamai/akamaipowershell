@@ -55,7 +55,7 @@ function Add-PropertyHostnames
             }
         }
 
-        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractID&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractID&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString"
         $CombinedHostnameArray = New-Object -TypeName System.Collections.ArrayList
     }
 
@@ -70,7 +70,7 @@ function Add-PropertyHostnames
         $Body = $BodyObj | ConvertTo-Json -Depth 100
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result.hostnames.items
         }
         catch {

@@ -27,7 +27,7 @@ function Copy-EdgeWorker
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/clone?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/clone"
 
     $BodyObj = @{
         name = $NewName
@@ -37,7 +37,7 @@ function Copy-EdgeWorker
     $Body = $BodyObj | ConvertTo-Json
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

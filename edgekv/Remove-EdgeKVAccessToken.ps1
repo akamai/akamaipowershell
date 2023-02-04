@@ -7,10 +7,10 @@ function Remove-EdgeKVAccessToken
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edgekv/v1/tokens/$TokenName`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgekv/v1/tokens/$TokenName"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

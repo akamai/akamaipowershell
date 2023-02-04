@@ -9,10 +9,10 @@ function List-EdgeKVItems
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edgekv/v1/networks/$Network/namespaces/$NamespaceID/groups/$GroupID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgekv/v1/networks/$Network/namespaces/$NamespaceID/groups/$GroupID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

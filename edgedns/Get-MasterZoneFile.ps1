@@ -7,13 +7,13 @@ function Get-MasterZoneFile
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-dns/v2/zones/$Zone/zone-file`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones/$Zone/zone-file"
     $AdditionalHeaders = @{
         Accept = 'text/dns'
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

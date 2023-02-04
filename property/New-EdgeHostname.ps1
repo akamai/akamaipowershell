@@ -17,7 +17,7 @@ function New-EdgeHostname
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/edgehostnames?contractId=$ContractId&groupId=$GroupID&options=$Options&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/edgehostnames?contractId=$ContractId&groupId=$GroupID&options=$Options"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
@@ -36,7 +36,7 @@ function New-EdgeHostname
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch {

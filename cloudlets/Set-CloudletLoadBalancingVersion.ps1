@@ -25,7 +25,7 @@ function Set-CloudletLoadBalancingVersion
             $Version = $Versions[0].version
         }
         
-        $Path = "/cloudlets/api/v2/origins/$OriginID/versions/$Version`?validate=$ValidateString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/cloudlets/api/v2/origins/$OriginID/versions/$Version`?validate=$ValidateString"
 
         $AdditionalHeaders = @{
             'Content-Type' = 'application/json'
@@ -36,7 +36,7 @@ function Set-CloudletLoadBalancingVersion
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

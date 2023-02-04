@@ -20,10 +20,10 @@ function Get-ReportingGroupUsage
     $BillingDayOnlyString = $BillingDayOnly.IsPresent.ToString().ToLower()
     if(!$BillingDayOnly){ $BillingDayOnlyString = '' }
 
-    $Path = "/billing-center-api/v2/reporting-groups/$ReportingGroupId/products/$ProductID/measures?fromMonth=$FromMonth&fromYear=$FromYear&toMonth=$ToMonth&toYear=$ToYear&month=$Month&year=$Year&statisticName=$StatisticName&billingDayOnly=$BillingDayOnlyString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/billing-center-api/v2/reporting-groups/$ReportingGroupId/products/$ProductID/measures?fromMonth=$FromMonth&fromYear=$FromYear&toMonth=$ToMonth&toYear=$ToYear&month=$Month&year=$Year&statisticName=$StatisticName&billingDayOnly=$BillingDayOnlyString"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -7,10 +7,10 @@ function List-CtrApiContracts
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/contract-api/v1/contracts/identifiers?depth=$Depth&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/contract-api/v1/contracts/identifiers?depth=$Depth"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

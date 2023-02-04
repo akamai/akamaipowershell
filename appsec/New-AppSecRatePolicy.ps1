@@ -25,10 +25,10 @@ function New-AppSecRatePolicy
         $Body = ConvertTo-Json -Depth 100 $Policy
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/rate-policies?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/rate-policies"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

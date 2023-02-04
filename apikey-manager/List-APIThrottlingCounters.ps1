@@ -6,10 +6,10 @@ function List-APIThrottlingCounters
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/counters?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/counters"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

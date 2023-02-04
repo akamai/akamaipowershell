@@ -15,7 +15,7 @@ function Set-NetworkList
     begin{}
 
     process{
-        $Path = "/network-list/v2/network-lists/$NetworkListID/elements?element=$Element&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/network-list/v2/network-lists/$NetworkListID/elements?element=$Element"
         $Method = 'PUT'
 
         if($Operation -ne 'set'){
@@ -38,7 +38,7 @@ function Set-NetworkList
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

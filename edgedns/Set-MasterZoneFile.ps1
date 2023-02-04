@@ -20,14 +20,14 @@ function Set-MasterZoneFile
         }
     }
     
-    $Path = "/config-dns/v2/zones/$Zone/zone-file`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones/$Zone/zone-file"
 
     $AdditionalHeaders = @{
         'content-type' = 'text/dns'
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $ZoneFileContents -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $ZoneFileContents -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

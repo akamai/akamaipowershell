@@ -12,10 +12,10 @@ function List-BotManAkamaiDefinedBots
     $IsRecategorizableString = $IsRecategorizable.IsPresent.ToString().ToLower()
     if(!$IsRecategorizable){ $IsRecategorizableString = '' }
 
-    $Path = "/appsec/v1/akamai-defined-bots?categoryId=$CategoryID&isRecategorizable=$IsRecategorizableString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/akamai-defined-bots?categoryId=$CategoryID&isRecategorizable=$IsRecategorizableString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.bots
     }
     catch {

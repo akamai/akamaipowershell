@@ -8,10 +8,10 @@ function List-NSStorageGroups
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/storage/v1/storage-groups?cpcodeId=$CPCodeID&storageGroupPurpose=$StorageGroupPurpose&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/storage/v1/storage-groups?cpcodeId=$CPCodeID&storageGroupPurpose=$StorageGroupPurpose"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.items
     }
     catch {

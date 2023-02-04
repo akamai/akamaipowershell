@@ -16,10 +16,10 @@ function Remove-PropertyInclude
         $IncludeID = $Include.includeId
     }
 
-    $Path = "/papi/v1/includes/$IncludeID`?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/includes/$IncludeID`?contractId=$ContractId&groupId=$GroupID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

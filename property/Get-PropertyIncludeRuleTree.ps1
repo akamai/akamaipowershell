@@ -30,7 +30,7 @@ function Get-PropertyIncludeRuleTree
         $IncludeVersion = $Include.includeVersion
     }
 
-    $Path = "/papi/v1/includes/$IncludeID/versions/$IncludeVersion/rules?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/includes/$IncludeID/versions/$IncludeVersion/rules?contractId=$ContractId&groupId=$GroupID"
 
     if($RuleFormat){
         $AdditionalHeaders = @{
@@ -39,7 +39,7 @@ function Get-PropertyIncludeRuleTree
     }
 
     try {
-        $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
     }
     catch {
         throw $_

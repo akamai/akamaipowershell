@@ -15,10 +15,10 @@ function Get-IDMRole
     if(!$Actions){ $ActionsString = '' }
     if(!$GrantedRoles){ $GrantedRolesString = '' }
 
-    $Path = "/identity-management/v2/user-admin/roles/$RoleID`?actions=$ActionsString&grantedRoles=$GrantedRolesString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/roles/$RoleID`?actions=$ActionsString&grantedRoles=$GrantedRolesString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

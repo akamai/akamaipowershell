@@ -7,10 +7,10 @@ function List-EdgeWorkers
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edgeworkers/v1/ids?groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids?groupId=$GroupID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.edgeWorkerIds
     }
     catch {

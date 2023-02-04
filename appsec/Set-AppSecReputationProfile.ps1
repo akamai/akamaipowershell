@@ -29,14 +29,14 @@ function Set-AppSecReputationProfile
             $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/reputation-profiles/$ReputationProfileID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/reputation-profiles/$ReputationProfileID"
     
         if($ReputationProfile){
             $Body = $ReputationProfile | ConvertTo-Json -Depth 100
         }
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

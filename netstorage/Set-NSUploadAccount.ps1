@@ -12,13 +12,13 @@ function Set-NSUploadAccount
     begin{}
 
     process{
-        $Path = "/storage/v1/upload-accounts/$UploadAccountID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/storage/v1/upload-accounts/$UploadAccountID"
         if($UploadAccount){
             $Body = $UploadAccount | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
             return $Result
         }
         catch {

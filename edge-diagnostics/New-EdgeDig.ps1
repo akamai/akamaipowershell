@@ -12,7 +12,7 @@ function New-EdgeDig
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/dig?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/dig"
 
     $BodyObj = @{
         hostname = $Hostname
@@ -31,7 +31,7 @@ function New-EdgeDig
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

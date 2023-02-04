@@ -11,7 +11,7 @@ function Rollback-ImageManagerPolicy
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v2/network/$Network/policies/rollback/$PolicyID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/imaging/v2/network/$Network/policies/rollback/$PolicyID"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if($ContractID -ne ''){
@@ -19,7 +19,7 @@ function Rollback-ImageManagerPolicy
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

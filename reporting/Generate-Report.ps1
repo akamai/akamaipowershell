@@ -27,7 +27,7 @@ function Generate-Report
     if($Filters)    { $Filters = [System.Uri]::EscapeDataString($Filters)   }
     if($Metrics)    { $Metrics = [System.Uri]::EscapeDataString($Metrics)   }
 
-    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&limit=$Limit&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&limit=$Limit"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes'){
         $BodyObj = @{ 
@@ -49,7 +49,7 @@ function Generate-Report
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch {

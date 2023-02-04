@@ -15,7 +15,7 @@ function Set-IDMUserAuthGrants
     #>
 
     begin{
-        $Path = "/identity-management/v2/user-admin/ui-identities/$UiIdentityID/auth-grants?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/identity-management/v2/user-admin/ui-identities/$UiIdentityID/auth-grants"
         if($PSCmdlet.ParameterSetName -eq 'pipeline'){
             $CombinedAuthGrantsArray = New-Object -TypeName System.Collections.ArrayList
         }
@@ -33,7 +33,7 @@ function Set-IDMUserAuthGrants
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

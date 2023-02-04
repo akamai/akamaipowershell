@@ -7,10 +7,10 @@ function List-LDSLogFormats
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
-    $Path = "/lds-api/v3/log-sources/$LogSourceType/log-formats?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-sources/$LogSourceType/log-formats"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

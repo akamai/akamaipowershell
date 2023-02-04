@@ -7,10 +7,10 @@ function List-SLATestConfigurations
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/sla-api/v1/tests?slaTestIds=$SLATestIDs&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/sla-api/v1/tests?slaTestIds=$SLATestIDs"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

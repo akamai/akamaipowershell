@@ -15,7 +15,7 @@ function New-APIEndpoint
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/api-definitions/v2/endpoints?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/api-definitions/v2/endpoints"
 
     if($PSCmdlet.ParameterSetName -eq "attributes"){
         $BodyObj = @{
@@ -39,7 +39,7 @@ function New-APIEndpoint
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

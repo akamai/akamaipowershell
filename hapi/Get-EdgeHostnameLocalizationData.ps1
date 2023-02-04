@@ -7,10 +7,10 @@ function Get-EdgeHostnameLocalizationData
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/hapi/v1/i18n/$Language`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/hapi/v1/i18n/$Language"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result.hapi
     }
     catch {

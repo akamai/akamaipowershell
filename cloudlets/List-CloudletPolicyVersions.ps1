@@ -16,10 +16,10 @@ function List-CloudletPolicyVersions
     $IncludeRulesString = $IncludeRules.IsPresent.ToString().ToLower()
     if(!$IncludeRules){ $IncludeRulesString = '' }
 
-    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions?cloneVersion=$CloneVersion&includeRules=$IncludeRulesString&matchRuleFormat=$MatchRuleFormat&offset=$Offset&pageSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions?cloneVersion=$CloneVersion&includeRules=$IncludeRulesString&matchRuleFormat=$MatchRuleFormat&offset=$Offset&pageSize=$PageSize"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

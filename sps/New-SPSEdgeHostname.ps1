@@ -9,10 +9,10 @@ function New-SPSEdgeHostname
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-secure-provisioning-service/v1/secure-edge-hosts?groupId=$GroupID&contractId=$ContractID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-secure-provisioning-service/v1/secure-edge-hosts?groupId=$GroupID&contractId=$ContractID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

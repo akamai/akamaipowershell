@@ -9,7 +9,7 @@ function Set-SharedCloudletPolicy
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/v3/policies/$PolicyID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/v3/policies/$PolicyID"
 
     $BodyObj = @{
         groupId = $GroupID
@@ -22,7 +22,7 @@ function Set-SharedCloudletPolicy
     $Body = ConvertTo-Json $BodyObj -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -10,10 +10,10 @@ function Get-EdgeHostnameByDNS
 
     Write-Warning "WARNING: This function is deprecated and will be removed in a future release. Use Get-EdgeHostname with the EdgeHostname parameter going forward"
 
-    $Path = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

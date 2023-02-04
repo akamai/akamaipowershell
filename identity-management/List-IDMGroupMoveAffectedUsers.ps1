@@ -9,10 +9,10 @@ function List-IDMGroupMoveAffectedUsers
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/identity-management/v2/user-admin/groups/move/$SourceGroupID/$DestinationGroupID/affected-users?userType=$UserType&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/groups/move/$SourceGroupID/$DestinationGroupID/affected-users?userType=$UserType"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

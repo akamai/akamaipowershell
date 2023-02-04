@@ -7,10 +7,10 @@ function Remove-DS1Stream
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v1/datastream1/streams/$StreamID`?groupId=$GroupID&streamStatus=$StreamStatus&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v1/datastream1/streams/$StreamID`?groupId=$GroupID&streamStatus=$StreamStatus"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -8,10 +8,10 @@ function Get-GTMDomainProperty
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-gtm/v1/domains/$DomainName/properties/$PropertyName`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-gtm/v1/domains/$DomainName/properties/$PropertyName"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

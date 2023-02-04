@@ -8,10 +8,10 @@ function List-FRMCidrBlocks
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
-    $Path = "/firewall-rules-manager/v1/cidr-blocks?effectiveDateGt=$EffectiveDateGt&lastAction=$LastAction&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/firewall-rules-manager/v1/cidr-blocks?effectiveDateGt=$EffectiveDateGt&lastAction=$LastAction"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

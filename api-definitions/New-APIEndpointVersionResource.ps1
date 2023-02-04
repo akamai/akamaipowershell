@@ -9,10 +9,10 @@ function New-APIEndpointVersionResource
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/resources?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/resources"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

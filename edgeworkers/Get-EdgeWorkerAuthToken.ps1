@@ -13,7 +13,7 @@ function Get-EdgeWorkerAuthToken
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edgeworkers/v1/secure-token?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/secure-token"
     $BodyObj = [PSCustomObject] @{
         expiry = $Expiry
     }
@@ -55,7 +55,7 @@ function Get-EdgeWorkerAuthToken
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.akamaiEwTrace
     }
     catch {

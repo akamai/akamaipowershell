@@ -14,10 +14,10 @@ function List-SLAPerformanceReports
         throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
-    $Path = "/sla-api/v1/tests/$SLATestID/reports/performance?start=$Start&end=$End&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/sla-api/v1/tests/$SLATestID/reports/performance?start=$Start&end=$End"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

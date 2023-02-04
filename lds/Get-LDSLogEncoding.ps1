@@ -7,10 +7,10 @@ function Get-LDSLogEncoding
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
-    $Path = "/lds-api/v3/log-configuration-parameters/encodings/$EncodingID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-configuration-parameters/encodings/$EncodingID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {
