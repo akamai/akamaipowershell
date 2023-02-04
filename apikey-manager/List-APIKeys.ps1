@@ -13,10 +13,10 @@ function List-APIKeys
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/keys?collectionId=$CollectionID&filter=$Filter&pageNumber=$PageNumber&keyType=$KeyType&pageSize=$PageSize&sortDirect=$SortDirection&sortColumn=$SortColumn&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/keys?collectionId=$CollectionID&filter=$Filter&pageNumber=$PageNumber&keyType=$KeyType&pageSize=$PageSize&sortDirect=$SortDirection&sortColumn=$SortColumn"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

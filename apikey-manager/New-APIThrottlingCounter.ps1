@@ -15,10 +15,10 @@ function New-APIThrottlingCounter
             $Body = ConvertTo-Json $Counter -Depth 100
         }
 
-        $Path = "/apikey-manager-api/v1/counters?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/apikey-manager-api/v1/counters"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

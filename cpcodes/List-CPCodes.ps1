@@ -18,10 +18,10 @@ function List-CPCodes
         $ContractID = $ContractID.replace("ctr_","")
     }
     
-    $Path = "/cprg/v1/cpcodes?contractId=$ContractID&groupId=$GroupID&productId=$ProductID&cpcodeName=$Name&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/cpcodes?contractId=$ContractID&groupId=$GroupID&productId=$ProductID&cpcodeName=$Name"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.cpcodes
     }
     catch {

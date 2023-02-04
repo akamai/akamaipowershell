@@ -14,10 +14,10 @@ function List-CtrApiProductsPerContract
         throw "ERROR: From & To must be in the format 'YYYY-MM-DD'"
     }
 
-    $Path = "/contract-api/v1/contracts/$ContractID/products/summaries?from=$From&to=$To&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/contract-api/v1/contracts/$ContractID/products/summaries?from=$From&to=$To"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.products.'marketing-products'
     }
     catch {

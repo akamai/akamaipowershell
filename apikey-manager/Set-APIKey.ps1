@@ -16,10 +16,10 @@ function Set-APIKey
             $Body = ConvertTo-Json $Key -Depth 100
         }
 
-        $Path = "/apikey-manager-api/v1/keys/$KeyID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/apikey-manager-api/v1/keys/$KeyID"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

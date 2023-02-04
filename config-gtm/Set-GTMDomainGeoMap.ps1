@@ -13,14 +13,14 @@ function Set-GTMDomainGeoMap
     begin{}
 
     process{
-        $Path = "/config-gtm/v1/domains/$DomainName/geographic-maps/$MapName`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/config-gtm/v1/domains/$DomainName/geographic-maps/$MapName"
 
         if($GeoMap){
             $Body = $GeoMap | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

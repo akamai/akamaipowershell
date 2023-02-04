@@ -8,10 +8,10 @@ function List-MSLOrigins
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-media-live/v2/msl-origin/origins?encoderLocation=$EncorderLocation&cpcode=$CPCode&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-media-live/v2/msl-origin/origins?encoderLocation=$EncorderLocation&cpcode=$CPCode"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

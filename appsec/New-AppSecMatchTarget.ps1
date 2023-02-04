@@ -32,10 +32,10 @@ function New-AppSecMatchTarget
             $Body = $MatchTarget | ConvertTo-Json -Depth 100
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
             return $Result
         }
         catch {

@@ -7,10 +7,10 @@ function Get-LDSDeliveryThreshold
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/lds-api/v3/log-configuration-parameters/delivery-thresholds/$DeliveryThresholdID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-configuration-parameters/delivery-thresholds/$DeliveryThresholdID"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

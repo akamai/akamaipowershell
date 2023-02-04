@@ -12,7 +12,7 @@ function Set-TestRequest
     begin{}
 
     process{
-        $Path = "/test-management/v2/functional/test-requests/$TestRequestID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/test-management/v2/functional/test-requests/$TestRequestID"
 
         if($TestRequest){
             # Sanitise request body. API does not do this
@@ -24,7 +24,7 @@ function Set-TestRequest
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

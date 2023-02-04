@@ -7,10 +7,10 @@ function Get-TestCondition
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v2/functional/test-catalog/conditions/$ConditionID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/test-catalog/conditions/$ConditionID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -16,10 +16,10 @@ function Set-APIKeyCollectionACL
             $Body = ConvertTo-Json $ACL -Depth 100
         }
 
-        $Path = "/apikey-manager-api/v1/collections/$CollectionID/acl?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/apikey-manager-api/v1/collections/$CollectionID/acl"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

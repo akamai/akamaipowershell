@@ -10,10 +10,10 @@ function Remove-EdgeHostname
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName`?comments=$Comments&statusUpdateEmail=$StatusUpdateEmail&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName`?comments=$Comments&statusUpdateEmail=$StatusUpdateEmail"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

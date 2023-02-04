@@ -24,10 +24,10 @@ function New-CPSEnrollment
         'accept' = 'application/vnd.akamai.cps.enrollment-status.v1+json'
         'content-type' = 'application/vnd.akamai.cps.enrollment.v11+json'
     }
-    $Path = "/cps/v2/enrollments?contractId=$ContractID&deploy-not-after=$DeployNotAfter&deploy-not-before=$DeployNotBefore&allowDuplicateCN=$AllowDuplicateCNString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cps/v2/enrollments?contractId=$ContractID&deploy-not-after=$DeployNotAfter&deploy-not-before=$DeployNotBefore&allowDuplicateCN=$AllowDuplicateCNString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -6,10 +6,10 @@ function List-EdgeKVAccessTokens
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
-    $Path = "/edgekv/v1/tokens?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgekv/v1/tokens"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.tokens
     }
     catch {

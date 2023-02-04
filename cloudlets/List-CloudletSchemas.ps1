@@ -7,10 +7,10 @@ function List-CloudletSchemas
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/api/v2/schemas?cloudletType=$CloudletType&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/schemas?cloudletType=$CloudletType"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.schemas
     }
     catch {

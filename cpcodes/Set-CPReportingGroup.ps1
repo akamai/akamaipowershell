@@ -16,10 +16,10 @@ function Set-CPReportingGroup
             $Body = ConvertTo-Json -Depth 10 $ReportingGroupObject
         }
 
-        $Path = "/cprg/v1/reporting-groups/$ReportingGroupID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/cprg/v1/reporting-groups/$ReportingGroupID"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

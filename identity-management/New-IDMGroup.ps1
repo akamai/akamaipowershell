@@ -9,7 +9,7 @@ function New-IDMGroup
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/identity-management/v2/user-admin/groups/$GroupID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/groups/$GroupID"
 
     if($PSCmdlet.ParameterSetName -eq "attributes"){
         $BodyObj = @{ 'groupName' = $GroupName }
@@ -17,7 +17,7 @@ function New-IDMGroup
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

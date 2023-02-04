@@ -12,10 +12,10 @@ function List-CPReportingGroupWatermarkLimits
         $ContractID = $ContractID.Replace("ctr_","")
     }
 
-    $Path = "/cprg/v1/reporting-groups/contracts/$ContractID/watermark-limits?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/reporting-groups/contracts/$ContractID/watermark-limits"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

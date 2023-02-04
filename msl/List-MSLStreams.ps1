@@ -10,10 +10,10 @@ function List-MSLStreams
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-media-live/v2/msl-origin/streams?page=$Page&pageSize=$PageSize&sortKey=$SortKey&sortOrder=$SortOrder&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-media-live/v2/msl-origin/streams?page=$Page&pageSize=$PageSize&sortKey=$SortKey&sortOrder=$SortOrder"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.streams
     }
     catch {

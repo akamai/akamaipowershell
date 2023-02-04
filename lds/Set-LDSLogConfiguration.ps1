@@ -12,13 +12,13 @@ function Set-LDSLogConfiguration
     begin{}
 
     process{
-        $Path = "/lds-api/v3/log-configurations/$logConfigurationId`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/lds-api/v3/log-configurations/$logConfigurationId"
         if($LogConfiguration){
             $Body = $LogConfiguration | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result 
         }
         catch {

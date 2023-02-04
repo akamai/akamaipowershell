@@ -7,10 +7,10 @@ function List-Cloudlets
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/api/v2/cloudlet-info?gid=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/cloudlet-info?gid=$GroupID"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

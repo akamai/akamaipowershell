@@ -7,7 +7,7 @@ function Get-ZoneTransferStatus
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-dns/v2/zones/zone-transfer-status?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones/zone-transfer-status"
 
     $BodyObj = @{
         zones = ($Zones -split ",")
@@ -15,7 +15,7 @@ function Get-ZoneTransferStatus
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -13,7 +13,7 @@ function New-Zone
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-dns/v2/zones?contractId=$ContractID&gid=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones?contractId=$ContractID&gid=$GroupID"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
@@ -29,7 +29,7 @@ function New-Zone
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -17,10 +17,10 @@ function List-Zones
     $ShowAllString = $ShowAll.IsPresent.ToString().ToLower()
     if(!$ShowAll){ $ShowAllString = '' }
 
-    $Path = "/config-dns/v2/zones?contractIds=$ContractIDs&page=$Page&pageSize=$PageSize&search=$Search&showAll=$ShowAllString&sortBy=$SortBy&types=$Types&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones?contractIds=$ContractIDs&page=$Page&pageSize=$PageSize&search=$Search&showAll=$ShowAllString&sortBy=$SortBy&types=$Types"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.zones
     }
     catch {

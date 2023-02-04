@@ -10,7 +10,7 @@ function Import-APIKey
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/keys/import?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/keys/import"
     $BodyObj = @{
         collectionId = $CollectionID
         content = $Content
@@ -24,7 +24,7 @@ function Import-APIKey
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

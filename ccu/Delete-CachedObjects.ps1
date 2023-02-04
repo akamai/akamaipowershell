@@ -16,7 +16,7 @@ function Delete-CachedObjects
     {
         Write-Host -ForegroundColor Yellow "The FastPurge API currently does not support Account Switching. Sorry"
         return
-        #?accountSwitchKey=$AccountSwitchKey
+        #
     }
 
     $Objects = @()
@@ -48,7 +48,7 @@ function Delete-CachedObjects
 
     try
     {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $PostJson
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $PostJson
         return $Result
     }
     catch

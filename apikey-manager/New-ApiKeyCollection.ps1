@@ -15,10 +15,10 @@ function New-APIKeyCollection
             $Body = ConvertTo-Json -Depth 100 $Collection
         }
 
-        $Path = "/apikey-manager-api/v1/collections?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/apikey-manager-api/v1/collections"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

@@ -28,14 +28,14 @@ function Set-AppSecBypassNetworkLists
             $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/bypass-network-lists?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/bypass-network-lists"
         $BodyObj = @{
             networkLists = ($NetworkLists -Split ',')
         }
         $Body = ConvertTo-Json $BodyObj
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

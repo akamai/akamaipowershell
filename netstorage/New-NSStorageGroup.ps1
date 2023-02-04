@@ -11,13 +11,13 @@ function New-NSStorageGroup
     begin{}
 
     process{
-        $Path = "/storage/v1/storage-groups?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/storage/v1/storage-groups"
         if($StorageGroup){
             $Body = $StorageGroup | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
             return $Result
         }
         catch {

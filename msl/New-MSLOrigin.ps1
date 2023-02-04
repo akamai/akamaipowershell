@@ -11,14 +11,14 @@ function New-MSLOrigin
     begin{}
 
     process{
-        "/config-media-live/v2/msl-origin/origins?accountSwitchKey=$AccountSwitchKey"
+        "/config-media-live/v2/msl-origin/origins"
 
         if($Origin){
             $Body = $Origin | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

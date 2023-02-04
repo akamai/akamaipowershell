@@ -9,7 +9,7 @@ function New-EdgeWorker
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edgeworkers/v1/ids?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids"
 
     $BodyObj = @{
         name = $Name
@@ -19,7 +19,7 @@ function New-EdgeWorker
     $Body = $BodyObj | ConvertTo-Json
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

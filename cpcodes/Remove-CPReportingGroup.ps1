@@ -7,10 +7,10 @@ function Remove-CPReportingGroup
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
-    $Path = "/cprg/v1/reporting-groups/$ReportingGroupID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/reporting-groups/$ReportingGroupID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

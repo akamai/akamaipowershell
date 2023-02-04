@@ -7,10 +7,10 @@ function List-TestCasesInTestSuite
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v2/functional/test-suites/$TestSuiteID/associations/test-cases?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/test-suites/$TestSuiteID/associations/test-cases"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

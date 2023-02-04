@@ -13,10 +13,10 @@ function Set-GTMDomainResource
     begin{}
 
     process{
-        $Path = "/config-gtm/v1/domains/$DomainName/resources/$ResourceName`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/config-gtm/v1/domains/$DomainName/resources/$ResourceName"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

@@ -7,10 +7,10 @@ function List-GTMDomainASMaps
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-gtm/v1/domains/$DomainName/as-maps?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-gtm/v1/domains/$DomainName/as-maps"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.items
     }
     catch {

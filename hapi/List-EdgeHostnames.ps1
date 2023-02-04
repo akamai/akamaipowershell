@@ -24,10 +24,10 @@ function List-EdgeHostnames
     if(!$ChinaCDNEnabled){ $ChinaCDNEnabledString = '' }
     if(!$IsEdgeIPBindingEnabled){ $IsEdgeIPBindingEnabledString = ''}
 
-    $Path = "/hapi/v1/edge-hostnames?chinaCdnEnabled=$ChinaCDNEnabledString&comments=$Comments&customTarget=$CustomTarget&dnsZone=$DNSZone&isEdgeIPBindingEnabled=$IsEdgeIPBindingEnabledString&map=$Map&mapAlias=$MapAlias&recordNameSubstring=$RecordNameSubstring&securityType=$SecurityType&slotNumber=$SlotNumber&ttl=$TTL&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/hapi/v1/edge-hostnames?chinaCdnEnabled=$ChinaCDNEnabledString&comments=$Comments&customTarget=$CustomTarget&dnsZone=$DNSZone&isEdgeIPBindingEnabled=$IsEdgeIPBindingEnabledString&map=$Map&mapAlias=$MapAlias&recordNameSubstring=$RecordNameSubstring&securityType=$SecurityType&slotNumber=$SlotNumber&ttl=$TTL"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.edgeHostnames
     }
     catch {

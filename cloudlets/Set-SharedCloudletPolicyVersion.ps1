@@ -20,7 +20,7 @@ function Set-SharedCloudletPolicyVersion
             $Version = (List-SharedCloudletPolicyVersions -PolicyID $PolicyID -Size 10 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey)[0].Version
         }
 
-        $Path = "/cloudlets/v3/policies/$PolicyID/versions/$Version`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/cloudlets/v3/policies/$PolicyID/versions/$Version"
 
         if($PSCmdlet.ParameterSetName -eq 'attributes')
         {
@@ -36,7 +36,7 @@ function Set-SharedCloudletPolicyVersion
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
             return $Result
         }
         catch {
