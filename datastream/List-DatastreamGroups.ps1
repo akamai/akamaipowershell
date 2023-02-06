@@ -1,5 +1,6 @@
 function List-DatastreamGroups
 {
+    [alias('List-DS2Groups')]
     Param(
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -16,8 +17,6 @@ function List-DatastreamGroups
         throw $_
     }
 }
-
-Set-Alias -Name List-DS2Groups -Value List-DatastreamGroups
 
 # SIG # Begin signature block
 # MIIpogYJKoZIhvcNAQcCoIIpkzCCKY8CAQExDzANBglghkgBZQMEAgEFADB5Bgor

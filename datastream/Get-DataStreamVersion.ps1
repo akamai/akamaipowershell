@@ -1,5 +1,6 @@
 function Get-DataStreamVersion
 {
+    [alias('Get-DS2StreamVersion')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$false)] [string] $Version,
@@ -18,8 +19,6 @@ function Get-DataStreamVersion
         throw $_
     }
 }
-
-Set-Alias -Name Get-DS2StreamVersion -Value Get-DataStreamVersion
 
 # SIG # Begin signature block
 # MIIpogYJKoZIhvcNAQcCoIIpkzCCKY8CAQExDzANBglghkgBZQMEAgEFADB5Bgor

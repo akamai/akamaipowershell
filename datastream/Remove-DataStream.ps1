@@ -1,5 +1,6 @@
 function Remove-DataStream
 {
+    [alias('Remove-DS2Stream')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -17,8 +18,6 @@ function Remove-DataStream
         throw $_
     }
 }
-
-Set-Alias -Name Remove-DS2Stream -Value Remove-DataStream
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

@@ -1,5 +1,6 @@
 function List-DatastreamProducts
 {
+    [alias('List-DS2Products')]
     Param(
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -16,8 +17,6 @@ function List-DatastreamProducts
         throw $_
     }
 }
-
-Set-Alias -Name List-DS2Products -Value List-DatastreamProducts
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

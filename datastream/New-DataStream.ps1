@@ -1,5 +1,6 @@
 function New-DataStream
 {
+    [alias('New-DS2Stream')]
     Param(
         [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $Stream,
         [Parameter(Mandatory=$true,ParameterSetName='body')]  [string] $Body,
@@ -28,8 +29,6 @@ function New-DataStream
 
     end{}
 }
-
-Set-Alias -Name New-DS2Stream -Value New-DataStream
 
 # SIG # Begin signature block
 # MIIpogYJKoZIhvcNAQcCoIIpkzCCKY8CAQExDzANBglghkgBZQMEAgEFADB5Bgor

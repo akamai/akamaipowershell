@@ -1,5 +1,6 @@
 function Set-DataStream
 {
+    [alias('Set-DS2Stream')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $Stream,
@@ -34,8 +35,6 @@ function Set-DataStream
 
     end{}
 }
-
-Set-Alias -Name Set-DS2Stream -Value Set-DataStream
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor
