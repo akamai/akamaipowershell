@@ -16,10 +16,10 @@ function List-APIEndpoints
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/api-definitions/v2/endpoints?page=$Page&pageSize=$PageSize&category=$Category&contains=$Contains&sortBy=$SortBy&sortOrder=$SortOrder&versionPreference=$VersionPreference&show=$Show&contractId=$ContractID&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/api-definitions/v2/endpoints?page=$Page&pageSize=$PageSize&category=$Category&contains=$Contains&sortBy=$SortBy&sortOrder=$SortOrder&versionPreference=$VersionPreference&show=$Show&contractId=$ContractID&groupId=$GroupID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.apiEndpoints
     }
     catch {

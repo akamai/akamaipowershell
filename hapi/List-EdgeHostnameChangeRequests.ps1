@@ -7,10 +7,10 @@ function List-EdgeHostnameChangeRequests
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/hapi/v1/change-requests?status=$Status&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/hapi/v1/change-requests?status=$Status"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result.changeRequests
     }
     catch {

@@ -7,10 +7,10 @@ function Get-LDSContact
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/lds-api/v3/log-configuration-parameters/contacts/$ContactID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-configuration-parameters/contacts/$ContactID"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

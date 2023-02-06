@@ -11,10 +11,10 @@ function List-CloudletPolicyActivations
 
     $NetworkLower = $Network.ToLowerInvariant()
 
-    $Path = "/cloudlets/api/v2/policies/$PolicyID/activations?network=$NetworkLower&propertyName=$PropertyName&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/activations?network=$NetworkLower&propertyName=$PropertyName"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

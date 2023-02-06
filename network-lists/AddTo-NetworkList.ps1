@@ -11,10 +11,10 @@ function AddTo-NetworkList
     begin{}
 
     process{
-        $Path = "/network-list/v2/network-lists/$NetworkListID/elements?element=$Element&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/network-list/v2/network-lists/$NetworkListID/elements?element=$Element"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

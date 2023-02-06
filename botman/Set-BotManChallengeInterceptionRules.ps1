@@ -32,10 +32,10 @@ function Set-BotManChallengeInterceptionRules
             $Body = ConvertTo-Json -Depth 100 $Rules
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/response-actions/challenge-interception-rules?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/response-actions/challenge-interception-rules"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

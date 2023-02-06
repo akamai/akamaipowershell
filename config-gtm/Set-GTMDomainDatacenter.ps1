@@ -13,14 +13,14 @@ function Set-GTMDomainDatacenter
     begin{}
 
     process{
-        $Path = "/config-gtm/v1/domains/$DomainName/datacenters/$DatacenterID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/config-gtm/v1/domains/$DomainName/datacenters/$DatacenterID"
 
         if($Datacenter){
             $Body = $Datacenter | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

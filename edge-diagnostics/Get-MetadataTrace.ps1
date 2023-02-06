@@ -8,7 +8,7 @@ function Get-MetadataTrace
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/metadata-tracer/requests/$RequestID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/metadata-tracer/requests/$RequestID"
 
     if($HTMLFormat){
         $AdditionalHeaders = @{
@@ -17,7 +17,7 @@ function Get-MetadataTrace
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

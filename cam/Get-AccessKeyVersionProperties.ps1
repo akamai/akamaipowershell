@@ -8,10 +8,10 @@ function Get-AccessKeyVersionProperties
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cam/v1/access-keys/$AccessKeyUID/versions/$Version/properties?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cam/v1/access-keys/$AccessKeyUID/versions/$Version/properties"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.properties
     }
     catch {

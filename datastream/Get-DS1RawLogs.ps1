@@ -22,10 +22,10 @@ function Get-DS1RawLogs
         throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
-    $Path = "/datastream-pull-api/v1/streams/$StreamID/raw-logs?start=$Start&end=$End&page=$Page&size=$Size&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-pull-api/v1/streams/$StreamID/raw-logs?start=$Start&end=$End&page=$Page&size=$Size"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

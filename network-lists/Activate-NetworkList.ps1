@@ -11,7 +11,7 @@ function Activate-NetworkList
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/network-list/v2/network-lists/$NetworkListId/environments/$Environment/activate?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/network-list/v2/network-lists/$NetworkListId/environments/$Environment/activate"
 
     $BodyObj = @{}
     if($Comments){
@@ -28,7 +28,7 @@ function Activate-NetworkList
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Body $Body -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Body $Body -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -7,10 +7,10 @@ function Get-LDSDeliveryFrequency
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/lds-api/v3/log-configuration-parameters/delivery-frequencies/$DeliveryFrequencyID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-configuration-parameters/delivery-frequencies/$DeliveryFrequencyID"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

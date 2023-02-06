@@ -7,10 +7,10 @@ function Get-DataStream
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v2/log/streams/$StreamID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v2/log/streams/$StreamID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -11,7 +11,7 @@ function Remove-ImageManagerImageCollection
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v0/network/$Network/imagecollections/$ImageCollectionID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/imaging/v0/network/$Network/imagecollections/$ImageCollectionID"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if($ContractID -ne ''){
@@ -19,7 +19,7 @@ function Remove-ImageManagerImageCollection
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

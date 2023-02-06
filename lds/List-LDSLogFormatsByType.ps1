@@ -9,10 +9,10 @@ function List-LDSLogFormatsByType
 
     Write-Host -ForegroundColor Yellow "Warning: This cmdlet is deprecated and will be removed in a future release. Please use List-LDSLogFormats instead"
     
-    $Path = "/lds-api/v3/log-sources/$LogSourceType/log-formats?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-sources/$LogSourceType/log-formats"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

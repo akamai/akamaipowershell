@@ -9,10 +9,10 @@ function List-SharedCloudletPolicyVersions
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/v3/policies/$PolicyID/versions?size=$Size&page=$Page&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/v3/policies/$PolicyID/versions?size=$Size&page=$Page"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.content
     }
     catch {

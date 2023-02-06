@@ -6,10 +6,10 @@ function List-EdgeLocations
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/edge-locations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/edge-locations"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.edgeLocations
     }
     catch {

@@ -12,10 +12,10 @@ function Restore-TestConfigVersion
     $RestoreChildResourcesString = $RestoreChildResources.IsPresent.ToString().ToLower()
     if(!$RestoreChildResources){ $RestoreChildResourcesString = '' }
 
-    $Path = "/test-management/v2/functional/config-versions/$ConfigVersionID/restore?restoreChildResources=$RestoreChildResourcesString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/config-versions/$ConfigVersionID/restore?restoreChildResources=$RestoreChildResourcesString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

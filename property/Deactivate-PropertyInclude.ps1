@@ -101,11 +101,11 @@ function Deactivate-PropertyInclude
         $Body = ConvertTo-Json -Depth 100 $BodyObj
     }
 
-    $Path = "/papi/v1/includes/$IncludeID/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/includes/$IncludeID/activations?contractId=$ContractId&groupId=$GroupID"
     
     try
     {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch

@@ -58,13 +58,13 @@ function New-EdgeWorkerVersion
         throw "Code Bundle $CodeBundle could not be found"
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/versions?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/versions"
     $AdditionalHeaders = @{
         'Content-Type' = 'application/gzip'
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -InputFile $CodeBundle -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -InputFile $CodeBundle -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

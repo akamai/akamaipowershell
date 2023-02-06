@@ -15,7 +15,7 @@ function New-ChinaCDNPropertyHostname
     begin{}
 
     process{
-        $Path = "/chinacdn/v1/property-hostnames/$Hostname`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/chinacdn/v1/property-hostnames/$Hostname"
 
         $AdditionalHeaders = @{
             Accept = 'application/vnd.akamai.chinacdn.property-hostname.v1+json'
@@ -43,7 +43,7 @@ function New-ChinaCDNPropertyHostname
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

@@ -11,7 +11,7 @@ function Get-EdgeErrorStatistics
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/estats?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/estats"
     $BodyObj = @{}
     if($CPCode){
         $BodyObj['cpCode'] = $CPCode
@@ -29,7 +29,7 @@ function Get-EdgeErrorStatistics
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

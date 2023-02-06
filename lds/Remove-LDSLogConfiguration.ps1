@@ -7,10 +7,10 @@ function Remove-LDSLogConfiguration
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/lds-api/v3/log-configurations/$logConfigurationId`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-configurations/$logConfigurationId"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

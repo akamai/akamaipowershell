@@ -14,7 +14,7 @@ function New-EdgeKVNamespace
         throw 'Only valid GeoLocation for STAGING network is US currently'
     }
 
-    $Path = "/edgekv/v1/networks/$Network/namespaces?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgekv/v1/networks/$Network/namespaces"
 
     $BodyObj = @{
         name = $Name
@@ -24,7 +24,7 @@ function New-EdgeKVNamespace
     $Body = $BodyObj | ConvertTo-Json
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

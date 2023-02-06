@@ -7,13 +7,13 @@ function Get-CPSDVHistory
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history"
     $AdditionalHeaders = @{
         'accept' = 'application/vnd.akamai.cps.dv-history.v1+json'
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.results
     }
     catch {

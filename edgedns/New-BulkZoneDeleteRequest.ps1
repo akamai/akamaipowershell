@@ -28,7 +28,7 @@ function New-BulkZoneDeleteRequest
 
     End {
 
-        $Path = "/config-dns/v2/zones/delete-requests?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/config-dns/v2/zones/delete-requests"
         if ($BypassSafetyChecks) {
             $Path += "&bypassSafetyChecks=true"
         }
@@ -44,7 +44,7 @@ function New-BulkZoneDeleteRequest
 
         if ($PSCmdlet.ShouldProcess($confirmationTarget, 'Delete')) {
             try {
-                Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+                Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             }
             catch { throw }
         }

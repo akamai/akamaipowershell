@@ -7,10 +7,10 @@ function Restore-TestDefinition
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v2/comparative/test-definitions/$TestDefinitionID/restore?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/comparative/test-definitions/$TestDefinitionID/restore"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

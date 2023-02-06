@@ -7,14 +7,14 @@ function Restore-APIKey
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/keys/restore?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/keys/restore"
     $BodyObj = @{
         keys = [int[]] ($Keys -split ',')
     }
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

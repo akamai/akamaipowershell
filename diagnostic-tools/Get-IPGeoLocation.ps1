@@ -7,10 +7,10 @@ function Get-IPGeoLocation
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/diagnostic-tools/v2/ip-addresses/$IPAddress/geo-location?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/diagnostic-tools/v2/ip-addresses/$IPAddress/geo-location"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.geolocation
     }
     catch {

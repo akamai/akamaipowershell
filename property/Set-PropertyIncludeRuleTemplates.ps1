@@ -77,11 +77,11 @@ Function Set-PropertyIncludeRuleTemplates
         #Sanitize body to remove NO-BREAK SPACE Unicode character, which breaks PAPI
         $Body = $Body -replace "[\u00a0]", ""
 
-        $Path = "/papi/v1/includes/$IncludeID/versions/$IncludeVersion/rules?validateRules=$ValidateRulesString&validateMode=$ValidateMode&dryRun=$DryRunString&contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/papi/v1/includes/$IncludeID/versions/$IncludeVersion/rules?validateRules=$ValidateRulesString&validateMode=$ValidateMode&dryRun=$DryRunString&contractId=$ContractId&groupId=$GroupID"
 
         try
         {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch

@@ -12,10 +12,10 @@ function Remove-TestConfigVersion
     $DeleteChildResourcesString = $DeleteChildResources.IsPresent.ToString().ToLower()
     if(!$DeleteChildResources){ $DeleteChildResourcesString = '' }
 
-    $Path = "/test-management/v2/functional/config-versions/$ConfigVersionID`?deleteChildResources=$DeleteChildResourcesString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/config-versions/$ConfigVersionID`?deleteChildResources=$DeleteChildResourcesString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -7,10 +7,10 @@ function List-MSLVODOrigins
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-media-live/v2/msl-origin/vod-origin?encoderLocation=$EncoderLocation&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-media-live/v2/msl-origin/vod-origin?encoderLocation=$EncoderLocation"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

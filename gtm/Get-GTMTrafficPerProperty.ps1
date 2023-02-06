@@ -15,10 +15,10 @@ function Get-GTMTrafficPerProperty
         throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
-    $Path = "/gtm-api/v1/reports/traffic/domains/$Domain/properties/$Property`?start=$Start&end=$End&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/gtm-api/v1/reports/traffic/domains/$Domain/properties/$Property`?start=$Start&end=$End"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

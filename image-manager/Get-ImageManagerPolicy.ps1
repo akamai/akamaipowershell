@@ -11,7 +11,7 @@ function Get-ImageManagerPolicy
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v2/network/$Network/policies/$PolicyID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/imaging/v2/network/$Network/policies/$PolicyID"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if($ContractID -ne ''){
@@ -19,7 +19,7 @@ function Get-ImageManagerPolicy
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

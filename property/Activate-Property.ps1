@@ -112,11 +112,11 @@ function Activate-Property
         $Body = $BodyObj | ConvertTo-Json -Depth 100
     }
 
-    $Path = "/papi/v1/properties/$PropertyID/activations?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/activations?contractId=$ContractId&groupId=$GroupID"
     
     try
     {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch

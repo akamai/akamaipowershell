@@ -16,10 +16,10 @@ function Set-APIKeyCollectionQuota
             $Body = ConvertTo-Json $Quota -Depth 100
         }
 
-        $Path = "/apikey-manager-api/v1/collections/$CollectionID/quota?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/apikey-manager-api/v1/collections/$CollectionID/quota"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

@@ -49,7 +49,7 @@ function Set-PropertyHostnames
         $IncludeCertStatusString = $IncludeCertStatus.IsPresent.ToString().ToLower()
         if(!$IncludeCertStatus){ $IncludeCertStatusString = '' }
 
-        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString"
         if($PSCmdlet.ParameterSetName -eq 'pipeline'){
             $CombinedHostnameArray = New-Object -TypeName System.Collections.ArrayList
         }
@@ -70,7 +70,7 @@ function Set-PropertyHostnames
         Write-Debug "Body = $Body"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result.hostnames.items
         }
         catch {

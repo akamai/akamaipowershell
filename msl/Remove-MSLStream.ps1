@@ -12,10 +12,10 @@ function Remove-MSLStream
     $PurgeContentString = $PurgeContent.IsPresent.ToString().ToLower()
     if(!$PurgeContent){ $PurgeContentString = '' }
 
-    $Path = "/config-media-live/v2/msl-origin/streams/$StreamID`?purgeContent=$PurgeContentString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-media-live/v2/msl-origin/streams/$StreamID`?purgeContent=$PurgeContentString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

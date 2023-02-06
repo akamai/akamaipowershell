@@ -6,10 +6,10 @@ function List-CtrApiReportingGroupIDs
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/contract-api/v1/reportingGroups/identifiers?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/contract-api/v1/reportingGroups/identifiers"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

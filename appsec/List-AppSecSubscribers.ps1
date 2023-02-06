@@ -19,10 +19,10 @@ function List-AppSecSubscribers
         }
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/notification/subscription/$Feature`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/notification/subscription/$Feature"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.emails
     }
     catch {

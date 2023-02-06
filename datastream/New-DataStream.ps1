@@ -11,14 +11,14 @@ function New-DataStream
     begin{}
 
     process{
-        $Path = "/datastream-config-api/v2/log/streams?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/datastream-config-api/v2/log/streams"
 
         if($Stream){
             $Body = $Stream | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

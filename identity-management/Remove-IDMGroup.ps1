@@ -7,10 +7,10 @@ function Remove-IDMGroup
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/identity-management/v2/user-admin/groups/$GroupID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/groups/$GroupID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -7,10 +7,10 @@ function Get-GTMLivenessTestError
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/gtm-api/v1/reports/liveness-tests/error-code-descriptions/$ErrorCode`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/gtm-api/v1/reports/liveness-tests/error-code-descriptions/$ErrorCode"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.items
     }
     catch {

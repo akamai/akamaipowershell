@@ -7,10 +7,10 @@ function Resume-LDSLogConfiguration
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/lds-api/v3/log-configurations/$logConfigurationId/resume?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-configurations/$logConfigurationId/resume"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

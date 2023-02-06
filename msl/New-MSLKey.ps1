@@ -7,10 +7,10 @@ function New-MSLKey
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-media-live/v2/msl-origin/generate-key?type=$Type&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-media-live/v2/msl-origin/generate-key?type=$Type"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

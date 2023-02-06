@@ -8,10 +8,10 @@ function Get-NetworkListActivationStatus
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/network-list/v2/network-lists/$NetworkListId/environments/$Environment/status?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/network-list/v2/network-lists/$NetworkListId/environments/$Environment/status"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

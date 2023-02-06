@@ -7,10 +7,10 @@ function List-APIThrottlingCounterEndpoints
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/counters/$CounterID/endpoints?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/counters/$CounterID/endpoints"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

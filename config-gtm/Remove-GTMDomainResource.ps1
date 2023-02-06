@@ -8,10 +8,10 @@ function Remove-GTMDomainResource
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-gtm/v1/domains/$DomainName/resources/$ResourceName`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-gtm/v1/domains/$DomainName/resources/$ResourceName"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

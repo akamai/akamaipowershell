@@ -39,7 +39,7 @@ function Set-CPSEnrollment
             throw "ERROR: DeployNotAfter & DeployNotBefore must be in the format 'YYYY-MM-DD'"
         }
 
-        $Path = "/cps/v2/enrollments/$EnrollmentID`?allow-cancel-pending-changes=$AllowCancelPendingChangesString&allow-staging-bypass=$AllowStagingBypassString&force-renewal=$ForceRenewalString&renewal-date-check-override=$RenewalDateCheckOverrideString&allow-missing-certificate-addition=$AllowMissingCertificateAdditionString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/cps/v2/enrollments/$EnrollmentID`?allow-cancel-pending-changes=$AllowCancelPendingChangesString&allow-staging-bypass=$AllowStagingBypassString&force-renewal=$ForceRenewalString&renewal-date-check-override=$RenewalDateCheckOverrideString&allow-missing-certificate-addition=$AllowMissingCertificateAdditionString"
         
         $AdditionalHeaders = @{
             'accept' = 'application/vnd.akamai.cps.enrollment-status.v1+json'
@@ -66,7 +66,7 @@ function Set-CPSEnrollment
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

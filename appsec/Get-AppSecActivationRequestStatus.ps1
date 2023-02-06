@@ -7,10 +7,10 @@ function Get-AppSecActivationRequestStatus
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/appsec/v1/activations/status/$StatusID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/activations/status/$StatusID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

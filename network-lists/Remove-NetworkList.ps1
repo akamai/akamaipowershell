@@ -7,10 +7,10 @@ function Remove-NetworkList
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/network-list/v2/network-lists/$NetworkListID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/network-list/v2/network-lists/$NetworkListID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {
