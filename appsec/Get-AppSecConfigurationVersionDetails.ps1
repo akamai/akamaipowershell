@@ -3,8 +3,8 @@ function Get-AppSecConfigurationVersionDetails
     Param(
         [Parameter(Mandatory=$true)]  [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [int]    $VersionNumber,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

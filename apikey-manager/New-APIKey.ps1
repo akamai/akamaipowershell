@@ -8,8 +8,8 @@ function New-APIKey
         [Parameter(Mandatory=$false)] [string] $Label,
         [Parameter(Mandatory=$false)] [string] $Tags,
         [Parameter(Mandatory=$false)] [string] $TerminationAt,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

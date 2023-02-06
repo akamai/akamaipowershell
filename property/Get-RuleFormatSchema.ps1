@@ -3,8 +3,8 @@ function Get-RuleFormatSchema
     Param(
         [Parameter(Mandatory=$true)]  [string] $ProductID,
         [Parameter(Mandatory=$true)]  [string] $RuleFormat,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

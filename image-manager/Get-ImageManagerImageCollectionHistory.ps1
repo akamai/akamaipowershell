@@ -6,8 +6,8 @@ function Get-ImageManagerImageCollectionHistory
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(Mandatory=$false)] [string] $Limit,
         [Parameter(Mandatory=$false)] [string] $ContractID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

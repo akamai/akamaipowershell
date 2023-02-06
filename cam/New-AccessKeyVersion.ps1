@@ -4,8 +4,8 @@ function New-AccessKeyVersion
         [Parameter(Mandatory=$true)]  [string] $AccessKeyUID,
         [Parameter(Mandatory=$true)]  [string] $CloudAccessKeyID,
         [Parameter(Mandatory=$true)]  [string] $CloudSecretAccessKey,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

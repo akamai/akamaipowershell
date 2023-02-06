@@ -5,8 +5,8 @@ function New-BulkZoneDeleteRequest
         [Parameter(ParameterSetName='attributes', Mandatory, ValueFromPipeline)]  [string[]] $Zone,
         [Parameter(ParameterSetName='postbody', Mandatory)] [string] $Body,
         [Parameter(Mandatory=$false)] [switch] $BypassSafetyChecks,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

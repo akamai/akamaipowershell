@@ -12,8 +12,8 @@ function List-EdgeHostnames
         [Parameter(Mandatory=$false)] [string] $SecurityType,
         [Parameter(Mandatory=$false)] [string] $SlotNumber,
         [Parameter(Mandatory=$false)] [string] $TTL,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

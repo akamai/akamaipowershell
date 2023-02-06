@@ -3,8 +3,8 @@ function List-SharedCloudletPolicies
     Param(
         [Parameter(Mandatory=$false)] [int]    $Size = 1000,
         [Parameter(Mandatory=$false)] [string] $Page,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

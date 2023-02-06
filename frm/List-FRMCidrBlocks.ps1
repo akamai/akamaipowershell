@@ -3,8 +3,8 @@ function List-FRMCidrBlocks
     Param(
         [Parameter(Mandatory=$false)] [string] $EffectiveDateGt,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('add', 'update', 'delete')] $LastAction,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     

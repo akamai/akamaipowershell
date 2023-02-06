@@ -7,8 +7,8 @@ function Set-NetworkList
         [Parameter(Mandatory=$false,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $NetworkList,
         [Parameter(Mandatory=$false,ParameterSetName='body')]     [string] $Body,
         [Parameter(Mandatory=$false)] [string] $Element,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

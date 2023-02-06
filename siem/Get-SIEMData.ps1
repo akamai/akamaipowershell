@@ -34,8 +34,8 @@ function Get-SIEMData
         [Parameter(Mandatory=$true,ParameterSetName="fromto")] [string] $To,
         [Parameter(Mandatory=$false)] [string] $Limit,
         [Parameter(Mandatory=$false)] [switch] $Decode,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

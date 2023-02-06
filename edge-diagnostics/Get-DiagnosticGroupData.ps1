@@ -5,8 +5,8 @@ function Get-DiagnosticGroupData
         [Parameter(Mandatory=$false)] [switch] $IncludeCurl,
         [Parameter(Mandatory=$false)] [switch] $IncludeDig,
         [Parameter(Mandatory=$false)] [switch] $IncludeMTR,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

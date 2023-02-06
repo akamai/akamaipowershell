@@ -1,8 +1,8 @@
 function Get-IDMClientByAccessToken
 {
     Param(
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default'
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section
     )
 
     $Auth = Get-AkamaiCredentials -EdgeRCFile $EdgeRCFile -Section $Section

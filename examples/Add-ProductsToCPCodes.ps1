@@ -14,7 +14,7 @@ Param(
         [Parameter(Mandatory=$true)]  [string] $ProductIDToAdd,
         [Parameter(Mandatory=$false)] [switch] $JustTesting,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = "~\.edgerc",
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

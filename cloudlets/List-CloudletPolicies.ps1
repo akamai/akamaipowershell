@@ -7,8 +7,8 @@ function List-CloudletPolicies
         [Parameter(Mandatory=$false)] [string] $Offset,
         [Parameter(Mandatory=$false)] [string] $Pagesize,
         [Parameter(Mandatory=$false)] [switch] $All,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

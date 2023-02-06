@@ -7,8 +7,8 @@ function Get-DS1AggregateLogs
         [Parameter(Mandatory=$false)] [string] $AggregateMetric,
         [Parameter(Mandatory=$false)] [string] $Page,
         [Parameter(Mandatory=$false)] [string] $Size,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

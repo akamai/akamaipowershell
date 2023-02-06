@@ -4,8 +4,8 @@ function New-APIEndpointVersionResource
         [Parameter(Mandatory=$true)]  [int] $APIEndpointID,
         [Parameter(Mandatory=$true)]  [int] $VersionNumber,
         [Parameter(Mandatory=$true)]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

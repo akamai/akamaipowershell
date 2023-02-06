@@ -3,8 +3,8 @@ function List-MSLCPCodes
     Param(
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('INGEST','DELIVERY','STORAGE')] $Type,
         [Parameter(Mandatory=$false)] [switch] $Unused,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

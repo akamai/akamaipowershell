@@ -3,8 +3,8 @@ function Restore-TestConfigVersion
     Param(
         [Parameter(Mandatory=$true)]  [string] $ConfigVersionID,
         [Parameter(Mandatory=$true)]  [string] $RestoreChildResources,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

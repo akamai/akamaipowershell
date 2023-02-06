@@ -11,8 +11,8 @@ function List-APIEndpoints
         [Parameter(Mandatory=$false)] [string] [ValidateSet('name', 'updateDate')] $SortBy,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('asc', 'desc')] $SortOrder,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('ACTIVATED_FIRST', 'LAST_UPDATED')] $VersionPreference,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

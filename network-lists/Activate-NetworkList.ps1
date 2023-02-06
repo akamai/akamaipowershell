@@ -6,8 +6,8 @@ function Activate-NetworkList
         [Parameter(Mandatory=$false)] [string] $Comments,
         [Parameter(Mandatory=$false)] [string] $NotificationRecipients,
         [Parameter(Mandatory=$false)] [string] $SiebelTicketID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -4,8 +4,8 @@ function Get-MtrFromGhostLocation
         [Parameter(Mandatory=$true)]  [string] $LocationID,
         [Parameter(Mandatory=$true)]  [string] $DestinationDomain,
         [Parameter(Mandatory=$false)] [switch] $ResolveDNS,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

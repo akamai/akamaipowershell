@@ -8,8 +8,8 @@ function List-APIKeys
         [Parameter(Mandatory=$false)] [string] [ValidateSet('All','Active','Revoked','Pending')] $KeyType,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('asc','desc')] $SortDirection,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('id','label','description')] $SortColumn,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -3,8 +3,8 @@ function Remove-NetstorageDirectory {
         [Parameter(Mandatory=$true)] [string] $Path,
         [Parameter(Mandatory=$false)] [switch] $DirectoryIsEmpty,
         [Parameter(Mandatory=$false)] [switch] $ImReallyReallySure,
-        [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
-        [Parameter(Mandatory=$false)] [string] $Section = "default"
+        [Parameter(Mandatory=$false)] [string] $AuthFile,
+        [Parameter(Mandatory=$false)] [string] $Section
     )
 
     if($DirectoryIsEmpty){

@@ -7,8 +7,8 @@ function New-EdgeDig
         [Parameter(Mandatory=$false,ParameterSetName='ip')]  [string] $EdgeIP,
         [Parameter(Mandatory=$false,ParameterSetName='location')] [string] $EdgeLocation,
         [Parameter(Mandatory=$false)] [switch] $IsGTMHostname,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

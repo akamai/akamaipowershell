@@ -5,8 +5,8 @@ function New-EdgeKVNamespace
         [Parameter(Mandatory=$false)] [string] $RetentionInSeconds = 0,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('US','EU','JP')] $GeoLocation = 'US',
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

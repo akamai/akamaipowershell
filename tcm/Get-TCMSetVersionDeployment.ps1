@@ -3,8 +3,8 @@ function Get-TCMSetVersionDeployment
     Param(
         [Parameter(Mandatory=$true)]  [string] $SetID,
         [Parameter(Mandatory=$true)]  [string] $Version,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

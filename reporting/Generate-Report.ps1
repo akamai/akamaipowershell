@@ -11,8 +11,8 @@ function Generate-Report
         [Parameter(Mandatory=$false, ParameterSetName='attributes')] [string] $Metrics,
         [Parameter(Mandatory=$false, ParameterSetName='postbody')] [String] $Body,
         [Parameter(Mandatory=$false)] [string] $Limit,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

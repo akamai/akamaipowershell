@@ -7,8 +7,8 @@ function Set-AppSecReputationProfile
         [Parameter(Mandatory=$true)]  [string] $ReputationProfileID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $ReputationProfile,
         [Parameter(Mandatory=$false)] [object] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

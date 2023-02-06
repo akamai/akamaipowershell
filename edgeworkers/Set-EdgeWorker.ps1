@@ -6,8 +6,8 @@ function Set-EdgeWorker
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $EdgeWorkerID,
         [Parameter(Mandatory=$false)] [string] $NewName,
         [Parameter(Mandatory=$true)]  [string] $GroupID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

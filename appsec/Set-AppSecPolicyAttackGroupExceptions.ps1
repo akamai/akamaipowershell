@@ -9,8 +9,8 @@ function Set-AppSecPolicyAttackGroupExceptions
         [Parameter(Mandatory=$true)]  [string] $AttackGroupID,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $Conditions,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

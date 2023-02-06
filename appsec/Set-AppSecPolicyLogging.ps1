@@ -8,8 +8,8 @@ function Set-AppSecPolicyLogging
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $LogSettings,
         [Parameter(Mandatory=$false)] [object] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

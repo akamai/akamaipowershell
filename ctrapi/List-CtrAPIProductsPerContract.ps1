@@ -4,8 +4,8 @@ function List-CtrApiProductsPerContract
         [Parameter(Mandatory=$true)] [string] $ContractID,
         [Parameter(Mandatory=$false)] [string] $From,
         [Parameter(Mandatory=$false)] [string] $To,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -5,8 +5,8 @@ function New-CloudletPolicyVersionRule
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $Index,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

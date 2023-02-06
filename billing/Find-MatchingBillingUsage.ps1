@@ -3,8 +3,8 @@ function Find-MatchingBillingUsage
    Param(
         [Parameter(Mandatory=$true, ParameterSetName='postbody')] [string] $Body,
         [Parameter(Mandatory=$true, ParameterSetName='query',ValueFromPipeline=$true)] [Object] $Query,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

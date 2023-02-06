@@ -6,8 +6,8 @@ function Set-AppSecCustomRule
         [Parameter(Mandatory=$true)]  [string] $RuleID,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $Rule,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

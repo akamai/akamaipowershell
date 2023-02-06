@@ -3,8 +3,8 @@ function RemoveFrom-NetworkList
     Param(
         [Parameter(Mandatory=$true)] [string] $NetworkListID,
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)] [string] $Element,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

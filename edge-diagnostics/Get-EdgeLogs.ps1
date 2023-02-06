@@ -11,8 +11,8 @@ function Get-EdgeLogs
         [Parameter(Mandatory=$false)] [string] $Start,
         [Parameter(Mandatory=$true)]  [string] $End,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('R','F')] $LogType,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

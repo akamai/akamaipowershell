@@ -5,8 +5,8 @@ function List-MSLStreams
         [Parameter(Mandatory=$false)] [string] $PageSize,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('cpcode', 'createdDate', 'dvrWindowInMin', 'format', 'modifiedDate', 'name', 'originHostName', 'status','zone')] $SortKey,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('ASC','DESC')] $SortOrder,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

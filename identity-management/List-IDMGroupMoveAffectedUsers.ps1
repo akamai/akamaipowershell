@@ -4,8 +4,8 @@ function List-IDMGroupMoveAffectedUsers
         [Parameter(Mandatory=$true)]  [string] $SourceGroupID,
         [Parameter(Mandatory=$true)]  [string] $DestinationGroupID,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('lostAccess', 'gainAccess')] $UserType,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

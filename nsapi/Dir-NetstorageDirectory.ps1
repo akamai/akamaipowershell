@@ -7,8 +7,8 @@ function Dir-NetstorageDirectory {
         [Parameter(Mandatory=$false)] [int] $MaxEntries,
         [Parameter(Mandatory=$false)] [string] $Encoding,
         [Parameter(Mandatory=$false)] [switch] $SlashBoth,
-        [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
-        [Parameter(Mandatory=$false)] [string] $Section = "default"
+        [Parameter(Mandatory=$false)] [string] $AuthFile,
+        [Parameter(Mandatory=$false)] [string] $Section
     )
     
     $Action = 'dir'

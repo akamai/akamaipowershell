@@ -8,8 +8,8 @@ function New-AppSecPolicy
         [Parameter(Mandatory=$true)]  [string] $PolicyPrefix,
         [Parameter(Mandatory=$false)] [string] $CreateFromSecurityPolicyID,
         [Parameter(Mandatory=$false)] [string] $DefaultSettings,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

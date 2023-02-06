@@ -5,8 +5,8 @@ function Get-GTMTrafficPerDatacenter
         [Parameter(Mandatory=$true)]  [string] $DatacenterID,
         [Parameter(Mandatory=$true)]  [string] $Start,
         [Parameter(Mandatory=$true)]  [string] $End,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -6,8 +6,8 @@ function Activate-EdgeWorker
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -3,8 +3,8 @@ function List-LDSLogEncodings
     Param(
         [Parameter(Mandatory=$false)] [string] [ValidateSet('email','ftp')] $DeliveryType,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('cpcode-products','gtm','edns','answerx')] $LogSourceType,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     

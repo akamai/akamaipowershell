@@ -7,8 +7,8 @@ function Activate-CloudletLoadBalancingVersion
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [string] $Version,
         [Parameter(Mandatory=$false,ParameterSetName='attributes')] [switch] $DryRun,
         [Parameter(Mandatory=$true,ParameterSetName='postbody')]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

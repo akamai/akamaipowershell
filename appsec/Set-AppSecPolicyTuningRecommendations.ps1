@@ -8,8 +8,8 @@ function Set-AppSecPolicyTuningRecommendations
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('ACCEPT','DECLINE','RESET')] $Action,
         [Parameter(Mandatory=$true)]  [int]    $SelectorID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
