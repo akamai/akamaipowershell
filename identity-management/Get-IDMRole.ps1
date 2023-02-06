@@ -4,8 +4,8 @@ function Get-IDMRole
         [Parameter(Mandatory=$false)] [string] $RoleID,
         [Parameter(Mandatory=$false)] [switch] $Actions,
         [Parameter(Mandatory=$false)] [switch] $GrantedRoles,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

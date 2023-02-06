@@ -4,8 +4,8 @@ function Get-RecordSet
         [Parameter(Mandatory=$true)]  [string] $Zone,
         [Parameter(Mandatory=$true)]  [string] $Name,
         [Parameter(Mandatory=$true)]  [string] $Type,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

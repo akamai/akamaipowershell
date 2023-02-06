@@ -11,8 +11,8 @@ function Get-CacheableReport
         [Parameter(Mandatory=$false)] [String] $Filters,
         [Parameter(Mandatory=$false)] [String] $Metrics,
         [Parameter(Mandatory=$false)] [string] $Limit,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

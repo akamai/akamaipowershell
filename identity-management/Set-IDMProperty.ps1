@@ -5,8 +5,8 @@ function Set-IDMProperty
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [int] $SourceGroupID,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [int] $DestinationGroupID,
         [Parameter(Mandatory=$true, ParameterSetName='postbody')]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

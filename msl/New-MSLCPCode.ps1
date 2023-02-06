@@ -3,8 +3,8 @@ function New-MSLCPCode
     Param(
         [Parameter(Mandatory=$true)]  [string] $Name,
         [Parameter(Mandatory=$true)]  [string] $ContractID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

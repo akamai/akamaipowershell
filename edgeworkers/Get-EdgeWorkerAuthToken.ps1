@@ -8,8 +8,8 @@ function Get-EdgeWorkerAuthToken
         [Parameter(Mandatory=$false)] [string] $URL = "/*",
         [Parameter(Mandatory=$false)] [int] $Expiry = 15,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

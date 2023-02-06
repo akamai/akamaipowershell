@@ -8,8 +8,8 @@ function New-Zone
         [Parameter(ParameterSetName='postbody', Mandatory=$true)] [string] $Body,
         [Parameter(Mandatory=$true)]  [string] $ContractID,
         [Parameter(Mandatory=$false)] [string] $GroupID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

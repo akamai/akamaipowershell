@@ -4,8 +4,8 @@ function Get-DigFromGhostLocation
         [Parameter(Mandatory=$true)]  [string] $LocationID,
         [Parameter(Mandatory=$true)]  [string] $Hostname,
         [Parameter(Mandatory=$false)] [string] $QueryType,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

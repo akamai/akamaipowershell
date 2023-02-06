@@ -6,7 +6,7 @@ function Purge-Cache
         [Parameter(ParameterSetName='cpcode', Mandatory=$true)] [string] $CPCodes,
         [Parameter(ParameterSetName='tag', Mandatory=$true)]    [string] $Tags,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('staging', 'production')] $Network = 'production',
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
         [Parameter(Mandatory=$false)] [string] $Section = 'ccu',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )

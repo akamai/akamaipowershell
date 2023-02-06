@@ -7,8 +7,8 @@ function Set-BotManCustomClient
         [Parameter(Mandatory=$true)]  [string] $CustomClientID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $CustomClient,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

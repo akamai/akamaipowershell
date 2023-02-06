@@ -7,8 +7,8 @@ function New-BotManCustomBotCategory
         [Parameter(Mandatory=$true)]  [string] $CategoryName,
         [Parameter(Mandatory=$false)] [string] $Description,
         [Parameter(Mandatory=$false)] [string] $Notes,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

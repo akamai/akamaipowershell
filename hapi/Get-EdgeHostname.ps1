@@ -3,8 +3,8 @@ function Get-EdgeHostname
     Param(
         [Parameter(Mandatory=$true,ParameterSetName='id')]   [string] $EdgeHostnameID,
         [Parameter(Mandatory=$true,ParameterSetName='name')] [string] $EdgeHostname,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

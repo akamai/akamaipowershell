@@ -4,8 +4,8 @@ function Get-CloudletLoadBalancingVersion
         [Parameter(Mandatory=$true)]  [string] $OriginID,
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$false)] [switch] $Validate,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

@@ -6,8 +6,8 @@ function Get-SPSRequest
         [Parameter(Mandatory=$true)]  [string] $ContractId,
         [Parameter(Mandatory=$false)] [string] $After,
         [Parameter(Mandatory=$false)] [switch] $Information,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

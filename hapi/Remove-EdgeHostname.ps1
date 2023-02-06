@@ -5,8 +5,8 @@ function Remove-EdgeHostname
         [Parameter(Mandatory=$true)] [string] $DNSZone,
         [Parameter(Mandatory=$false)] [string] $Comments,
         [Parameter(Mandatory=$false)] [string] $StatusUpdateEmail,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

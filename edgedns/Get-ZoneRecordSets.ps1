@@ -8,8 +8,8 @@ function Get-ZoneRecordSets
         [Parameter(Mandatory=$false)] [switch] $ShowAll,
         [Parameter(Mandatory=$false)] [string] $SortBy,
         [Parameter(Mandatory=$false)] [string] $Types,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

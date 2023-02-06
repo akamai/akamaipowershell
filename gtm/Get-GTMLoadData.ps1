@@ -4,8 +4,8 @@ function Get-GTMLoadData
         [Parameter(Mandatory=$true)]  [string] $Domain,
         [Parameter(Mandatory=$true)]  [string] $Resource,
         [Parameter(Mandatory=$true)]  [string] $DatacenterID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

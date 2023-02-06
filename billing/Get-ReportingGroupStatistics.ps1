@@ -9,8 +9,8 @@ function Get-ReportingGroupStatistics
         [Parameter(Mandatory=$true,ParameterSetName='fromto')] [string] $ToYear,
         [Parameter(Mandatory=$true,ParameterSetName='monthyear')] [string] $Month,
         [Parameter(Mandatory=$true,ParameterSetName='monthyear')] [string] $Year,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

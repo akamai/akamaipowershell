@@ -5,8 +5,8 @@ function List-NetworkLists
         [Parameter(Mandatory=$false)] [switch] $IncludeElements,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('IP','GEO')] $ListType,
         [Parameter(Mandatory=$false)] [string] $Search,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

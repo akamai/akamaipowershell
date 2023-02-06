@@ -5,8 +5,8 @@ function List-TSIGKeys
         [Parameter(Mandatory=$false)] [string] $Search,
         [Parameter(Mandatory=$false)] [string] $SortBy,
         [Parameter(Mandatory=$false)] [string] $GroupID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

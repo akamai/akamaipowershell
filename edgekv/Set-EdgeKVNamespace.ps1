@@ -8,8 +8,8 @@ function Set-EdgeKVNamespace
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [int]    $RetentionInSeconds,
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [int]    $GroupID,
         [Parameter(Mandatory=$true,ParameterSetName='body')]        [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

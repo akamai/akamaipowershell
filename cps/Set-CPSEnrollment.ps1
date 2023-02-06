@@ -12,8 +12,8 @@ function Set-CPSEnrollment
         [Parameter(Mandatory=$false)] [switch] $ForceRenewal,
         [Parameter(Mandatory=$false)] [switch] $RenewalDateCheckOverride,
         [Parameter(Mandatory=$false)] [switch] $AllowMissingCertificateAddition,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

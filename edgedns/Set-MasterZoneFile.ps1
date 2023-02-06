@@ -4,8 +4,8 @@ function Set-MasterZoneFile
         [Parameter(Mandatory=$true)]  [string] $Zone,
         [Parameter(ParameterSetName='filename', Mandatory=$true)]  [string] $ZoneFilePath,
         [Parameter(ParameterSetName='contents', Mandatory=$true)]  [string] $ZoneFileContents,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

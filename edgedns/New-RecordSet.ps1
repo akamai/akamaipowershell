@@ -7,8 +7,8 @@ function New-RecordSet
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $TTL,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $RData,
         [Parameter(ParameterSetName='postbody',   Mandatory=$true)]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

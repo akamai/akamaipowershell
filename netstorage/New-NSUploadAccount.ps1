@@ -3,8 +3,8 @@ function New-NSUploadAccount
     Param(
         [Parameter(Mandatory=$false,ParameterSetName='pipeline',ValueFromPipeline=$true)] [System.Object] $UploadAccount,
         [Parameter(Mandatory=$false,ParameterSetName='body')] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

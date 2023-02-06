@@ -8,8 +8,8 @@ function New-AppSecConfiguration
         [Parameter(Mandatory=$true)]  [string] $Hostnames,
         [Parameter(Mandatory=$false)] [int] $CloneConfigID,
         [Parameter(Mandatory=$false)] [int] $CloneConfigVersion,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

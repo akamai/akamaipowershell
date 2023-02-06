@@ -3,8 +3,8 @@ function Remove-MSLStream
     Param(
         [Parameter(Mandatory=$true)]  [int]    $StreamID,
         [Parameter(Mandatory=$false)] [switch] $PurgeContent,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

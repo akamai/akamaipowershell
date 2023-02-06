@@ -9,8 +9,8 @@ function Get-EdgeWorkerReport
         [Parameter(Mandatory=$true)]  [string] $End,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('onClientRequest','onOriginRequest','onOriginResponse','onClientResponse','responseProvider')] $EventHandler,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('success','genericError','unknownEdgeWorkerId','unimplementedEventHandler','runtimeError','executionError','timeoutError','resourceLimitHit')] $Status,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

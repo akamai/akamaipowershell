@@ -7,8 +7,8 @@ function Get-GTMDatacenterLatency
         [Parameter(Mandatory=$true)]  [string] $End,
         [Parameter(Mandatory=$false)] [string] $Latency,
         [Parameter(Mandatory=$false)] [string] $Loss,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

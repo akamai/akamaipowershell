@@ -3,8 +3,8 @@ function List-LDSLogConfigurationsForID
     Param(
         [Parameter(Mandatory=$false)] [string] [ValidateSet('cpcode-products','gtm-properties','edns-zones','answerx-objects')] $LogSourceType = "cpcode-products",
         [Parameter(Mandatory=$true)]  [string] $logSourceId,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

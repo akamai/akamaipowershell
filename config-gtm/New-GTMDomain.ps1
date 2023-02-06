@@ -5,8 +5,8 @@ function New-GTMDomain
         [Parameter(Mandatory=$false, ParameterSetName='body')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $ContractID,
         [Parameter(Mandatory=$false)] [string] $GroupID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

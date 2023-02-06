@@ -7,8 +7,8 @@ function Set-AppSecCustomRuleActions
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [int] $RuleID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $Action,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

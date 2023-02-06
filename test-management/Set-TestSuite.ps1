@@ -4,8 +4,8 @@ function Set-TestSuite
         [Parameter(Mandatory=$true)]  [string] $TestSuiteID,
         [Parameter(Mandatory=$true,ParameterSetName='pipieline',ValueFromPipeline=$true)]  [object] $TestSuite,
         [Parameter(Mandatory=$true,ParameterSetName='body')]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

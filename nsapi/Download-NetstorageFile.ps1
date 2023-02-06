@@ -2,8 +2,8 @@ function Download-NetstorageFile {
     Param(
         [Parameter(Mandatory=$true)] [string] $RemotePath,
         [Parameter(Mandatory=$false)] [string] $LocalPath,
-        [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
-        [Parameter(Mandatory=$false)] [string] $Section = "default"
+        [Parameter(Mandatory=$false)] [string] $AuthFile,
+        [Parameter(Mandatory=$false)] [string] $Section
     )
 
     $Action = "download"

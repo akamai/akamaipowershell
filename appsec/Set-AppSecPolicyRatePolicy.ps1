@@ -9,8 +9,8 @@ function Set-AppSecPolicyRatePolicy
         [Parameter(Mandatory=$true)]  [int]    $RatePolicyID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $IPv4Action,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $IPv6Action,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
