@@ -20,8 +20,8 @@ $PS1Files | Where-Object {$_.Name.StartsWith('List-')} | ForEach-Object {
 }
 
 # Set module version env variable, used in custom UA, and check for updates
-$Exp = Get-Content -Raw $PSScriptRoot\AkamaiPowershell.psd1
-$Details = Invoke-Expression $Exp
+$ModuleData = Get-Content -Raw $PSScriptRoot\AkamaiPowershell.psd1
+$Details = Invoke-Expression $ModuleData
 $Env:AkamaiPowershellVersion = $Details.ModuleVersion
 
 if($null -eq $env:AkamaiPowerShellDisableUpdateCheck){ ## Can turn off the update check if desired
@@ -29,7 +29,7 @@ if($null -eq $env:AkamaiPowerShellDisableUpdateCheck){ ## Can turn off the updat
     if([System.Version]($LatestVersion.Version) -gt [System.Version]($Details.ModuleVersion)){
         $WindowWidth = (Get-Host).UI.RawUI.MaxWindowSize.Width
         $MessageLength = 104
-        $Dashes = '--------------------------------------------------------------------------------------------------------'
+        $Dashes = '---------------------------------------------------------------------------------------------------------'
         if($WindowWidth -lt $MessageLength){ $Dashes = $Dashes.Substring(0,$WindowWidth)}
         Write-Host -ForegroundColor Cyan $Dashes
         Write-Host -ForegroundColor White 'Note: A newer version of this module is available (' -NoNewline
@@ -41,8 +41,8 @@ if($null -eq $env:AkamaiPowerShellDisableUpdateCheck){ ## Can turn off the updat
     Remove-Variable $LatestVersion
 }
 
-Remove-Variable $Exp
-$Details = $null
+Remove-Variable -Name ModuleData
+Remove-Variable -Name Details
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
