@@ -36,7 +36,7 @@ function New-EdgeWorkerVersion
         if( Get-Command tar -ErrorAction SilentlyContinue){
             $Directory = Get-Item $CodeDirectory
             $Slash = Get-OSSlashCharacter
-            $Bundle = ConvertFrom-Json (Get-Content "$($Directory.FullName)$($Slash)bundle.json") 
+            $Bundle = ConvertFrom-Json (Get-Content "$($Directory.FullName)$($Slash)bundle.json" -Raw) 
             $Version = $Bundle.'edgeworker-version'
             $CodeBundleFileName = "$EdgeWorkerName-$Version.tgz"
             
