@@ -1,5 +1,6 @@
 function Deactivate-DataStream
 {
+    [alias('Deactivate-DS2Stream')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -17,8 +18,6 @@ function Deactivate-DataStream
         throw $_
     }
 }
-
-Set-Alias -Name Deactivate-DS2Stream -Value Deactivate-DataStream
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

@@ -1,5 +1,6 @@
 function Get-DataStreamHistory
 {
+    [alias('Get-DS2StreamHistory')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -17,8 +18,6 @@ function Get-DataStreamHistory
         throw $_
     }
 }
-
-Set-Alias -Name Get-DS2StreamHistory -Value Get-DataStreamHistory
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

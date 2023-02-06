@@ -1,5 +1,6 @@
 function Activate-DataStream
 {
+    [alias('Activate-DS2Stream')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -17,8 +18,6 @@ function Activate-DataStream
         throw $_
     }
 }
-
-Set-Alias -Name Activate-DS2Stream -Value Activate-DataStream
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

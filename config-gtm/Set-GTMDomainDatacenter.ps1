@@ -1,5 +1,6 @@
 function Set-GTMDomainDatacenter
 {
+    [alias('New-GTMDomainDatacenter')]
     Param(
         [Parameter(Mandatory=$true)] [string] $DomainName,
         [Parameter(Mandatory=$true)] [string] $DatacenterID,

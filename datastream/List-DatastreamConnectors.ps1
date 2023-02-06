@@ -1,5 +1,6 @@
 function List-DatastreamConnectors
 {
+    [alias('List-DS2Connectors')]
     Param(
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
         [Parameter(Mandatory=$false)] [string] $Section = 'default',
@@ -16,8 +17,6 @@ function List-DatastreamConnectors
         throw $_
     }
 }
-
-Set-Alias -Name List-DS2Connectors -Value List-DatastreamConnectors
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

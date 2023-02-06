@@ -1,5 +1,6 @@
 function List-DataStreamTypes
 {
+    [alias('List-DS2StreamTypes')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -17,8 +18,6 @@ function List-DataStreamTypes
         throw $_
     }
 }
-
-Set-Alias List-DS2StreamTypes List-DataStreamTypes
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

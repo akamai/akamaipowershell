@@ -1,5 +1,6 @@
 function List-DatastreamDatasetFields
 {
+    [alias('List-DS2DatasetFields')]
     Param(
         [Parameter(Mandatory=$false)] [string] $ProductID,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
@@ -17,8 +18,6 @@ function List-DatastreamDatasetFields
         throw $_
     }
 }
-
-Set-Alias -Name List-DS2DatasetFields -Value List-DatastreamDatasetFields
 
 # SIG # Begin signature block
 # MIIpogYJKoZIhvcNAQcCoIIpkzCCKY8CAQExDzANBglghkgBZQMEAgEFADB5Bgor

@@ -1,5 +1,6 @@
 function Set-GTMDomainResource
 {
+    [alias('New-GTMDomainResource')]
     Param(
         [Parameter(Mandatory=$true)] [string] $DomainName,
         [Parameter(Mandatory=$true)] [string] $ResourceName,

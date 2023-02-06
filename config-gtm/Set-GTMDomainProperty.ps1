@@ -1,5 +1,6 @@
 function Set-GTMDomainProperty
 {
+    [alias('New-GTMDomainProperty')]
     Param(
         [Parameter(Mandatory=$true)] [string] $DomainName,
         [Parameter(Mandatory=$true)] [string] $PropertyName,

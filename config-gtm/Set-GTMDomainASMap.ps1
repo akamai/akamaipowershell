@@ -1,5 +1,6 @@
 function Set-GTMDomainASMap
 {
+    [alias('New-GTMDomainASMap')]
     Param(
         [Parameter(Mandatory=$true)] [string] $DomainName,
         [Parameter(Mandatory=$true)] [string] $MapName,
