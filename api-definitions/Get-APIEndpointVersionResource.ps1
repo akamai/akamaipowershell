@@ -5,8 +5,8 @@ function Get-APIEndpointVersionResource
         [Parameter(Mandatory=$true, ParameterSetName="id")]   [int] $APIEndpointID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [int] $APIResourceID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,10 +18,10 @@ function Get-APIEndpointVersionResource
         $VersionNumber = (List-APIEndpointVersions -APIEndpointID $APIEndpointID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | Sort-Object -Property versionNumber -Descending)[0].versionNumber
     }
 
-    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/resources/$APIResourceID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/resources/$APIResourceID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

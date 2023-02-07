@@ -2,15 +2,15 @@ function Resume-LDSLogConfiguration
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $logConfigurationId,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/lds-api/v3/log-configurations/$logConfigurationId/resume?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/lds-api/v3/log-configurations/$logConfigurationId/resume"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

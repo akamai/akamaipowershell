@@ -6,8 +6,8 @@ function New-SPSRequest
         [Parameter(Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $After,
         [Parameter(Mandatory=$false)] [switch] $Information,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -20,10 +20,10 @@ function New-SPSRequest
         throw "ERROR: After must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
-    $Path = "/config-secure-provisioning-service/v1/sps-requests?groupId=$GroupID&contractId=$ContractID&after=$After&information=$InformationString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-secure-provisioning-service/v1/sps-requests?groupId=$GroupID&contractId=$ContractID&after=$After&information=$InformationString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

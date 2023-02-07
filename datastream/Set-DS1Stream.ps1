@@ -4,22 +4,22 @@ function Set-DS1Stream
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)]  [object] $Stream,
         [Parameter(Mandatory=$true,ParameterSetName='postbody')]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     begin{}
 
     process{
-        $Path = "/datastream-config-api/v1/datastream1/streams/$StreamID`?groupId=$GroupID&streamStatus=$StreamStatus&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/datastream-config-api/v1/datastream1/streams/$StreamID`?groupId=$GroupID&streamStatus=$StreamStatus"
 
         if($Stream){
             $Body = ConvertTo-Json -Depth 100 $Stream
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

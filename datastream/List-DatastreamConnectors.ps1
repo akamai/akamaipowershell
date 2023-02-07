@@ -1,23 +1,22 @@
 function List-DatastreamConnectors
 {
+    [alias('List-DS2Connectors')]
     Param(
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v1/log/connectors?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v1/log/connectors"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {
         throw $_
     }
 }
-
-Set-Alias -Name List-DS2Connectors -Value List-DatastreamConnectors
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

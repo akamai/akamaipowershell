@@ -7,8 +7,8 @@ function List-AppSecMatchTargets
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false)] [switch] $IncludeChildObjectName,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -34,10 +34,10 @@ function List-AppSecMatchTargets
         $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets?policyId=$PolicyID&includeChildObjectName=$IncludeChildObjectNameString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets?policyId=$PolicyID&includeChildObjectName=$IncludeChildObjectNameString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.matchTargets
     }
     catch {

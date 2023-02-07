@@ -8,12 +8,12 @@ function New-EdgeKVAccessToken
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [string] $Namespace,
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [string] $Permissions,
         [Parameter(Mandatory=$true,ParameterSetName='body')]        [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
-    $Path = "/edgekv/v1/tokens?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgekv/v1/tokens"
 
     if($PSCmdlet.ParameterSetName -eq "attributes"){
         ### Check expiry datetime
@@ -44,7 +44,7 @@ function New-EdgeKVAccessToken
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

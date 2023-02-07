@@ -9,12 +9,12 @@ function New-MetadataTrace
         [Parameter(Mandatory=$false)] [string] $SpoofEdgeIP,
         [Parameter(Mandatory=$false)] [string] $RequestHeaders,
         [Parameter(Mandatory=$false)] [switch] $UseStaging,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/metadata-tracer?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/metadata-tracer"
 
     $BodyObj = @{
         url = $URL
@@ -50,7 +50,7 @@ function New-MetadataTrace
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

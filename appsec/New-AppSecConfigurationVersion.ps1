@@ -5,8 +5,8 @@ function New-AppSecConfigurationVersion
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $CreateFromVersion,
         [Parameter(Mandatory=$false)] [switch] $UpdateRules,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -20,7 +20,7 @@ function New-AppSecConfigurationVersion
         }
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions"
 
     if($CreateFromVersion.ToLower() -eq 'latest'){
         $CreateFromVersion = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
@@ -33,7 +33,7 @@ function New-AppSecConfigurationVersion
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

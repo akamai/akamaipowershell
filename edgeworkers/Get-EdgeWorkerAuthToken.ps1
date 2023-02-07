@@ -8,12 +8,12 @@ function Get-EdgeWorkerAuthToken
         [Parameter(Mandatory=$false)] [string] $URL = "/*",
         [Parameter(Mandatory=$false)] [int] $Expiry = 15,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edgeworkers/v1/secure-token?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/secure-token"
     $BodyObj = [PSCustomObject] @{
         expiry = $Expiry
     }
@@ -55,7 +55,7 @@ function Get-EdgeWorkerAuthToken
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.akamaiEwTrace
     }
     catch {

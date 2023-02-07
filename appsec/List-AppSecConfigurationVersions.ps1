@@ -6,8 +6,8 @@ function List-AppSecConfigurationVersions
         [Parameter(Mandatory=$false)] [switch] $Detail,
         [Parameter(Mandatory=$false)] [int]    $Page = 1,
         [Parameter(Mandatory=$false)] [int]    $PageSize = 25,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -25,10 +25,10 @@ function List-AppSecConfigurationVersions
         }
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions?detail=$DetailString&page=$Page&pageSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions?detail=$DetailString&page=$Page&pageSize=$PageSize"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.versionList
     }
     catch {

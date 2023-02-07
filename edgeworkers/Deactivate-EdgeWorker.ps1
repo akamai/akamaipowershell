@@ -7,8 +7,8 @@ function Deactivate-EdgeWorker
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
         [Parameter(Mandatory=$false)] [string] $Note,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -35,7 +35,7 @@ function Deactivate-EdgeWorker
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/deactivations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/deactivations"
 
     $BodyObj = [PSCustomObject] @{
         network = $Network
@@ -49,7 +49,7 @@ function Deactivate-EdgeWorker
     $Body = $BodyObj | ConvertTo-Json
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

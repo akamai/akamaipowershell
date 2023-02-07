@@ -1,23 +1,22 @@
 function List-DatastreamProducts
 {
+    [alias('List-DS2Products')]
     Param(
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v1/log/products?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v1/log/products"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {
         throw $_
     }
 }
-
-Set-Alias -Name List-DS2Products -Value List-DatastreamProducts
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

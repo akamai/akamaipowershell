@@ -4,15 +4,15 @@ function Set-TestRequest
         [Parameter(Mandatory=$true)]  [string] $TestRequestID,
         [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $TestRequest,
         [Parameter(Mandatory=$true,ParameterSetName='requestbody')]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     begin{}
 
     process{
-        $Path = "/test-management/v2/functional/test-requests/$TestRequestID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/test-management/v2/functional/test-requests/$TestRequestID"
 
         if($TestRequest){
             # Sanitise request body. API does not do this
@@ -24,7 +24,7 @@ function Set-TestRequest
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

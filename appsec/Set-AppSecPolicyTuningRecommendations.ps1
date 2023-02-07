@@ -8,8 +8,8 @@ function Set-AppSecPolicyTuningRecommendations
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('ACCEPT','DECLINE','RESET')] $Action,
         [Parameter(Mandatory=$true)]  [int]    $SelectorID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -37,10 +37,10 @@ function Set-AppSecPolicyTuningRecommendations
     }
     $Body = ConvertTo-Json $BodyObj
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/recommendations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/recommendations"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

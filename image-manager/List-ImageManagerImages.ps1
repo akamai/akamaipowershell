@@ -7,13 +7,13 @@ function List-ImageManagerImages
         [Parameter(Mandatory=$false)] [string] $URL,
         [Parameter(Mandatory=$false)] [string] $Limit,
         [Parameter(Mandatory=$false)] [string] $ContractID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v0/network/$Network/images/?limit=$limit&policyId=$PolicyID&url=$URL&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/imaging/v0/network/$Network/images/?limit=$limit&policyId=$PolicyID&url=$URL"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if($ContractID -ne ''){
@@ -21,7 +21,7 @@ function List-ImageManagerImages
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

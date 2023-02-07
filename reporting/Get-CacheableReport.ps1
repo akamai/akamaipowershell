@@ -11,8 +11,8 @@ function Get-CacheableReport
         [Parameter(Mandatory=$false)] [String] $Filters,
         [Parameter(Mandatory=$false)] [String] $Metrics,
         [Parameter(Mandatory=$false)] [string] $Limit,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -31,10 +31,10 @@ function Get-CacheableReport
     if($Filters)    { $Filters = [System.Uri]::EscapeDataString($Filters)   }
     if($Metrics)    { $Metrics = [System.Uri]::EscapeDataString($Metrics)   }
 
-    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&allObjectIds=$AllObjectIDsString&filters=$Filters&metrics=$Metrics&objectIds=$ObjectIds&limit=$Limit&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/reporting-api/v1/reports/$ReportType/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&allObjectIds=$AllObjectIDsString&filters=$Filters&metrics=$Metrics&objectIds=$ObjectIds&limit=$Limit"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

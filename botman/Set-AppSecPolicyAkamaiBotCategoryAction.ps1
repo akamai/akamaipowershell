@@ -8,8 +8,8 @@ function Set-AppSecPolicyAkamaiBotCategoryAction
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $CategoryID,
         [Parameter(Mandatory=$true)]  [string] $Action,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -37,10 +37,10 @@ function Set-AppSecPolicyAkamaiBotCategoryAction
     }
     $Body = ConvertTo-Json $BodyObj
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/akamai-bot-category-actions/$CategoryID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/akamai-bot-category-actions/$CategoryID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

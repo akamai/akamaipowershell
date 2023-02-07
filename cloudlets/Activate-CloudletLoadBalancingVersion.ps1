@@ -7,12 +7,12 @@ function Activate-CloudletLoadBalancingVersion
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [string] $Version,
         [Parameter(Mandatory=$false,ParameterSetName='attributes')] [switch] $DryRun,
         [Parameter(Mandatory=$true,ParameterSetName='postbody')]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/api/v2/origins/$OriginID/activations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/origins/$OriginID/activations"
 
     if($PSCmdlet.ParameterSetName -eq "attributes"){
         if($Version -eq 'latest'){
@@ -34,7 +34,7 @@ function Activate-CloudletLoadBalancingVersion
     }
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

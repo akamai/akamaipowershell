@@ -4,8 +4,8 @@ function List-TCMSets
         [Parameter(Mandatory=$false)] [string] $Name,
         [Parameter(Mandatory=$false)] [switch] $DeployedOnStaging,
         [Parameter(Mandatory=$false)] [switch] $DeployedOnProduction,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -23,10 +23,10 @@ function List-TCMSets
         'accept' = 'application/prs.akamai.trust-chain-manager-api.set.v1+json'
     }
 
-    $Path = "/trust-chain-manager/v1/sets?name=$Name&deployedOnStaging=$DeployedOnStagingString&deployedOnProduction=$DeployedOnProductionString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/trust-chain-manager/v1/sets?name=$Name&deployedOnStaging=$DeployedOnStagingString&deployedOnProduction=$DeployedOnProductionString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.sets
     }
     catch {

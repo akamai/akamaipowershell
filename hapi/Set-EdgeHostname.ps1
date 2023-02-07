@@ -8,12 +8,12 @@ function Set-EdgeHostname
         [Parameter(Mandatory=$true, ParameterSetName='postbody')] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $Comments,
         [Parameter(Mandatory=$false)] [string] $StatusUpdateEmail,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $ReqPath = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName`?comments=$Comments&statusUpdateEmail=$StatusUpdateEmail&accountSwitchKey=$AccountSwitchKey"
+    $ReqPath = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName`?comments=$Comments&statusUpdateEmail=$StatusUpdateEmail"
     $AdditionalHeaders = @{
         'Content-Type' = 'application/json-patch+json'
     }
@@ -23,7 +23,7 @@ function Set-EdgeHostname
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $ReqPath -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $ReqPath -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

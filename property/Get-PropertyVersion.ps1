@@ -7,8 +7,8 @@ function Get-PropertyVersion
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [switch] $XML,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -41,16 +41,16 @@ function Get-PropertyVersion
         }
     }
 
-    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion`?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion`?contractId=$ContractId&groupId=$GroupID"
     
     try {
         if($XML)
         {
-            $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -XML
+            $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -XML
         }
         else
         {
-            $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         }
         return $Result.versions.items
     }

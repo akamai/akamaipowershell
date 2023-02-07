@@ -8,12 +8,12 @@ function Generate-APIKeys
         [Parameter(Mandatory=$false)] [string] $Label,
         [Parameter(Mandatory=$false)] [string] $Tags,
         [Parameter(Mandatory=$false)] [string] $TerminationAt,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/apikey-manager-api/v1/keys?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/apikey-manager-api/v1/keys"
     $BodyObj = @{
         collectionId = $CollectionID
         count = $Count
@@ -37,7 +37,7 @@ function Generate-APIKeys
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

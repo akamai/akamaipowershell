@@ -8,8 +8,8 @@ function New-PropertyIncludeVersion
         [Parameter(ParameterSetName='postbody', Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
     
@@ -53,10 +53,10 @@ function New-PropertyIncludeVersion
         $Body = $PostObject | ConvertTo-json
     }
     
-    $Path = "/papi/v1/includes/$IncludeID/versions?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/includes/$IncludeID/versions?contractId=$ContractId&groupId=$GroupID"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

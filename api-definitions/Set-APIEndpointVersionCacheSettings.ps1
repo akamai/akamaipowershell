@@ -5,8 +5,8 @@ function Set-APIEndpointVersionCacheSettings
         [Parameter(Mandatory=$true, ParameterSetName="id")]   [int] $APIEndpointID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,10 +18,10 @@ function Set-APIEndpointVersionCacheSettings
         $VersionNumber = (List-APIEndpointVersions -APIEndpointID $APIEndpointID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | Sort-Object -Property versionNumber -Descending)[0].versionNumber
     }
 
-    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/settings/cache?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/settings/cache"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

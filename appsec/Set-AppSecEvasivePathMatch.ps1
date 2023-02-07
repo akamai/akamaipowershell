@@ -5,8 +5,8 @@ function Set-AppSecEvasivePathMatch
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  [bool]   $EnablePathMatch,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -32,10 +32,10 @@ function Set-AppSecEvasivePathMatch
         }
         $Body = $BodyObj | ConvertTo-Json
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/advanced-settings/evasive-path-match?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/advanced-settings/evasive-path-match"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

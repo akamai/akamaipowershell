@@ -6,8 +6,8 @@ function Test-OpenAPI
         [Parameter(Mandatory=$false)] [string] $Body,
         [Parameter(Mandatory=$false)] [string] $Accept,
         [Parameter(Mandatory=$false)] [string] $ContentType,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -15,10 +15,10 @@ function Test-OpenAPI
     {
         if($Path.Contains("?"))
         {
-            $Path += "&accountSwitchKey=$AccountSwitchKey"
+            $Path += ""
         }
         else {
-            $Path += "?accountSwitchKey=$AccountSwitchKey"
+            $Path += ""
         }
     }
 
@@ -34,10 +34,10 @@ function Test-OpenAPI
 
     try {
         if($Body) {
-            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRcFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders
+            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -AdditionalHeaders $AdditionalHeaders
         }
         else {
-            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -EdgeRcFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders
+            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -AdditionalHeaders $AdditionalHeaders
         }
     }
     catch {

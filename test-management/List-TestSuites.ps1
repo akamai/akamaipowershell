@@ -2,8 +2,8 @@ function List-TestSuites
 {
     Param(
         [Parameter(Mandatory=$false)] [switch] $IncludeRecentlyDeleted,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -11,10 +11,10 @@ function List-TestSuites
     $IncludeRecentlyDeletedString = $IncludeRecentlyDeleted.IsPresent.ToString().ToLower()
     if(!$IncludeRecentlyDeleted){ $IncludeRecentlyDeletedString = '' }
 
-    $Path = "/test-management/v2/functional/test-suites?includeRecentlyDeleted=$IncludeRecentlyDeletedString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/functional/test-suites?includeRecentlyDeleted=$IncludeRecentlyDeletedString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

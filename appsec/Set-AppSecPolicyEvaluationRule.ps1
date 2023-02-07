@@ -8,8 +8,8 @@ function Set-AppSecPolicyEvaluationRule
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $RuleID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $Action,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -31,7 +31,7 @@ function Set-AppSecPolicyEvaluationRule
         $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/eval-rules/$RuleID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/eval-rules/$RuleID"
 
     $BodyObj = @{
         action = $Action
@@ -39,7 +39,7 @@ function Set-AppSecPolicyEvaluationRule
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

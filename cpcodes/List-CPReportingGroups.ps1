@@ -5,8 +5,8 @@ function List-CPReportingGroups
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $Name,
         [Parameter(Mandatory=$false)] [string] $CPCodeID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,10 +18,10 @@ function List-CPReportingGroups
         $ContractID = $ContractID.replace("ctr_","")
     }
     
-    $Path = "/cprg/v1/reporting-groups?contractId=$ContractID&groupId=$GroupID&cpcodeId=$CPCodeID&reportingGroupName=$Name&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cprg/v1/reporting-groups?contractId=$ContractID&groupId=$GroupID&cpcodeId=$CPCodeID&reportingGroupName=$Name"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.groups
     }
     catch {

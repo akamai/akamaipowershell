@@ -31,20 +31,20 @@ function Get-ProductUsagePerDay
         [Parameter(Mandatory=$true,ParameterSetName='reportinggroup')]  [string] $ReportingGroupId,
         [Parameter(Mandatory=$true)]  [string] $ProductID,
         [Parameter(Mandatory=$true)]  [string] $Month,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     if($PSCmdlet.ParameterSetName -eq 'contract'){
-        $Path = "/billing/v1/contracts/$ContractID/products/$ProductID/usage/daily?month=$Month&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/billing/v1/contracts/$ContractID/products/$ProductID/usage/daily?month=$Month"
     }
     elseif($PSCmdlet.ParameterSetName -eq 'reportinggroup'){
-        $Path = "/billing/v1/reporting-groups/$ReportingGroupID/products/$ProductID/usage/daily?month=$Month&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/billing/v1/reporting-groups/$ReportingGroupID/products/$ProductID/usage/daily?month=$Month"
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

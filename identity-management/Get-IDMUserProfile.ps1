@@ -4,8 +4,8 @@ function Get-IDMUserProfile
         [Parameter(Mandatory=$false)] [switch] $Actions,
         [Parameter(Mandatory=$false)] [switch] $AuthGrants,
         [Parameter(Mandatory=$false)] [switch] $Notifications,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default'
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section
     )
 
     # nullify false switches
@@ -19,7 +19,7 @@ function Get-IDMUserProfile
     $Path = "/identity-management/v2/user-profile?actions=$ActionsString&authGrants=$AuthGrantsString&notifications=$NotificationsString"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

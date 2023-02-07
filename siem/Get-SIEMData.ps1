@@ -34,15 +34,15 @@ function Get-SIEMData
         [Parameter(Mandatory=$true,ParameterSetName="fromto")] [string] $To,
         [Parameter(Mandatory=$false)] [string] $Limit,
         [Parameter(Mandatory=$false)] [switch] $Decode,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/siem/v1/configs/$ConfigID`?offset=$Offset&limit=$Limit&from=$From&to=$To&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/siem/v1/configs/$ConfigID`?offset=$Offset&limit=$Limit&from=$From&to=$To"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
     }
     catch {
         throw $_ 

@@ -5,8 +5,8 @@ function List-NetworkLists
         [Parameter(Mandatory=$false)] [switch] $IncludeElements,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('IP','GEO')] $ListType,
         [Parameter(Mandatory=$false)] [string] $Search,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -16,10 +16,10 @@ function List-NetworkLists
     $IncludeElementsString = $IncludeElements.IsPresent.ToString().ToLower()
     if(!$IncludeElements){ $IncludeElementsString = '' }
 
-    $Path = "/network-list/v2/network-lists?extended=$ExtendedString&includeElements=$IncludeElementsString&listType=$ListType&search=$Search&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/network-list/v2/network-lists?extended=$ExtendedString&includeElements=$IncludeElementsString&listType=$ListType&search=$Search"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.networkLists
     }
     catch {

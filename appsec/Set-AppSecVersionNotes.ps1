@@ -5,8 +5,8 @@ function Set-AppSecVersionNotes
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$true)]  [string] $Notes,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -29,10 +29,10 @@ function Set-AppSecVersionNotes
     }
     $Body = ConvertTo-Json $BodyObj
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/version-notes?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/version-notes"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.notes
     }
     catch {

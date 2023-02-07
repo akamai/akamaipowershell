@@ -6,8 +6,8 @@ function New-AppSecMatchTarget
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $MatchTarget,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -32,10 +32,10 @@ function New-AppSecMatchTarget
             $Body = $MatchTarget | ConvertTo-Json -Depth 100
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
             return $Result
         }
         catch {

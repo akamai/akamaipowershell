@@ -10,8 +10,8 @@ function New-CloudletPolicyVersion
         [Parameter(Mandatory=$false,ParameterSetName='postbody')]   [string] $Body,
         [Parameter(Mandatory=$false)] [string] $CloneVersion,
         [Parameter(Mandatory=$false)] [switch] $IncludeRules,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -20,7 +20,7 @@ function New-CloudletPolicyVersion
         Write-Debug "Found latest cloneversion = $CloneVersion"
     }
 
-    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions?cloneVersion=$CloneVersion&includeRules=$IncludeRules&matchRuleFormat=$MatchRuleFormat&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions?cloneVersion=$CloneVersion&includeRules=$IncludeRules&matchRuleFormat=$MatchRuleFormat"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
@@ -66,7 +66,7 @@ function New-CloudletPolicyVersion
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch {

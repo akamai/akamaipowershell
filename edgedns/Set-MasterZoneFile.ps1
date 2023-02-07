@@ -4,8 +4,8 @@ function Set-MasterZoneFile
         [Parameter(Mandatory=$true)]  [string] $Zone,
         [Parameter(ParameterSetName='filename', Mandatory=$true)]  [string] $ZoneFilePath,
         [Parameter(ParameterSetName='contents', Mandatory=$true)]  [string] $ZoneFileContents,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -20,14 +20,14 @@ function Set-MasterZoneFile
         }
     }
     
-    $Path = "/config-dns/v2/zones/$Zone/zone-file`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones/$Zone/zone-file"
 
     $AdditionalHeaders = @{
         'content-type' = 'text/dns'
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $ZoneFileContents -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $ZoneFileContents -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

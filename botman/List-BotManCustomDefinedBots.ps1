@@ -4,8 +4,8 @@ function List-BotManCustomDefinedBots
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [string] $VersionNumber,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -23,10 +23,10 @@ function List-BotManCustomDefinedBots
         $VersionNumber = (List-AppSecConfigurationVersions -ConfigID $ConfigID -PageSize 1 -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).version
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-defined-bots?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-defined-bots"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.bots
     }
     catch {

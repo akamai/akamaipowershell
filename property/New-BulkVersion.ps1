@@ -5,22 +5,22 @@ function New-BulkVersion
         [Parameter(Mandatory=$true,ParameterSetName='postbody')]  [string] $Body,
         [Parameter(Mandatory=$false)] [string] $GroupId,
         [Parameter(Mandatory=$false)] [string] $ContractId,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     begin{}
 
     process{
-        $Path = "/papi/v1/bulk/property-version-creations?contractId=$ContractID&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/papi/v1/bulk/property-version-creations?contractId=$ContractID&groupId=$GroupID"
         
         if($Versions){
             $Body = $Versions | ConvertTo-Json -depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

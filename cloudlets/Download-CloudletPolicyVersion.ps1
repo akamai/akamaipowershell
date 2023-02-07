@@ -4,8 +4,8 @@ function Download-CloudletPolicyVersion
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$false)] [string] $OutputFileName,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -14,14 +14,14 @@ function Download-CloudletPolicyVersion
         Write-Debug "Found latest version = $Version"
     }
 
-    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/download?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/download"
 
     $AdditionalHeaders = @{
         Accept = "*/*"
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AdditionalHeaders $AdditionalHeaders
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -AdditionalHeaders $AdditionalHeaders
 
         if($OutputFileName -eq ''){
             $Lines = $Result -split "`n"

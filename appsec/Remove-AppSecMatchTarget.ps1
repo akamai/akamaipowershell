@@ -5,8 +5,8 @@ function Remove-AppSecMatchTarget
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
         [Parameter(Mandatory=$true)]  [int]    $VersionNumber,
         [Parameter(Mandatory=$true)]  [int]    $TargetID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -20,10 +20,10 @@ function Remove-AppSecMatchTarget
         }
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets/$TargetID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/match-targets/$TargetID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

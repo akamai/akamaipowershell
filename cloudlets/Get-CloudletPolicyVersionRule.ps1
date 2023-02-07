@@ -4,8 +4,8 @@ function Get-CloudletPolicyVersionRule
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$true)]  [string] $AkaRuleID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -14,10 +14,10 @@ function Get-CloudletPolicyVersionRule
         Write-Debug "Found latest version = $Version"
     }
 
-    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/rules/$AkaRuleID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies/$PolicyID/versions/$Version/rules/$AkaRuleID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

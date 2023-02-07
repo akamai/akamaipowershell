@@ -6,8 +6,8 @@ function New-EdgeWorkerVersion
         [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $EdgeWorkerID,
         [Parameter(Mandatory=$false)] [string] $CodeDirectory,
         [Parameter(Mandatory=$false)] [string] $CodeBundle,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -36,7 +36,7 @@ function New-EdgeWorkerVersion
         if( Get-Command tar -ErrorAction SilentlyContinue){
             $Directory = Get-Item $CodeDirectory
             $Slash = Get-OSSlashCharacter
-            $Bundle = ConvertFrom-Json (Get-Content "$($Directory.FullName)$($Slash)bundle.json") 
+            $Bundle = ConvertFrom-Json (Get-Content "$($Directory.FullName)$($Slash)bundle.json" -Raw) 
             $Version = $Bundle.'edgeworker-version'
             $CodeBundleFileName = "$EdgeWorkerName-$Version.tgz"
             
@@ -58,13 +58,13 @@ function New-EdgeWorkerVersion
         throw "Code Bundle $CodeBundle could not be found"
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/versions?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/versions"
     $AdditionalHeaders = @{
         'Content-Type' = 'application/gzip'
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -InputFile $CodeBundle -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -InputFile $CodeBundle -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -8,8 +8,8 @@ function Set-AppSecPolicyLogging
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $LogSettings,
         [Parameter(Mandatory=$false)] [object] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -38,10 +38,10 @@ function Set-AppSecPolicyLogging
             $Body = $LogSettings | ConvertTo-Json -Depth 100
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/advanced-settings/logging?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/advanced-settings/logging"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

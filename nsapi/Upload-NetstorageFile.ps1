@@ -5,8 +5,8 @@ function Upload-NetstorageFile {
         [Parameter(Mandatory=$false)] [string] $MTime,
         [Parameter(Mandatory=$false)] [string] $Size,
         [Parameter(Mandatory=$false)] [switch] $CheckHash,
-        [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
-        [Parameter(Mandatory=$false)] [string] $Section = "default"
+        [Parameter(Mandatory=$false)] [string] $AuthFile,
+        [Parameter(Mandatory=$false)] [string] $Section
     )
 
     $Action = 'upload'

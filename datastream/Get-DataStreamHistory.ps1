@@ -1,24 +1,23 @@
 function Get-DataStreamHistory
 {
+    [alias('Get-DS2StreamHistory')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/datastream-config-api/v2/log/streams/$StreamID/history?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-config-api/v2/log/streams/$StreamID/history"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {
         throw $_
     }
 }
-
-Set-Alias -Name Get-DS2StreamHistory -Value Get-DataStreamHistory
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

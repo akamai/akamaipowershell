@@ -8,8 +8,8 @@ function Set-AppSecPolicyAPIRequestConstraints
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false)] [string] $ApiID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('alert','deny','none')] $Action,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -36,10 +36,10 @@ function Set-AppSecPolicyAPIRequestConstraints
     }
     $Body = ConvertTo-Json $BodyObj
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/api-request-constraints/$ApiID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/api-request-constraints/$ApiID"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.apiEndpoints
     }
     catch {

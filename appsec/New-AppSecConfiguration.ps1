@@ -8,12 +8,12 @@ function New-AppSecConfiguration
         [Parameter(Mandatory=$true)]  [string] $Hostnames,
         [Parameter(Mandatory=$false)] [int] $CloneConfigID,
         [Parameter(Mandatory=$false)] [int] $CloneConfigVersion,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/appsec/v1/configs?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs"
     $BodyObj = @{
         name = $Name
         description = $Description
@@ -32,7 +32,7 @@ function New-AppSecConfiguration
     $Body = $BodyObj | ConvertTo-Json
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -4,8 +4,8 @@ function Stat-NetstorageObject {
         [Parameter(Mandatory=$false)] [string] $Encoding,
         [Parameter(Mandatory=$false)] [switch] $Implicit,
         [Parameter(Mandatory=$false)] [switch] $SlashBoth,
-        [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
-        [Parameter(Mandatory=$false)] [string] $Section = "default"
+        [Parameter(Mandatory=$false)] [string] $AuthFile,
+        [Parameter(Mandatory=$false)] [string] $Section
     )
     
     $Action = 'stat'

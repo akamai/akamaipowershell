@@ -2,15 +2,15 @@ function Restore-TestDefinition
 {
     Param(
         [Parameter(Mandatory=$true)]  [string] $TestDefinitionID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/test-management/v2/comparative/test-definitions/$TestDefinitionID/restore?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/test-management/v2/comparative/test-definitions/$TestDefinitionID/restore"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -7,8 +7,8 @@ function New-BulkSearch
         [Parameter(Mandatory=$false)] [switch] $Synchronous,
         [Parameter(Mandatory=$false)] [string] $GroupId,
         [Parameter(Mandatory=$false)] [string] $ContractId,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -16,7 +16,7 @@ function New-BulkSearch
     if($Synchronous){
         $Endpoint += '-synch'
     }
-    $Path = "/papi/v1/bulk/$Endpoint`?contractId=$ContractID&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/bulk/$Endpoint`?contractId=$ContractID&groupId=$GroupID"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
@@ -32,7 +32,7 @@ function New-BulkSearch
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

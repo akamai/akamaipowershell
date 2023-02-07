@@ -10,8 +10,8 @@ function Get-PropertyRuleTree
         [Parameter(Mandatory=$false)] [switch] $OutputToFile,
         [Parameter(Mandatory=$false)] [string] $OutputFileName,
         [Parameter(Mandatory=$false)] [switch] $Force,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -44,7 +44,7 @@ function Get-PropertyRuleTree
         }
     }
 
-    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/rules?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/rules?contractId=$ContractId&groupId=$GroupID"
 
     if($RuleFormat){
         $AdditionalHeaders = @{
@@ -53,7 +53,7 @@ function Get-PropertyRuleTree
     }
 
     try {
-        $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $PropertyRuleTree = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
     }
     catch {
         throw $_

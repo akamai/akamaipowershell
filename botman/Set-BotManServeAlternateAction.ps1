@@ -7,8 +7,8 @@ function Set-BotManServeAlternateAction
         [Parameter(Mandatory=$true)]  [string] $ActionID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Action,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -33,10 +33,10 @@ function Set-BotManServeAlternateAction
             $Body = ConvertTo-Json -Depth 100 $Action
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/response-actions/serve-alternate-actions/$ActionID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/response-actions/serve-alternate-actions/$ActionID"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

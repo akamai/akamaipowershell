@@ -8,8 +8,8 @@ function List-PropertyHostnames
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [switch] $ValidateHostnames,
         [Parameter(Mandatory=$false)] [switch] $IncludeCertStatus,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -38,10 +38,10 @@ function List-PropertyHostnames
         $PropertyVersion = (Get-Property -PropertyID $PropertyID -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey).latestVersion
     }
 
-    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.hostnames.items
     }
     catch {

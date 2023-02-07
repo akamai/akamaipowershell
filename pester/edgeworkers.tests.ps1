@@ -79,21 +79,25 @@ Describe 'Safe Edgeworker Tests' {
     $MainJS | Set-Content -Path "$TestEdgeworkerName/main.js"
     $Script:NewVersion = New-EdgeWorkerVersion -Name $TestEdgeworkerName -CodeDirectory $TestEdgeworkerName -EdgeRCFile $EdgeRCFile -Section $Section
     it 'New-EdgeWorkerVersion creates a new version and removes it successfully' {
+        "$TestEdgeworkerName\$TestEdgeWorkerName-$TestEdgeWorkerVersion.tgz" | Should -Exist
         $NewVersion.edgeWorkerId | Should -Be $EdgeWorker.edgeWorkerId
     }
 
     ### Remove-EdgeWorkerVersion
     it 'Remove-EdgeWorkerVersion completes successfully' {
         { Remove-EdgeWorkerVersion -Name $TestEdgeworkerName -Version $TestEdgeworkerVersion -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
-    }
-
-    <#
-    ### New-EdgeWorkerVersion with codebundle
-    $Script:NewVersion = New-EdgeWorkerVersion -Name $TestEdgeworkerName -CodeBundle "$TestEdgeworkerName\$TestEdgeWorkerName-$TestEdgeWorkerVersion.tgz" -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'New-EdgeWorkerVersion completes successfully' {
+        $Script:NewVersion = New-EdgeWorkerVersion -Name $TestEdgeworkerName -CodeBundle "$TestEdgeworkerName\$TestEdgeWorkerName-$TestEdgeWorkerVersion.tgz" -EdgeRCFile $EdgeRCFile -Section $Section
         $NewVersion.edgeWorkerId | Should -Be $EdgeWorker.edgeWorkerId
     }
-    #>
+
+    # Allow remove command to finish
+    Start-Sleep -Seconds 10
+
+    # ### New-EdgeWorkerVersion with codebundle
+    # $Script:NewVersion = New-EdgeWorkerVersion -Name $TestEdgeworkerName -CodeBundle "$TestEdgeworkerName\$TestEdgeWorkerName-$TestEdgeWorkerVersion.tgz" -EdgeRCFile $EdgeRCFile -Section $Section
+    # it 'New-EdgeWorkerVersion completes successfully' {
+    #     $NewVersion.edgeWorkerId | Should -Be $EdgeWorker.edgeWorkerId
+    # }
 
     ### Get-EdgeWorkerVersion
     $Script:Version = Get-EdgeWorkerVersion -Name $TestEdgeworkerName -Version $TestEdgeWorkerVersion -EdgeRCFile $EdgeRCFile -Section $Section

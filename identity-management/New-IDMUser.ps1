@@ -3,8 +3,8 @@ function New-IDMUser
     Param(
         [Parameter(Mandatory=$true)]  [string] $Body,
         [Parameter(Mandatory=$false)] [switch] $SendEmail,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -12,10 +12,10 @@ function New-IDMUser
     $SendEmailString = $SendEmail.IsPresent.ToString().ToLower()
     if(!$SendEmail){ $SendEmailString = '' }
 
-    $Path = "/identity-management/v2/user-admin/ui-identities?sendEmail=$SendEmailString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/ui-identities?sendEmail=$SendEmailString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

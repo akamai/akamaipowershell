@@ -3,13 +3,13 @@ function Get-EdgeHostname
     Param(
         [Parameter(Mandatory=$true,ParameterSetName='id')]   [string] $EdgeHostnameID,
         [Parameter(Mandatory=$true,ParameterSetName='name')] [string] $EdgeHostname,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     if($PSCmdlet.ParameterSetName -eq 'id'){
-        $Path = "/hapi/v1/edge-hostnames/$EdgeHostnameID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/hapi/v1/edge-hostnames/$EdgeHostnameID"
     }
     elseif($PSCmdlet.ParameterSetName -eq 'name'){
         if($EdgeHostname.Contains('.edgekey.net')){
@@ -28,11 +28,11 @@ function Get-EdgeHostname
             throw '$EdgeHostname must be in the format <recordName>.edge(suite|key).net or <recordName>.akamaized.net'
         }
     
-        $Path = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/hapi/v1/dns-zones/$DNSZone/edge-hostnames/$RecordName"
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

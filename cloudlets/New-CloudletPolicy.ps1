@@ -9,12 +9,12 @@ function New-CloudletPolicy
         [Parameter(ParameterSetName='postbody', Mandatory=$false)]   [string] $Body,
         [Parameter(Mandatory=$false)] [int]    $ClonePolicyID,
         [Parameter(Mandatory=$false)] [string] $ClonePolicyVersion,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/api/v2/policies?clonepolicyid=$ClonePolicyID&version=$ClonePolicyVersion&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies?clonepolicyid=$ClonePolicyID&version=$ClonePolicyVersion"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
@@ -23,7 +23,7 @@ function New-CloudletPolicy
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch {

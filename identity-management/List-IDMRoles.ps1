@@ -5,8 +5,8 @@ function List-IDMRoles
         [Parameter(Mandatory=$false)] [int] $GroupID,
         [Parameter(Mandatory=$false)] [switch] $IgnoreContext,
         [Parameter(Mandatory=$false)] [switch] $Users,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,10 +18,10 @@ function List-IDMRoles
     if(!$IgnoreContext){ $IgnoreContextString = '' }
     if(!$Users){ $UsersString = '' }
 
-    $Path = "/identity-management/v2/user-admin/roles?actions=$ActionsString&groupId=$GroupID&ignoreContext=$IgnoreContextString&users=$UsersString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/roles?actions=$ActionsString&groupId=$GroupID&ignoreContext=$IgnoreContextString&users=$UsersString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

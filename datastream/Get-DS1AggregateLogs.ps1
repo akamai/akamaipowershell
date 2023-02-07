@@ -7,8 +7,8 @@ function Get-DS1AggregateLogs
         [Parameter(Mandatory=$false)] [string] $AggregateMetric,
         [Parameter(Mandatory=$false)] [string] $Page,
         [Parameter(Mandatory=$false)] [string] $Size,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -23,10 +23,10 @@ function Get-DS1AggregateLogs
         throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
-    $Path = "/datastream-pull-api/v1/streams/$StreamID/raw-logs?start=$Start&end=$End&aggregateMetric=$AggregateMetric&page=$Page&size=$Size&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/datastream-pull-api/v1/streams/$StreamID/raw-logs?start=$Start&end=$End&aggregateMetric=$AggregateMetric&page=$Page&size=$Size"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

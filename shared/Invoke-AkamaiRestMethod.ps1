@@ -39,6 +39,8 @@ Request path without hostname or scheme, but including any request parameters
 File-based Auth - Authorization file to read credentials from. Defaults to ~/.edgerc
 .PARAMETER Section
 File-based Auth - Section in EdgeRC file to read credentials from. Defaults to [default]
+.PARAMETER AccountSwitchKey
+Switch key to be used by Akamai Partners or internal users in order to apply a command to another account
 .PARAMETER Body
 Should contain the POST/PUT Body. The body should be structured like a JSON object. Example: $Body = '{ "name": "botlist2", "type": "IP", "list": ["201.22.44.12", "8.7.6.0/24"] }'
 .PARAMETER AdditionalHeaders
@@ -56,33 +58,31 @@ function Invoke-AkamaiRestMethod {
         [Parameter(Mandatory = $true)]  [string] $Path,
         [Parameter(Mandatory = $false)] $Body,
         [Parameter(Mandatory = $false)] [string] $InputFile,
-        [Parameter(Mandatory = $false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory = $false)] [string] $Section = 'default',
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey,
         [Parameter(Mandatory = $false)] [hashtable] $AdditionalHeaders,
-        [Parameter(Mandatory = $false)] [boolean] $Staging,
         [Parameter(Mandatory = $false)] [string] $MaxBody = 131072,
         [Parameter(Mandatory = $false)] [string] $ResponseHeadersVariable
     )
 
-    if ($Script:AkamaiSession -ne $null -and $Script:AkamaiSession.Auth.$Section -ne $null) {
-        #Use the script session auth instead of a file
-        $Auth = $Script:AkamaiSession.Auth
-        $authSource = "cached Akamai session credential" #Used in error messages
-    }
-    else {
-        ### Get .edgrc credentials
-        $Auth = Parse-EdgeRCFile -EdgeRCFile $EdgeRCFile -Section $Section
-        $authSource = "$EdgeRCFile file" #Used in error messages
+    # Get auth creds from various potential sources
+    $Auth = Get-AkamaiCredentials -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+    if($Debug){
+        ## Check creds if in Debug mode
+        Test-Auth -Auth $Auth
     }
 
-    # Set IM staging host if switch present
-    if ($Auth.Host.Contains('.imaging.') -and $Staging) {
-        $Auth.Host = $Auth.Host.Replace(".imaging.", ".imaging-staging.")
+    # Add account switch key from $Auth, if present
+    if($Auth.account_key){
+        if($Path.Contains('?')){ $Path += '&' }
+        else{ $Path += '?' }
+        $Path += "accountSwitchKey=$($Auth.account_key)"
     }
 
     # Sanitise query string
-    if ($Path.Contains("?")) {
-        $PathElements = $Path.Split("?")
+    if ($Path.Contains('?')) {
+        $PathElements = $Path.Split('?')
         $PathOnly = $PathElements[0]
         $QueryString = $PathElements[1]
         $SanitisedQuery = Sanitise-QueryString -QueryString $QueryString
@@ -90,33 +90,21 @@ function Invoke-AkamaiRestMethod {
         Write-Debug "Sanitised Query = $SanitisedQuery"
         # Reconstruct Path
         if ($SanitisedQuery) {
-            $Path = $PathOnly + "?" + $SanitisedQuery
+            $Path = $PathOnly + '?' + $SanitisedQuery
         }
         else {
             $Path = $PathOnly
         }
     }
 
-    # Add account switch key if it is not contained in query already, but present in $Auth
-    if($Auth.AccountKey -and !$Path.Contains('accountSwitchKey')){
-        if($Path.Contains("?")){
-            $Path += '&'
-        }
-        else{
-            $Path += '?'
-        }
-        $Path += "accountSwitchKey=$($Auth.AccountKey)"
-    }
-    
-
     # Set ReqURL from host and provided path
-    $ReqURL = "https://" + $Auth.Host + $Path
+    $ReqURL = "https://" + $Auth.host + $Path
 
     # ReqURL Verification
+    Write-Debug "Request URL = $ReqURL"
     If ($null -eq ($ReqURL -as [System.URI]).AbsoluteURI -or $ReqURL -notmatch "akamaiapis.net") {
         throw "Error: Invalid Request URI"
     }
-    Write-Debug "Request URL = $ReqURL"
 
     # Sanitize Method param
     $Method = $Method.ToUpper()
@@ -129,7 +117,7 @@ function Invoke-AkamaiRestMethod {
 
     # Build data string for signature generation
     $SignatureData = $Method + "`thttps`t"
-    $SignatureData += $Auth.Host + "`t" + $Path
+    $SignatureData += $Auth.host + "`t" + $Path
 
     # Add body to signature. Truncate if body is greater than max-body (Akamai default is 131072). PUT Method does not require adding to signature.
     if ($Method -eq "POST") {
@@ -165,23 +153,23 @@ function Invoke-AkamaiRestMethod {
     }
 
     $SignatureData += "EG1-HMAC-SHA256 "
-    $SignatureData += "client_token=" + $Auth.ClientToken + ";"
-    $SignatureData += "access_token=" + $Auth.ClientAccessToken + ";"
+    $SignatureData += "client_token=" + $Auth.client_token + ";"
+    $SignatureData += "access_token=" + $Auth.access_token + ";"
     $SignatureData += "timestamp=" + $TimeStamp + ";"
     $SignatureData += "nonce=" + $Nonce + ";"
 
     Write-Debug "SignatureData = $SignatureData"
 
     # Generate SigningKey
-    $SigningKey = Crypto -secret $Auth.ClientSecret -message $TimeStamp
+    $SigningKey = Crypto -secret $Auth.client_secret -message $TimeStamp
 
     # Generate Auth Signature
     $Signature = Crypto -secret $SigningKey -message $SignatureData
 
     # Create AuthHeader
     $AuthorizationHeader = "EG1-HMAC-SHA256 "
-    $AuthorizationHeader += "client_token=" + $Auth.ClientToken + ";"
-    $AuthorizationHeader += "access_token=" + $Auth.ClientAccessToken + ";"
+    $AuthorizationHeader += "client_token=" + $Auth.client_token + ";"
+    $AuthorizationHeader += "access_token=" + $Auth.access_token + ";"
     $AuthorizationHeader += "timestamp=" + $TimeStamp + ";"
     $AuthorizationHeader += "nonce=" + $Nonce + ";"
     $AuthorizationHeader += "signature=" + $Signature
@@ -275,7 +263,7 @@ function Invoke-AkamaiRestMethod {
                 # Redirects aren't well handled due to signatures needing regenerated
                 if ($null -ne ($Response.PSObject.members | where { $_.Name -eq "redirectLink" }) ) {
                     Write-Debug "Redirecting to $($Response.redirectLink)"
-                    $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+                    $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
                 }
             }
             catch {
@@ -333,7 +321,7 @@ function Invoke-AkamaiRestMethod {
                     try {
                         $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
                         Write-Debug "Redirecting to $NewPath"
-                        $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -ResponseHeadersVariable $ResponseHeadersVariable
+                        $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -ResponseHeadersVariable $ResponseHeadersVariable
                     }
                     catch {
                         throw $_

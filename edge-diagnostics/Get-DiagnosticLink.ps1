@@ -5,12 +5,12 @@ function Get-DiagnosticLink
         [Parameter(Mandatory=$true,ParameterSetName='url')]  [string] $URL,
         [Parameter(Mandatory=$true,ParameterSetName='ipa')]  [string] $IPAHostname,
         [Parameter(Mandatory=$false)] [string] $Note,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edge-diagnostics/v1/user-diagnostic-data/groups?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/user-diagnostic-data/groups"
 
     $BodyObj = @{}
     if($URL -ne ''){
@@ -25,7 +25,7 @@ function Get-DiagnosticLink
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

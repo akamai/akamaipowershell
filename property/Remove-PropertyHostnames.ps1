@@ -9,8 +9,8 @@ function Remove-PropertyHostnames
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [switch] $IncludeCertStatus,
         [Parameter(Mandatory=$false)] [switch] $ValidateHostnames,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -49,14 +49,14 @@ function Remove-PropertyHostnames
         }
     }
 
-    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractID&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractID&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString"
 
     $RemovalArray = $HostnamesToRemove -split ","
     $BodyObj = @{ remove = $RemovalArray }
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.hostnames.items
     }
     catch {

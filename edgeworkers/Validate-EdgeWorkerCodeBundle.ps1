@@ -3,8 +3,8 @@ function Validate-EdgeWorkerCodeBundle
     Param(
         [Parameter(Mandatory=$true,ParameterSetName='directory')]  [string] $CodeDirectory,
         [Parameter(Mandatory=$true,ParameterSetName='bundle')]     [string] $CodeBundle,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -29,13 +29,13 @@ function Validate-EdgeWorkerCodeBundle
         throw "Code Bundle $CodeBundle could not be found"
     }
 
-    $Path = "/edgeworkers/v1/validations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/validations"
     $AdditionalHeaders = @{
         'Content-Type' = 'application/gzip'
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -InputFile $CodeBundle -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -InputFile $CodeBundle -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

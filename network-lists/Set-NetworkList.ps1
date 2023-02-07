@@ -7,15 +7,15 @@ function Set-NetworkList
         [Parameter(Mandatory=$false,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $NetworkList,
         [Parameter(Mandatory=$false,ParameterSetName='body')]     [string] $Body,
         [Parameter(Mandatory=$false)] [string] $Element,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     begin{}
 
     process{
-        $Path = "/network-list/v2/network-lists/$NetworkListID/elements?element=$Element&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/network-list/v2/network-lists/$NetworkListID/elements?element=$Element"
         $Method = 'PUT'
 
         if($Operation -ne 'set'){
@@ -38,7 +38,7 @@ function Set-NetworkList
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method $Method -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

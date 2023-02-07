@@ -3,12 +3,12 @@ function New-CloudletLoadBalancer
     Param(
         [Parameter(Mandatory=$true)]  [string] $OriginID,
         [Parameter(Mandatory=$false)] [string] $Description,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/api/v2/origins?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/origins"
     $BodyObj = @{
         originId = $OriginID
     }
@@ -18,7 +18,7 @@ function New-CloudletLoadBalancer
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

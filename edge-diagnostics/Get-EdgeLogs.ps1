@@ -11,8 +11,8 @@ function Get-EdgeLogs
         [Parameter(Mandatory=$false)] [string] $Start,
         [Parameter(Mandatory=$true)]  [string] $End,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('R','F')] $LogType,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -28,10 +28,10 @@ function Get-EdgeLogs
         }
     }
 
-    $Path = "/edge-diagnostics/v1/grep?edgeIp=$EdgeIP&cpCode=$CPCode&clientIp=$ClientIP&objectStatus=$ObjectStatus&httpStatusCode=$HTTPStatusCode&userAgent=$UserAgent&arl=$ARL&start=$Start&end=$End&logType=$LogType&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/grep?edgeIp=$EdgeIP&cpCode=$CPCode&clientIp=$ClientIP&objectStatus=$ObjectStatus&httpStatusCode=$HTTPStatusCode&userAgent=$UserAgent&arl=$ARL&start=$Start&end=$End&logType=$LogType"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

@@ -10,8 +10,8 @@ function Set-PropertyHostnames
         [Parameter(Mandatory=$false)] [string] $ContractId,
         [Parameter(Mandatory=$false)] [switch] $ValidateHostnames,
         [Parameter(Mandatory=$false)] [switch] $IncludeCertStatus,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -49,7 +49,7 @@ function Set-PropertyHostnames
         $IncludeCertStatusString = $IncludeCertStatus.IsPresent.ToString().ToLower()
         if(!$IncludeCertStatus){ $IncludeCertStatusString = '' }
 
-        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/papi/v1/properties/$PropertyID/versions/$PropertyVersion/hostnames?contractId=$ContractId&groupId=$GroupID&validateHostnames=$ValidateHostnamesString&includeCertStatus=$IncludeCertStatusString"
         if($PSCmdlet.ParameterSetName -eq 'pipeline'){
             $CombinedHostnameArray = New-Object -TypeName System.Collections.ArrayList
         }
@@ -70,7 +70,7 @@ function Set-PropertyHostnames
         Write-Debug "Body = $Body"
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result.hostnames.items
         }
         catch {

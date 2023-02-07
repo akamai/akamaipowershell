@@ -11,12 +11,12 @@ function New-Property
         [Parameter(ParameterSetName='postbody', Mandatory=$true)]    [string] $Body,
         [Parameter(Mandatory=$true)]  [string] $GroupID,
         [Parameter(Mandatory=$true)]  [string] $ContractId,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/papi/v1/properties?contractId=$ContractId&groupId=$GroupID&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/papi/v1/properties?contractId=$ContractId&groupId=$GroupID"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
@@ -36,7 +36,7 @@ function New-Property
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $Body
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $Body
         return $Result
     }
     catch {

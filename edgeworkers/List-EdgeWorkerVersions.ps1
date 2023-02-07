@@ -4,8 +4,8 @@ function List-EdgeWorkerVersions
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $Name,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $EdgeWorkerID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -25,10 +25,10 @@ function List-EdgeWorkerVersions
         }
     }
 
-    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/versions?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/ids/$EdgeWorkerID/versions"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.versions
     }
     catch {

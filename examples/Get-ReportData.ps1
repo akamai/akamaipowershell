@@ -18,7 +18,7 @@ Param(
     [Parameter(Mandatory=$false)] [int] $LastXDays,
     [Parameter(Mandatory=$false)] [string] $Limit,
     [Parameter(Mandatory=$false)] [string] $EdgeRCFile = "~\.edgerc",
-    [Parameter(Mandatory=$false)] [string] $Section = 'default',
+    [Parameter(Mandatory=$false)] [string] $Section,
     [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 

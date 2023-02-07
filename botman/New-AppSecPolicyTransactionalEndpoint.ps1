@@ -8,8 +8,8 @@ function New-AppSecPolicyTransactionalEndpoint
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Endpoint,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -38,10 +38,10 @@ function New-AppSecPolicyTransactionalEndpoint
             $Body = ConvertTo-Json -Depth 100 $Endpoint
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/transactional-endpoints/bot-protection?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/transactional-endpoints/bot-protection"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

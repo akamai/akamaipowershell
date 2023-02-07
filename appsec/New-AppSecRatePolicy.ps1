@@ -6,8 +6,8 @@ function New-AppSecRatePolicy
         [Parameter(Mandatory=$true)]  [int]    $VersionNumber,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true)] [object] $Policy,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -25,10 +25,10 @@ function New-AppSecRatePolicy
         $Body = ConvertTo-Json -Depth 100 $Policy
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/rate-policies?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/rate-policies"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

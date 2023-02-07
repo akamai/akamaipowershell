@@ -5,8 +5,8 @@ function New-EdgeKVNamespace
         [Parameter(Mandatory=$false)] [string] $RetentionInSeconds = 0,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('US','EU','JP')] $GeoLocation = 'US',
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -14,7 +14,7 @@ function New-EdgeKVNamespace
         throw 'Only valid GeoLocation for STAGING network is US currently'
     }
 
-    $Path = "/edgekv/v1/networks/$Network/namespaces?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgekv/v1/networks/$Network/namespaces"
 
     $BodyObj = @{
         name = $Name
@@ -24,7 +24,7 @@ function New-EdgeKVNamespace
     $Body = $BodyObj | ConvertTo-Json
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

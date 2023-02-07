@@ -8,8 +8,8 @@ function Activate-APIEndpointVersion
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [string] [ValidateSet('Production', 'Staging', 'Both')] $Networks,
         [Parameter(Mandatory=$true, ParameterSetName='attributes')]  [string] $NotificationRecipients,
         [Parameter(Mandatory=$true, ParameterSetName='postbody')]    [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -38,10 +38,10 @@ function Activate-APIEndpointVersion
         $Body = $BodyObj | ConvertTo-Json -Depth 10
     }
 
-    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/activate?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/api-definitions/v2/endpoints/$APIEndpointID/versions/$VersionNumber/activate"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

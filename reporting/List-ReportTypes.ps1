@@ -3,8 +3,8 @@ function List-ReportTypes
     Param(
         [Parameter(Mandatory=$false)] [switch] $ShowDeprecated,
         [Parameter(Mandatory=$false)] [switch] $ShowUnavailable,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -14,10 +14,10 @@ function List-ReportTypes
     $ShowUnavailableString = $ShowUnavailable.IsPresent.ToString().ToLower()
     if(!$ShowUnavailable){ $ShowUnavailableString = '' }
 
-    $Path = "/reporting-api/v1/reports?showDeprecated=$ShowDeprecatedString&showUnavailable=$ShowUnavailableString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/reporting-api/v1/reports?showDeprecated=$ShowDeprecatedString&showUnavailable=$ShowUnavailableString"
     
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

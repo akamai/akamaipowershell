@@ -3,8 +3,8 @@ function List-MSLCPCodes
     Param(
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('INGEST','DELIVERY','STORAGE')] $Type,
         [Parameter(Mandatory=$false)] [switch] $Unused,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -12,10 +12,10 @@ function List-MSLCPCodes
     $UnusedString = $Unused.IsPresent.ToString().ToLower()
     if(!$Unused){ $UnusedString = '' }
 
-    $Path = "/config-media-live/v2/msl-origin/cpcodes?type=$Type&unused=$UnusedString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-media-live/v2/msl-origin/cpcodes?type=$Type&unused=$UnusedString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

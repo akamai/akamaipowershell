@@ -5,8 +5,8 @@ function Get-IDMUser
         [Parameter(Mandatory=$false)] [switch] $Actions,
         [Parameter(Mandatory=$false)] [switch] $AuthGrants,
         [Parameter(Mandatory=$false)] [switch] $Notifications,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,10 +18,10 @@ function Get-IDMUser
     if(!$AuthGrants){ $AuthGrantsString = '' }
     if(!$Notifications){ $NotificationsString = '' }
 
-    $Path = "/identity-management/v2/user-admin/ui-identities/$UIIdentityID`?actions=$ActionsString&authGrants=$AuthGrantsString&notifications=$NotificationsString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/identity-management/v2/user-admin/ui-identities/$UIIdentityID`?actions=$ActionsString&authGrants=$AuthGrantsString&notifications=$NotificationsString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

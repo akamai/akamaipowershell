@@ -8,8 +8,8 @@ function Set-AppSecPolicyBotCategoryExceptions
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $Exceptions,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -38,10 +38,10 @@ function Set-AppSecPolicyBotCategoryExceptions
             $Body = ConvertTo-Json -depth 100 $Exceptions
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/transactional-endpoints/bot-protection-exceptions?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/transactional-endpoints/bot-protection-exceptions"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

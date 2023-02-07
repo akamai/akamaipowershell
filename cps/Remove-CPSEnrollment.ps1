@@ -5,8 +5,8 @@ function Remove-CPSEnrollment
         [Parameter(Mandatory=$false)] [switch] $AllowCancelPendingChanges,
         [Parameter(Mandatory=$false)] [string] $DeployNotAfter,
         [Parameter(Mandatory=$false)] [string] $DeployNotBefore,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -22,10 +22,10 @@ function Remove-CPSEnrollment
     $AdditionalHeaders = @{
         'accept' = 'application/vnd.akamai.cps.enrollment-status.v1+json'
     }
-    $Path = "/cps/v2/enrollments/$EnrollmentID`?allow-cancel-pending-changes=$AllowCancelPendingChangesString&deploy-not-after=$DeployNotAfter&deploy-not-before=$DeployNotBefore&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cps/v2/enrollments/$EnrollmentID`?allow-cancel-pending-changes=$AllowCancelPendingChangesString&deploy-not-after=$DeployNotAfter&deploy-not-before=$DeployNotBefore"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

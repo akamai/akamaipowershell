@@ -5,12 +5,12 @@ function Copy-SharedCloudletPolicy
         [Parameter(Mandatory=$true)]  [string] $NewName,
         [Parameter(Mandatory=$true)]  [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $AdditionalVersions,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/cloudlets/v3/policies/$PolicyID/clone?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/v3/policies/$PolicyID/clone"
     $BodyObj = @{
         newName = $NewName
         groupId = $GroupID
@@ -22,7 +22,7 @@ function Copy-SharedCloudletPolicy
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

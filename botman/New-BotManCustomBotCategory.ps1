@@ -7,8 +7,8 @@ function New-BotManCustomBotCategory
         [Parameter(Mandatory=$true)]  [string] $CategoryName,
         [Parameter(Mandatory=$false)] [string] $Description,
         [Parameter(Mandatory=$false)] [string] $Notes,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -41,10 +41,10 @@ function New-BotManCustomBotCategory
 
         $Body = ConvertTo-Json $BodyObj
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-bot-categories?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-bot-categories"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

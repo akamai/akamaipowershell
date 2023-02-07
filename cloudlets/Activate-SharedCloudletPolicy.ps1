@@ -4,8 +4,8 @@ function Activate-SharedCloudletPolicy
         [Parameter(Mandatory=$true)]  [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] $Version,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -14,7 +14,7 @@ function Activate-SharedCloudletPolicy
         Write-Debug "Found latest version = $Version"
     }
 
-    $Path = "/cloudlets/v3/policies/$PolicyID/activations?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/v3/policies/$PolicyID/activations"
 
     $BodyObj = @{ 
         operation = 'ACTIVATION'
@@ -25,7 +25,7 @@ function Activate-SharedCloudletPolicy
     $Body = ConvertTo-Json $BodyObj -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

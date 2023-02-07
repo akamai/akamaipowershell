@@ -5,8 +5,8 @@ function Get-DiagnosticGroupData
         [Parameter(Mandatory=$false)] [switch] $IncludeCurl,
         [Parameter(Mandatory=$false)] [switch] $IncludeDig,
         [Parameter(Mandatory=$false)] [switch] $IncludeMTR,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,10 +18,10 @@ function Get-DiagnosticGroupData
     $IncludeMTRString = $IncludeMTR.IsPresent.ToString().ToLower()
     if(!$IncludeMTR){ $IncludeMTRString = '' }
 
-    $Path = "/edge-diagnostics/v1/user-diagnostic-data/groups/$GroupID/records?includeCurl=$IncludeCurlString&includeDig=$IncludeDigString&includeMtr=$IncludeMTRString&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edge-diagnostics/v1/user-diagnostic-data/groups/$GroupID/records?includeCurl=$IncludeCurlString&includeDig=$IncludeDigString&includeMtr=$IncludeMTRString"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

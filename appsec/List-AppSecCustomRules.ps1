@@ -3,8 +3,8 @@ function List-AppSecCustomRules
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,10 +18,10 @@ function List-AppSecCustomRules
         }
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/custom-rules?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/custom-rules"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.customRules
     }
     catch {

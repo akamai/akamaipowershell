@@ -3,8 +3,8 @@ function List-AppSecFailoverHostnames
     Param(
         [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $ConfigName,
         [Parameter(ParameterSetName="id", Mandatory=$true)]    [string] $ConfigID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,10 +18,10 @@ function List-AppSecFailoverHostnames
         }
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/failover-hostnames?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/failover-hostnames"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result.hostnameList
     }
     catch {

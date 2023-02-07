@@ -5,7 +5,7 @@ function Invalidate-CachedObjects
         [Parameter(ParameterSetName='cpcode', Mandatory=$true)] [string] $CPCodes,
         [Parameter(ParameterSetName='tag', Mandatory=$true)]    [string] $Tags,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('staging', 'production')] $Network = 'production',
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
         [Parameter(Mandatory=$false)] [string] $Section = 'ccu',
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
@@ -16,7 +16,7 @@ function Invalidate-CachedObjects
     {
         Write-Host -ForegroundColor Yellow "The FastPurge API currently does not support Account Switching. Sorry"
         return
-        #?accountSwitchKey=$AccountSwitchKey
+        #
     }
 
     $Objects = @()
@@ -68,7 +68,7 @@ function Invalidate-CachedObjects
 
     try
     {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -Body $PostJson
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $PostJson
         return $Result
     }
     catch

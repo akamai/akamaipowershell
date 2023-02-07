@@ -7,8 +7,8 @@ function Set-BotManCustomClient
         [Parameter(Mandatory=$true)]  [string] $CustomClientID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $CustomClient,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -33,10 +33,10 @@ function Set-BotManCustomClient
             $Body = ConvertTo-Json -depth 100 $CustomClient
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-clients/$CustomClientID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-clients/$CustomClientID"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

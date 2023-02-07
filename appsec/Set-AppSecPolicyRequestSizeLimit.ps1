@@ -7,8 +7,8 @@ function Set-AppSecPolicyRequestSizeLimit
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$false)] [string] [ValidateSet('8','16','32','default')] $RequestSizeLimit,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -30,7 +30,7 @@ function Set-AppSecPolicyRequestSizeLimit
         $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/advanced-settings/request-body?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/advanced-settings/request-body"
 
     $BodyObj = @{
         requestBodyInspectionLimitInKB = $RequestSizeLimit
@@ -38,7 +38,7 @@ function Set-AppSecPolicyRequestSizeLimit
     $Body = ConvertTo-Json $BodyObj
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

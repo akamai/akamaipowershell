@@ -2,8 +2,8 @@ function Set-NetstorageFileMTime {
     Param(
         [Parameter(Mandatory=$true)] [string] $Path,
         [Parameter(Mandatory=$true)] [string] $mtime,
-        [Parameter(Mandatory=$false)] [string] $AuthFile = "~/.akamai-cli/.netstorage/auth",
-        [Parameter(Mandatory=$false)] [string] $Section = "default"
+        [Parameter(Mandatory=$false)] [string] $AuthFile,
+        [Parameter(Mandatory=$false)] [string] $Section
     )
 
     $Action = "mtime"

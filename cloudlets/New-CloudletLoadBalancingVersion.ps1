@@ -6,8 +6,8 @@ function New-CloudletLoadBalancingVersion
         [Parameter(Mandatory=$true,ParameterSetName="pipeline",ValueFromPipeline=$true)]  [object] $LoadBalancer,
         [Parameter(Mandatory=$true,ParameterSetName="postbody")]  [string] $Body,
         [Parameter(Mandatory=$false)] [switch] $Validate,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -18,7 +18,7 @@ function New-CloudletLoadBalancingVersion
         $ValidateString = $Validate.IsPresent.ToString().ToLower()
         if(!$Validate){ $ValidateString = '' }
         
-        $Path = "/cloudlets/api/v2/origins/$OriginID/versions?validate=$ValidateString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/cloudlets/api/v2/origins/$OriginID/versions?validate=$ValidateString"
 
         $AdditionalHeaders = @{
             'Content-Type' = 'application/json'
@@ -29,7 +29,7 @@ function New-CloudletLoadBalancingVersion
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

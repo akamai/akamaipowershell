@@ -3,8 +3,8 @@ function List-TCMSetVersionCertificates
     Param(
         [Parameter(Mandatory=$true)]  [string] $SetID,
         [Parameter(Mandatory=$true)]  [string] $Version,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -19,7 +19,7 @@ function List-TCMSetVersionCertificates
     $Path = "/trust-chain-manager/v1/sets/$SetID/certificates/versions/$Version"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

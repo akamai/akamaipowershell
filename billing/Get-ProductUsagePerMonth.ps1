@@ -35,24 +35,24 @@ function Get-ProductUsagePerMonth
         [Parameter(Mandatory=$true)]  [string] $Start,
         [Parameter(Mandatory=$true)]  [string] $End,
         [Parameter(Mandatory=$true,ParameterSetName='contract')]  [switch] $ByCPCode,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     if($PSCmdlet.ParameterSetName -eq 'contract'){
-        $Path = "/billing/v1/contracts/$ContractID/products/$ProductID/usage/monthly-summary?start=$Start&end=$End&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/billing/v1/contracts/$ContractID/products/$ProductID/usage/monthly-summary?start=$Start&end=$End"
 
         if($ByCPCode){
             $Path = $Path.replace('monthly-summary','by-cp-code/monthly-summary')
         }
     }
     elseif($PSCmdlet.ParameterSetName -eq 'reportinggroup'){
-        $Path = "/billing/v1/reporting-groups/$ReportingGroupID/products/$ProductID/usage/monthly-summary?start=$Start&end=$End&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/billing/v1/reporting-groups/$ReportingGroupID/products/$ProductID/usage/monthly-summary?start=$Start&end=$End"
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

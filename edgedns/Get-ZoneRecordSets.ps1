@@ -8,17 +8,17 @@ function Get-ZoneRecordSets
         [Parameter(Mandatory=$false)] [switch] $ShowAll,
         [Parameter(Mandatory=$false)] [string] $SortBy,
         [Parameter(Mandatory=$false)] [string] $Types,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     Write-Host -ForegroundColor Yellow "Warning: This function has been deprecated and will be removed in a future release. Use List-RecordSets"
 
-    $Path = "/config-dns/v2/zones/$Zone/recordsets?page=$Page&pageSize=$PageSize&search=$Search&showAll=$ShowAllString&sortBy=$SortBy&types=$Types&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones/$Zone/recordsets?page=$Page&pageSize=$PageSize&search=$Search&showAll=$ShowAllString&sortBy=$SortBy&types=$Types"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

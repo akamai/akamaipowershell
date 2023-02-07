@@ -8,15 +8,15 @@ function Set-EdgeKVNamespace
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [int]    $RetentionInSeconds,
         [Parameter(Mandatory=$true,ParameterSetName='attributes')]  [int]    $GroupID,
         [Parameter(Mandatory=$true,ParameterSetName='body')]        [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     begin{}
 
     process{
-        $Path = "/edgekv/v1/networks/$Network/namespaces/$NamespaceID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/edgekv/v1/networks/$Network/namespaces/$NamespaceID"
 
         if($PSCmdlet.ParameterSetName -eq 'attributes'){
             $BodyObj = @{
@@ -31,7 +31,7 @@ function Set-EdgeKVNamespace
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

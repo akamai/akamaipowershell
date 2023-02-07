@@ -7,8 +7,8 @@ function List-CloudletPolicies
         [Parameter(Mandatory=$false)] [string] $Offset,
         [Parameter(Mandatory=$false)] [string] $Pagesize,
         [Parameter(Mandatory=$false)] [switch] $All,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -20,10 +20,10 @@ function List-CloudletPolicies
     $IncludeDeletedString = $IncludeDeleted.IsPresent.ToString().ToLower()
     if(!$IncludeDeleted){ $IncludeDeletedString = '' }
 
-    $Path = "/cloudlets/api/v2/policies?gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&offset=$Offset&pageSize=$PageSize&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/cloudlets/api/v2/policies?gid=$GroupID&includedeleted=$IncludeDeletedString&cloudletId=$CloudletId&clonepolicyid=$ClonePolicyID&offset=$Offset&pageSize=$PageSize"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -ResponseHeadersVariable ResponseHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -ResponseHeadersVariable ResponseHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
 
         # If -all is selected, loop through paged responses until you get to the end.
         if($All){

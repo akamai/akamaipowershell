@@ -7,8 +7,8 @@ function Update-AppSecKRSRuleSet
         [Parameter(Mandatory=$false)] [string] $PolicyName,
         [Parameter(Mandatory=$false)] [string] $PolicyID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('KRS','ASE_AUTO','ASE_MANUAL')] $Mode,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -30,7 +30,7 @@ function Update-AppSecKRSRuleSet
         $PolicyID = (List-AppsecPolicies -ConfigID $ConfigID -VersionNumber $VersionNumber -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey | where {$_.policyName -eq $PolicyName}).policyId
     }
 
-    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/rules/$RuleID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/security-policies/$PolicyID/rules/$RuleID"
 
     $BodyObj = @{
         upgrade = $true
@@ -42,7 +42,7 @@ function Update-AppSecKRSRuleSet
     $Body = $BodyObj | ConvertTo-Json -Depth 100
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

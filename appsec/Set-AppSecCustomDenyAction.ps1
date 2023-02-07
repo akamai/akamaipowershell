@@ -7,8 +7,8 @@ function Set-AppSecCustomDenyAction
         [Parameter(Mandatory=$true)]  [string] $CustomDenyID,
         [Parameter(Mandatory=$false,ValueFromPipeline=$true)]  [object] $CustomDenyAction,
         [Parameter(Mandatory=$false)] [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -33,10 +33,10 @@ function Set-AppSecCustomDenyAction
             $Body = $CustomDenyAction | ConvertTo-Json -Depth 100
         }
     
-        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-deny/$CustomDenyID`?accountSwitchKey=$AccountSwitchKey"
+        $Path = "/appsec/v1/configs/$ConfigID/versions/$VersionNumber/custom-deny/$CustomDenyID"
     
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {

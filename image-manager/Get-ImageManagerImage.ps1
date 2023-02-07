@@ -5,13 +5,13 @@ function Get-ImageManagerImage
         [Parameter(Mandatory=$true)]  [string] $ImageID,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(Mandatory=$false)] [string] $ContractID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v0/network/$Network/images/$ImageID`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/imaging/v0/network/$Network/images/$ImageID"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if($ContractID -ne ''){
@@ -19,7 +19,7 @@ function Get-ImageManagerImage
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

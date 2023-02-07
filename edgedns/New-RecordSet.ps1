@@ -7,12 +7,12 @@ function New-RecordSet
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $TTL,
         [Parameter(ParameterSetName='attributes', Mandatory=$true)]  [string] $RData,
         [Parameter(ParameterSetName='postbody',   Mandatory=$true)]  [string] $Body,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/config-dns/v2/zones/$Zone/names/$Name/types/$Type`?accountSwitchKey=$AccountSwitchKey"
+    $Path = "/config-dns/v2/zones/$Zone/names/$Name/types/$Type"
 
     if($PSCmdlet.ParameterSetName -eq 'attributes')
     {
@@ -27,7 +27,7 @@ function New-RecordSet
     }
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {

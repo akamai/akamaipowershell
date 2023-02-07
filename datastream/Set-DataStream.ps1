@@ -1,12 +1,13 @@
 function Set-DataStream
 {
+    [alias('Set-DS2Stream')]
     Param(
         [Parameter(Mandatory=$true)]  [string] $StreamID,
         [Parameter(Mandatory=$true,ParameterSetName='pipeline',ValueFromPipeline=$true)] [object] $Stream,
         [Parameter(Mandatory=$true,ParameterSetName='body')]  [string] $Body,
         [Parameter(Mandatory=$false)] [switch] $Activate,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -17,14 +18,14 @@ function Set-DataStream
         $ActivateString = $Activate.IsPresent.ToString().ToLower()
         if(!$Activate){ $ActivateString = '' }
 
-        $Path = "/datastream-config-api/v2/log/streams/$StreamID`?activate=$ActivateString&accountSwitchKey=$AccountSwitchKey"
+        $Path = "/datastream-config-api/v2/log/streams/$StreamID`?activate=$ActivateString"
 
         if($Stream){
             $Body = $Stream | ConvertTo-Json -Depth 100
         }
 
         try {
-            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
             return $Result
         }
         catch {
@@ -34,8 +35,6 @@ function Set-DataStream
 
     end{}
 }
-
-Set-Alias -Name Set-DS2Stream -Value Set-DataStream
 
 # SIG # Begin signature block
 # MIIpowYJKoZIhvcNAQcCoIIplDCCKZACAQExDzANBglghkgBZQMEAgEFADB5Bgor

@@ -9,8 +9,8 @@ function Get-EdgeWorkerReport
         [Parameter(Mandatory=$true)]  [string] $End,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('onClientRequest','onOriginRequest','onOriginResponse','onClientResponse','responseProvider')] $EventHandler,
         [Parameter(Mandatory=$true)]  [string] [ValidateSet('success','genericError','unknownEdgeWorkerId','unimplementedEventHandler','runtimeError','executionError','timeoutError','resourceLimitHit')] $Status,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile = '~\.edgerc',
-        [Parameter(Mandatory=$false)] [string] $Section = 'default',
+        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
@@ -35,10 +35,10 @@ function Get-EdgeWorkerReport
         throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
     }
 
-    $Path = "/edgeworkers/v1/reports/$ReportID`?start=$Start&edgeWorker=$EdgeWorkerID&end=$End&status=$Status&eventHandler=$EventHandler&accountSwitchKey=$AccountSwitchKey"
+    $Path = "/edgeworkers/v1/reports/$ReportID`?start=$Start&edgeWorker=$EdgeWorkerID&end=$End&status=$Status&eventHandler=$EventHandler"
 
     try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         return $Result
     }
     catch {
