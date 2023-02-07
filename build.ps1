@@ -13,8 +13,20 @@ param(
     [Parameter(Mandatory=$true)] [string] $Version
 )
 
-Import-Module AkamaiPowerShell.psd1 -Force -DisableNameChecking
+Import-Module AkamaiPowershell.psm1 -Force -DisableNameChecking
 
-$Functions = Get-Command -Module AkamaiPowershell -CommandType Function
-$Aliases = Get-Command -Module AkamaiPowershell -CommandType Alias
-Update-ModuleManifest -Path .\AkamaiPowershell.psd1 -ModuleVersion $Version -FunctionsToExport $Functions -AliasesToExport $Aliases
+$PS1Files = Get-ChildItem $PSScriptRoot -exclude examples,pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
+$Aliases = New-Object -TypeName System.Collections.ArrayList
+foreach($File in $PS1Files){
+    try{
+        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
+        if($Alias){
+            $Aliases.Add($Alias.Name) | Out-Null
+        }
+    }
+    catch{
+
+    }
+}
+
+Update-ModuleManifest -Path .\AkamaiPowershell.psd1 -ModuleVersion $Version -FunctionsToExport $PS1Files.BaseName -AliasesToExport $Aliases

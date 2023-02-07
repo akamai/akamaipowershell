@@ -34,7 +34,7 @@ function Get-ProductUsagePerMonth
         [Parameter(Mandatory=$true)]  [string] $ProductID,
         [Parameter(Mandatory=$true)]  [string] $Start,
         [Parameter(Mandatory=$true)]  [string] $End,
-        [Parameter(Mandatory=$true,ParameterSetName='contract')]  [switch] $ByCPCode,
+        [Parameter(Mandatory=$false,ParameterSetName='contract')]  [switch] $ByCPCode,
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
         [Parameter(Mandatory=$false)] [string] $Section,
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
