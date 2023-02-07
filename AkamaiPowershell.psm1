@@ -9,7 +9,7 @@
 #************************************************************************
 
 ## List script files, excluding certain directories
-$PS1Files = $PS1Files = Get-ChildItem $PSScriptRoot -exclude examples,pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
+$PS1Files = Get-ChildItem $PSScriptRoot -exclude examples,pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
 $PS1Files | ForEach-Object { . $_.FullName }
 
 # Alias all List- cmdlets to Get- also for ease of use
