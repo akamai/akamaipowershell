@@ -25,7 +25,7 @@ $Details = Invoke-Expression $ModuleData
 $Env:AkamaiPowershellVersion = $Details.ModuleVersion
 
 if($null -eq $env:AkamaiPowerShellDisableUpdateCheck){ ## Can turn off the update check if desired
-    $LatestVersion = Find-Module AkamaiPowerShell
+    $LatestVersion = Find-Module AkamaiPowerShell -Repository PSGallery
     if([System.Version]($LatestVersion.Version) -gt [System.Version]($Details.ModuleVersion)){
         $WindowWidth = (Get-Host).UI.RawUI.MaxWindowSize.Width
         $MessageLength = 104
