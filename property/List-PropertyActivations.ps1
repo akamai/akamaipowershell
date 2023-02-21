@@ -1,7 +1,8 @@
 function List-PropertyActivations
 {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PropertyID,
+        [Parameter(ParameterSetName="name", Mandatory=$true)]  [string] $PropertyName,
+        [Parameter(ParameterSetName="id", Mandatory=$true)]  [string] $PropertyID,
         [Parameter(Mandatory=$true)]  [string] $PropertyVersion,
         [Parameter(Mandatory=$false)] [string] $GroupID,
         [Parameter(Mandatory=$false)] [string] $ContractId,
