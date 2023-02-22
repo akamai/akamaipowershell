@@ -12,7 +12,7 @@ $Script:TestNamespaceObj = [PSCustomObject] @{
 }
 $Script:TestNamespaceBody = $Script:TestNamespaceObj | ConvertTo-Json
 $Script:TestTokenName = 'akamaipowershell-testing'
-$Script:Tomorrow = (Get-Date).AddDays(1)
+$Script:Tomorrow = (Get-Date).AddDays(7)
 $Script:TommorowsDate = Get-Date $Tomorrow -Format yyyy-MM-dd
 $Script:NewItemID = 'pester'
 $Script:NewItemContent = 'new'
@@ -20,11 +20,25 @@ $Script:NewItemContent = 'new'
 Describe 'Safe EdgeKV Tests' {
 
     BeforeDiscovery {
-        ### New-EdgeKVAccessToken
-        $Script:Token = New-EdgeKVAccessToken -Name $TestTokenName -AllowOnStaging -Expiry $TommorowsDate -Namespace $TestNameSpace -Permissions r -EdgeRCFile $EdgeRCFile -Section $Section
-        it 'New-EdgeKVAccessToken returns list of tokens' {
-            $Token.name | Should -Be $TestTokenName
-        }
+        
+    }
+
+    ### New-EdgeKVAccessToken
+    $Script:Token = New-EdgeKVAccessToken -Name $TestTokenName -AllowOnStaging -Expiry $TommorowsDate -Namespace $TestNameSpace -Permissions r -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-EdgeKVAccessToken returns list of tokens' {
+        $Token.name | Should -Be $TestTokenName
+    }
+
+    ### List-EdgeKVGroups
+    $Script:Groups = List-EdgeKVGroups -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeKVGroups returns a list' {
+        $Groups.count | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-EdgeKVGroup
+    $Script:Group = Get-EdgeKVGroup -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeKVGroup returns the correct group' {
+        $Group.groupId | Should -Be $TestGroupID
     }
 
     ### Get-EdgeKVInitializationStatus
@@ -61,6 +75,12 @@ Describe 'Safe EdgeKV Tests' {
     $Script:SetNamespaceByBody = Set-EdgeKVNamespace -Network STAGING -NamespaceID $TestNamespace -Body $TestNamespaceBody -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Set-EdgeKVNamespace returns namespace' {
         $SetNamespaceByBody.namespace | Should -Be $TestNamespace
+    }
+
+    ### Move-EdgeKVNamespace
+    $Script:MoveNamespace = Move-EdgeKVNamespace -NamespaceID $TestNamespace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Move-EdgeKVNamespace returns the correct group' {
+        $MoveNamespace.groupId | Should -Be $TestGroupID
     }
 
     ### List-EdgeKVAccessTokens
