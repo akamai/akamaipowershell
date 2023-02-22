@@ -9,6 +9,7 @@ $Script:TestEdgeworkerName = 'akamaipowershell-testing'
 $Script:TestEdgeworkerVersion = '0.0.1'
 $Script:BundleJson = '{ "edgeworker-version": "0.0.1", "description" : "Pester testing" }'
 $Script:MainJS = 'export function onClientRequest (request) {}'
+$Script:BigFileLocation = 'https://raw.githubusercontent.com/adamdehaven/Brackets-BTTF-Ipsum/master/src/script.txt'
 
 Describe 'Safe Edgeworker Tests' {
 
@@ -77,6 +78,7 @@ Describe 'Safe Edgeworker Tests' {
     New-Item -ItemType Directory -Name $TestEdgeworkerName
     $BundleJson | Set-Content -Path "$TestEdgeworkerName/bundle.json"
     $MainJS | Set-Content -Path "$TestEdgeworkerName/main.js"
+    Invoke-RestMethod -Uri $BigFileLocation -OutFile "$TestEdgeworkerName/data.txt" | Out-Null
     $Script:NewVersion = New-EdgeWorkerVersion -Name $TestEdgeworkerName -CodeDirectory $TestEdgeworkerName -EdgeRCFile $EdgeRCFile -Section $Section
     it 'New-EdgeWorkerVersion creates a new version and removes it successfully' {
         "$TestEdgeworkerName\$TestEdgeWorkerName-$TestEdgeWorkerVersion.tgz" | Should -Exist
