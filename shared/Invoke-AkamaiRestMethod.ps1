@@ -200,7 +200,7 @@ function Invoke-AkamaiRestMethod {
 
     # Add additional headers
     if ($AdditionalHeaders) {
-        $AdditionalHeaders.Keys | foreach {
+        $AdditionalHeaders.Keys | ForEach-Object {
             $Headers[$_] = $AdditionalHeaders[$_]
         }
     }
@@ -218,134 +218,71 @@ function Invoke-AkamaiRestMethod {
     # Set TLS version to 1.2
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 
-    # Check for Proxy Env variable and use if present
-    if ($null -ne $ENV:https_proxy) {
-        $UseProxy = $true
+    $params = @{
+        Method = $Method
+        Uri = $ReqURL
+        Headers = $Headers
+        ContentType =  $ContentType
     }
+    
+    if ($null -ne $ENV:https_proxy) { $params.Proxy = $ENV:https_proxy }
+    # change to IF statement
 
-    # Differentiate on PS 5 and later as PS 5's Invoke-RestMethod doesn't behave the same as the later versions
-    if ($PSVersionTable.PSVersion.Major -le 5) { 
-        if ($Method -eq "PUT" -or $Method -eq "POST" -or $Method -eq "PATCH") {
+    if ($Method -in "PUT","POST","PATCH") {
+        if ($Body) { $params.Body = $Body }
+        if ($InputFile) { $params.InFile = $InputFile }
+    }
+    
+    # GET requests typically
+    else { 
+        $params.MaximumRedirection = 0
+
+        # Differentiate on PS 5 and later as PS 5's Invoke-RestMethod doesn't behave the same as the later versions
+        if ($PSVersionTable.PSVersion.Major -le 5) {
+            $params.ErrorAction = "SilentlyContinue"
+        }
+        else {
+            $params.ErrorAction = "Stop"
+            $params.ResponseHeadersVariable = $ResponseHeadersVariable
+        }
+    }
+    
+    try {
+        $Response = Invoke-RestMethod @params
+    }
+    catch {
+        # PS >=6 handling
+        # Redirects aren't well handled due to signatures needing regenerated
+        if ($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302) {
             try {
-                if ($Body) {
-                    if ($UseProxy) {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body -Proxy $ENV:https_proxy
-                    }
-                    else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body
-                    }
-                }
-                elseif ($InputFile) {
-                    if ($UseProxy) {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -Proxy $ENV:https_proxy
-                    }
-                    else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile
-                    }
-                    
-                }
-                else {
-                    if ($UseProxy) {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Proxy $ENV:https_proxy
-                    }
-                    else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType
-                    }
-                }
+                $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
+                Write-Debug "Redirecting to $NewPath"
+                $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -ResponseHeadersVariable $ResponseHeadersVariable -AccountSwitchKey $AccountSwitchKey
             }
             catch {
                 throw $_
             }
         }
         else {
-            # GET requests typically
-            try {
-                if ($UseProxy) {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -MaximumRedirection 0 -ErrorAction SilentlyContinue -Proxy $ENV:https_proxy
-                }
-                else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -MaximumRedirection 0 -ErrorAction SilentlyContinue
-                }
-    
-                # Redirects aren't well handled due to signatures needing regenerated
-                if ($null -ne ($Response.PSObject.members | where { $_.Name -eq "redirectLink" }) ) {
-                    Write-Debug "Redirecting to $($Response.redirectLink)"
-                    $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink  -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-                }
-            }
-            catch {
-                throw $_
-            }
-        }
-    }
-    # PS 6+, the .net versions
-    else {
-        if ($Method -eq "PUT" -or $Method -eq "POST" -or $Method -eq "PATCH") {
-            try {
-                if ($Body) {
-                    if ($UseProxy) {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
-                    }
-                    else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -Body $Body -ResponseHeadersVariable $ResponseHeadersVariable
-                    }
-                    
-                }
-                elseif ($InputFile) {
-                    if ($UseProxy) {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
-                    }
-                    else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -InFile $InputFile -ResponseHeadersVariable $ResponseHeadersVariable
-                    }
-                }
-                else {
-                    if ($UseProxy) {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable -Proxy $ENV:https_proxy
-                    }
-                    else {
-                        $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable
-                    }
-                }
-            }
-            catch {
-                throw $_
-            }
-        }
-        else {
-            # GET requests typically
-            try {
-                if ($UseProxy) {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop -Proxy $ENV:https_proxy
-                }
-                else {
-                    $Response = Invoke-RestMethod -Method $Method -Uri $ReqURL -Headers $Headers -ContentType $ContentType -ResponseHeadersVariable $ResponseHeadersVariable -MaximumRedirection 0 -ErrorAction Stop
-                }
-            }
-            catch {
-                # Redirects aren't well handled due to signatures needing regenerated
-                if ($_.Exception.Response.StatusCode.value__ -eq 301 -or $_.Exception.Response.StatusCode.value__ -eq 302) {
-                    try {
-                        $NewPath = $_.Exception.Response.Headers.Location.PathAndQuery
-                        Write-Debug "Redirecting to $NewPath"
-                        $Response = Invoke-AkamaiRestMethod -Method $Method -Path $NewPath -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -ResponseHeadersVariable $ResponseHeadersVariable
-                    }
-                    catch {
-                        throw $_
-                    }
-                }
-                else {
-                    throw $_
-                }
-            }
-        }
-        
-        # Set ResponseHeadersVariable to be passed back to requesting function
-        if ($ResponseHeadersVariable) {
-            Set-Variable -name $ResponseHeadersVariable -Value (Get-Variable -Name $ResponseHeadersVariable -ValueOnly) -Scope Script
+            throw $_
         }
     }
     
+    # PS <5 handling
+    if ($null -ne ($Response.PSObject.members | Where-Object { $_.Name -eq "redirectLink" }) -and $method -notin "PUT","POST","PATCH") {
+        try {
+            Write-Debug "Redirecting to $($Response.redirectLink)"
+            $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+        }
+        catch {
+            throw $_
+        }
+    }
+    
+    # Set ResponseHeadersVariable to be passed back to requesting function
+    if ($ResponseHeadersVariable) {
+        Set-Variable -name $ResponseHeadersVariable -Value (Get-Variable -Name $ResponseHeadersVariable -ValueOnly) -Scope Script
+    }
     Return $Response
 }
 
