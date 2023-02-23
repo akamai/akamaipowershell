@@ -247,7 +247,7 @@ Describe 'Safe PAPI Tests' {
         $Activation.activationLink | Should -Not -BeNullOrEmpty
     }
 
-    ### Get-Activation
+    ### Get-PropertyActivation
     # Sanitise activation ID from previous response
     $Script:ActivationID = ($Activation.activationLink -split "/")[-1]
     if($ActivationID.contains("?")){
@@ -256,6 +256,12 @@ Describe 'Safe PAPI Tests' {
     $Script:ActivationResult = Get-PropertyActivation -PropertyName $TestPropertyName -ActivationID $ActivationID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-Activation finds the correct activation' {
         $ActivationResult[0].activationId | Should -Be $ActivationID
+    }
+
+    ### List-PropertyActivations
+    $Script:Activations = List-PropertyActivations -PropertyName $TestPropertyName -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-PropertyActivations returns a list' {
+        $Activations.count | Should -Not -Be 0
     }
 
     #************************************************#
