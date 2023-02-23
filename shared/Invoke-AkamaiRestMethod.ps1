@@ -140,7 +140,14 @@ function Invoke-AkamaiRestMethod {
             else{
                 $Bytes = Get-Content $InputFile -AsByteStream
             }
-            $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash($Bytes))
+
+            if ($Bytes.Length -gt $MaxBody) {
+                $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash($Bytes[0..($MaxBody - 1)]))
+            }
+            else {
+                $Body_Hash = [System.Convert]::ToBase64String($Body_SHA256.ComputeHash($Bytes))
+            }
+
             $SignatureData += "`t`t" + $Body_Hash + "`t"
             Write-Debug "Signature generated from input file $InputFile"
         }
