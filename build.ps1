@@ -13,7 +13,7 @@ param(
     [Parameter(Mandatory=$true)] [string] $Version
 )
 
-Import-Module AkamaiPowershell.psm1 -Force -DisableNameChecking
+Import-Module $PSScriptRoot\AkamaiPowershell.psm1 -Force -DisableNameChecking
 
 $PS1Files = Get-ChildItem $PSScriptRoot -exclude examples,pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
 $Aliases = New-Object -TypeName System.Collections.ArrayList
