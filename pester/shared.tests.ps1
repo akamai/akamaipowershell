@@ -124,7 +124,7 @@ Describe 'Safe Shared Tests' {
     }
 
     ### Get-NetstorageCredentials from file
-    $Script:NSAuth = Get-NetstorageCredentials
+    $Script:NSAuth = Get-NetstorageCredentials -AuthFile $SafeAuthFile -Section $Section
     it 'Get-NetstorageCredentials from file parses correctly' {
         $NSAuth.cpcode | Should -Not -BeNullOrEmpty
         $NSAuth.group | Should -Not -BeNullOrEmpty

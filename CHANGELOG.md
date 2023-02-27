@@ -9,7 +9,9 @@
 -  [Shared] - We now support credentials from Environment Variables for {OPEN} APIs. Set AKAMAI_HOST, AKAMAI_CLIENT_TOKEN, AKAMAI_CLIENT_SECRET and AKAMAI_ACCESS_TOKEN variables to use, or AKAMAI_<SECTION NAME>_HOST etc. and use the -Section parameter with <SECTION NAME> (section name is not case sensitive but variable names are)
 -  [Netstorage] - Also support credentials from Environment variables, as with {OPEN} APIs above. Use NETSTORAGE_KEY, NETSTORAGE_ID, NETSTORAGE_GROUP, NETSTORAGE_HOST, & NETSTORAGE_CPCODE, or use NETSTORAGE_<SECTION NAME>_KEY etc. and use the -Section parameter with <SECTION NAME> (section name is not case sensitive but variable names are)
 -  [Shared] - Module FunctionsToExport is now populated with an explicit list, rather than a wildcard. This will fix the auto-import issues previously and should mean you no longer need to use Import-Module
+-  [Edgeworkers] - BREAKING: Updated New-EdgeWorkerAuthToken to a POST method rather than the deprecated offline Token Auth method
 -  [EdgeWorkers] - Fix for bundle tar creation. This should now work on Windows, MacOS and Linux in the same way
+-  [EdgeWorkers] - Various new endpoints, including the ability to download a code bundle in tgz format
 -  [Billing] - Old billing API deprecated and replaced with 3 new functions
 -  [EdgeKV] - New endpoints for managing groups
 -  [Shared] - Fix for any functions (e.g. New-EdgeWorkerVersion) where the method is POST and which use an InputFile param where the file is larger than 128KB

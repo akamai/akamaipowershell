@@ -24,7 +24,7 @@ $Script:TestReportingGroupBody = '{
       "contractId": "1-1NC95D"
     }
 }'
-$Script:TestReportingGroupObject = ConvertFrom-Json -Depth 10 $TestReportingGroupBody
+$Script:TestReportingGroupObject = ConvertFrom-Json $TestReportingGroupBody
 
 Describe 'Safe CP Codes Tests' {
 

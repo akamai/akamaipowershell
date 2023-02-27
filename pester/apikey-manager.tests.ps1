@@ -185,14 +185,14 @@ Describe 'Safe API Key Manager Tests' {
 
     ### List-APIThrottlingCounterEndpoints
     $Script:CounterEndpoints = List-APIThrottlingCounterEndpoints -CounterID $NewCounter.id -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-APIThrottlingCounterEndpoints returns a list' {
-        $CounterEndpoints.count | Should -Not -BeNullOrEmpty
+    it 'List-APIThrottlingCounterEndpoints returns the correct data' {
+        $CounterEndpoints[0].apiEndPointId | Should -Not -BeNullOrEmpty
     }
 
     ### List-APIThrottlingCounterKeys
     $Script:CounterKeys = List-APIThrottlingCounterKeys -CounterID $NewCounter.id -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-APIThrottlingCounterKeys returns a list' {
-        $CounterKeys.count | Should -Not -BeNullOrEmpty
+    it 'List-APIThrottlingCounterKeys returns the correct data' {
+        $CounterKeys[0].id | Should -Not -BeNullOrEmpty
     }
 
     ### Remove-APIThrottlingCounter

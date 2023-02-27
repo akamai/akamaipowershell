@@ -31,10 +31,22 @@ Describe 'Safe Edgeworker Tests' {
         $EdgeWorkers | Should -Not -BeNullOrEmpty
     }
 
+    ### List-EdgeworkerContracts
+    $Script:EdgeWorkerContracts = List-EdgeworkerContracts -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeworkerContracts returns a list of contracts' {
+        $EdgeWorkerContracts | Should -Not -BeNullOrEmpty
+    }
+
     ### List-EdgeworkerGroups
     $Script:EdgeWorkerGroups = List-EdgeWorkerGroups -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-EdgeworkerGroups returns groups' {
-        $EdgeWorkerGroups | Should -Not -BeNullOrEmpty
+    it 'List-EdgeworkerGroups returns a list of groups' {
+        $EdgeWorkerGroups[0].groupId | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-EdgeworkerLimits
+    $Script:EdgeWorkerLimits = List-EdgeworkerLimits -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeworkerLimits returns a list of contracts' {
+        $EdgeWorkerLimits[0].limitId | Should -Not -BeNullOrEmpty
     }
 
     ### List-EdgeWorkerGroupReports
@@ -61,7 +73,6 @@ Describe 'Safe Edgeworker Tests' {
         $EdgeWorker.edgeWorkerId | Should -Not -BeNullOrEmpty
     }
 
-    
     ### Get-EdgeWorker by name
     $Script:EdgeWorker = Get-EdgeWorker -EdgeWorkerID $EdgeWorker.edgeWorkerId -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-EdgeWorker by ID returns EW' {
@@ -69,9 +80,15 @@ Describe 'Safe Edgeworker Tests' {
     }
 
     ### Set-EdgeWorker
-    $Script:EdgeWorker = Set-EdgeWorker -Name $TestEdgeWorkerName -NewName $TestEdgeWorkerName -GroupID $TestGroupId -EdgeRCFile $EdgeRCFile -Section $Section
+    $Script:SetEdgeWorker = Set-EdgeWorker -Name $TestEdgeWorkerName -NewName $TestEdgeWorkerName -GroupID $TestGroupId -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Set-EdgeWorker returns EW' {
-        $EdgeWorker.name | Should -Be $TestEdgeWorkerName
+        $SetEdgeWorker.name | Should -Be $TestEdgeWorkerName
+    }
+
+    ### Get-EdgeWorkerResourceTier
+    $Script:EdgeWorkerTier = Get-EdgeWorkerResourceTier -EdgeWorkerID $EdgeWorker.edgeWorkerId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeWorkerResourceTier returns the correct data' {
+        $EdgeWorkerTier.resourceTierId | Should -Not -BeNullOrEmpty
     }
 
     ### New-EdgeWorkerVersion with directory
@@ -83,6 +100,12 @@ Describe 'Safe Edgeworker Tests' {
     it 'New-EdgeWorkerVersion creates a new version and removes it successfully' {
         "$TestEdgeworkerName\$TestEdgeWorkerName-$TestEdgeWorkerVersion.tgz" | Should -Exist
         $NewVersion.edgeWorkerId | Should -Be $EdgeWorker.edgeWorkerId
+    }
+
+    ### Get-EdgeWorkerCodeBungle
+    Get-EdgeWorkerCodeBundle -Name $TestEdgeWorkerName -Version latest -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeWorkerCodeBundle should download a file' {
+        "$TestEdgeWorkerName-$TestEdgeWorkerVersion.tgz" | Should -Exist
     }
 
     ### Remove-EdgeWorkerVersion
@@ -120,6 +143,7 @@ Describe 'Safe Edgeworker Tests' {
 
     AfterAll {
         Remove-Item -Recurse $TestEdgeworkerName
+        Remove-Item "$TestEdgeWorkerName-$TestEdgeWorkerVersion.tgz"
     }
     
 }
@@ -177,5 +201,11 @@ Describe 'Unsafe Edgeworker Tests' {
     $Script:Token = Get-EdgeWorkerAuthToken -Hostname www.example.com -Expiry 60 -Network STAGING -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Get-EdgeWorkerDeactivation returns valid response' {
         $Token | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-EdgeWorkerAuthToken
+    $Script:NewToken = New-EdgeWorkerAuthToken -Hostname www.example.com -Expiry 60 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'New-EdgeWorkerAuthToken returns valid response' {
+        $NewToken | Should -Not -BeNullOrEmpty
     }
 }
