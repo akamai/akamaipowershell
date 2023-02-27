@@ -281,7 +281,7 @@ function Invoke-AkamaiRestMethod {
     
     # Set ResponseHeadersVariable to be passed back to requesting function
     if ($ResponseHeadersVariable) {
-        Set-Variable -name $ResponseHeadersVariable -Value (Get-Variable -Name $ResponseHeadersVariable -ValueOnly) -Scope Script
+        Set-Variable -name $ResponseHeadersVariable -Value (Get-Variable -Name $ResponseHeadersVariable -ValueOnly -ErrorAction SilentlyContinue) -Scope Script
     }
     Return $Response
 }

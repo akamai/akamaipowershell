@@ -10,7 +10,7 @@ function List-EdgeKVGroups
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result
+        return $Result.groups
     }
     catch {
         throw $_

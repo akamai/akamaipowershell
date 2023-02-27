@@ -31,8 +31,8 @@ Describe 'Safe EdgeKV Tests' {
 
     ### List-EdgeKVGroups
     $Script:Groups = List-EdgeKVGroups -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-EdgeKVGroups returns a list' {
-        $Groups.count | Should -Not -BeNullOrEmpty
+    it 'List-EdgeKVGroups returns the correct data' {
+        $Groups[0].groupId | Should -Not -BeNullOrEmpty
     }
 
     ### Get-EdgeKVGroup
