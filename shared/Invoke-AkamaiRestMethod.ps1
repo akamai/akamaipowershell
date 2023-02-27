@@ -58,6 +58,7 @@ function Invoke-AkamaiRestMethod {
         [Parameter(Mandatory = $true)]  [string] $Path,
         [Parameter(Mandatory = $false)] $Body,
         [Parameter(Mandatory = $false)] [string] $InputFile,
+        [Parameter(Mandatory = $false)] [string] $OutputFile,
         [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
         [Parameter(Mandatory = $false)] [string] $Section,
         [Parameter(Mandatory = $false)] [string] $AccountSwitchKey,
@@ -226,7 +227,6 @@ function Invoke-AkamaiRestMethod {
     }
     
     if ($null -ne $ENV:https_proxy) { $params.Proxy = $ENV:https_proxy }
-    # change to IF statement
 
     if ($Method -in "PUT","POST","PATCH") {
         if ($Body) { $params.Body = $Body }
@@ -245,6 +245,10 @@ function Invoke-AkamaiRestMethod {
             $params.ErrorAction = "Stop"
             $params.ResponseHeadersVariable = $ResponseHeadersVariable
         }
+    }
+
+    if($OutputFile){
+        $params.OutFile = $OutputFile
     }
     
     try {
