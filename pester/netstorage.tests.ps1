@@ -14,8 +14,8 @@ Describe 'Safe Netstorage Tests' {
 
     ### List-NSStorageGroups
     $Script:Groups = List-NSStorageGroups -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-NSStorageGroups returns a list' {
-        $Groups.count | Should -Not -BeNullOrEmpty
+    it 'List-NSStorageGroups returns the correct data' {
+        $Groups[0].storageGroupId | Should -Not -BeNullOrEmpty
     }
 
     ### Get-NSStorageGroup
@@ -26,8 +26,8 @@ Describe 'Safe Netstorage Tests' {
 
     ### List-NSUploadAccounts
     $Script:UploadAccounts = List-NSUploadAccounts -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-NSUploadAccounts returns a list' {
-        $UploadAccounts.count | Should -Not -BeNullOrEmpty
+    it 'List-NSUploadAccounts returns the correct data' {
+        $UploadAccounts[0].uploadAccountId | Should -Not -BeNullOrEmpty
     }
 
     ### Get-NSUploadAccount

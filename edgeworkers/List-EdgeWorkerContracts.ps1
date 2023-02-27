@@ -1,4 +1,4 @@
-function List-EdgeKVGroups
+function List-EdgeWorkerContracts
 {
     Param(
         [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
@@ -6,11 +6,11 @@ function List-EdgeKVGroups
         [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
     )
 
-    $Path = "/edgekv/v1/auth/groups"
+    $Path = "/edgeworkers/v1/contracts"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result.groups
+        return $Result.contractIds
     }
     catch {
         throw $_
