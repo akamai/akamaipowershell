@@ -31,7 +31,7 @@ function Set-CloudletPolicyVersion
                 matchRules = $Policy.matchRules.PSObject.Copy()
             }
 
-            ### Sanitise
+            ### Sanitize
             foreach($Rule in $UpdateObj.matchRules){
                 $Rule.PSObject.Members.Remove('location')
 

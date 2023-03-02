@@ -1,5 +1,5 @@
 # Will remove null query parameters and encode invalid characters
-function Sanitise-QueryString
+function Sanitize-QueryString
 {
     param(
         [Parameter(Mandatory=$true)] [string] $QueryString
