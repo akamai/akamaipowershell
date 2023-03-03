@@ -137,7 +137,12 @@ function Get-PropertyRuleTemplates {
     }
 
     ### Split variables out to its own file
-    $Rules.rules.variables | ConvertTo-Json -depth 100 | Out-File "$outputdir\pmVariables.json" -Force
+    if($Rules.rules.variables.count -gt 0){
+        $Rules.rules.variables | ConvertTo-Json -depth 100 | Out-File "$outputdir\pmVariables.json" -Force
+    }
+    else{
+        '[]' | Out-File "$outputdir\pmVariables.json" -Force -NoNewline
+    }
     $Rules.rules.variables = "#include:pmVariables.json"
 
     ### Write default rule to main file
