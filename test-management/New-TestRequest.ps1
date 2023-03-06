@@ -14,7 +14,7 @@ function New-TestRequest
         $Path = "/test-management/v2/functional/test-requests"
 
         if($TestRequest){
-            # Sanitise request body. API does not do this
+            # Sanitize request body. API does not do this
             $TestRequest.PSObject.Members.Remove('createdBy')
             $TestRequest.PSObject.Members.Remove('createdDate')
             $TestRequest.PSObject.Members.Remove('modifiedBy')

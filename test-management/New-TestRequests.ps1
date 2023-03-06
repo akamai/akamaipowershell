@@ -18,7 +18,7 @@ function New-TestRequests
     process{
         if($PSCmdlet.ParameterSetName -eq 'pipeline'){
             foreach($TestRequest in $TestRequests){
-                # Sanitise request body. API does not do this
+                # Sanitize request body. API does not do this
                 $TestRequest.PSObject.Members.Remove('createdBy')
                 $TestRequest.PSObject.Members.Remove('createdDate')
                 $TestRequest.PSObject.Members.Remove('modifiedBy')

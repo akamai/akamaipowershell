@@ -14,21 +14,21 @@ function Parse-NSAuthFile{
     $SectionFound = $false
     for($i = 0; $i -lt $AuthFileContent.length; $i++){
         $line = $AuthFileContent[$i]
-        $SanitisedLine = $line.Replace(" ","")
+        $SanitizedLine = $line.Replace(" ","")
 
         if($line.contains("[") -and $line.contains("]")){
-            $SectionHeader = $SanitisedLine.Substring($Line.indexOf('[')+1)
+            $SectionHeader = $SanitizedLine.Substring($Line.indexOf('[')+1)
             $SectionHeader = $SectionHeader.SubString(0,$SectionHeader.IndexOf(']'))
             if($SectionHeader -eq $Section){
                 $SectionFound = $true
             }
         }
 
-        if($SanitisedLine.ToLower().StartsWith('key'))      { $Key = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith('id'))       { $ID = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith('group'))    { $Group = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith('host'))     { $AuthHost = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith('cpcode'))   { $CPCode = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith('key'))      { $Key = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith('id'))       { $ID = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith('group'))    { $Group = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith('host'))     { $AuthHost = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith('cpcode'))   { $CPCode = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
     }
 
     # Validate auth contents

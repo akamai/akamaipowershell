@@ -82,18 +82,18 @@ function Get-NetstorageCredentials{
         $AuthFileContent = Get-Content $AuthFile
         for($i = 0; $i -lt $AuthFileContent.length; $i++){
             $line = $AuthFileContent[$i]
-            $SanitisedLine = $line.Replace(" ","")
+            $SanitizedLine = $line.Replace(" ","")
 
             if($line.contains("[") -and $line.contains("]")){
-                $SectionHeader = $SanitisedLine.Substring($Line.indexOf('[')+1)
+                $SectionHeader = $SanitizedLine.Substring($Line.indexOf('[')+1)
                 $SectionHeader = $SectionHeader.SubString(0,$SectionHeader.IndexOf(']'))
             }
 
-            if($SanitisedLine.ToLower().StartsWith('key'))      { $Auth.key = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-            if($SanitisedLine.ToLower().StartsWith('id'))       { $Auth.id = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-            if($SanitisedLine.ToLower().StartsWith('group'))    { $Auth.group = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-            if($SanitisedLine.ToLower().StartsWith('host'))     { $Auth.host = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-            if($SanitisedLine.ToLower().StartsWith('cpcode'))   { $Auth.cpcode = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith('key'))      { $Auth.key = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith('id'))       { $Auth.id = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith('group'))    { $Auth.group = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith('host'))     { $Auth.host = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith('cpcode'))   { $Auth.cpcode = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
         }
 
         ## Check essential elements and return

@@ -73,7 +73,7 @@ function Get-PropertyIncludeRuleTemplates {
 
     for($i = 0; $i -lt $Rules.rules.children.count; $i++) {
         Get-ChildRuleTemplate -Rules $Rules.rules.children[$i] -Path $OutputDir -CurrentDepth 0 -MaxDepth $MaxDepth
-        $SafeName = Sanitise-FileName -FileName $Rules.rules.children[$i].Name
+        $SafeName = Sanitize-FileName -FileName $Rules.rules.children[$i].Name
         $Rules.rules.children[$i] = "#include:$SafeName.json"
     }
 

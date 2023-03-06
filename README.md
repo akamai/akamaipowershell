@@ -28,7 +28,7 @@ The module contains hundreds of functions from 30+ APIs, so there is a lot inclu
 
 ### Proxy Support
 
-If you wish to use an https proxy with your commands, simply set the _https_proxy_ environment variable to your proxy address (e.g. http://localhost:8888). Once complete set the variable back to $null. Remember that this var might be persistent so could cause odd behaviours if left in place and the proxy disabled.
+If you wish to use an https proxy with your commands, simply set the _https_proxy_ environment variable to your proxy address (e.g. http://localhost:8888). Once complete set the variable back to $null. Remember that this var might be persistent so could cause odd behaviors if left in place and the proxy disabled.
 
 ### Contribution
 
