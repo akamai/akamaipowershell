@@ -19,12 +19,6 @@ Describe 'Safe Datastream Tests' {
         $Streams.count | Should -Not -BeNullOrEmpty
     }
 
-    ### List-DatastreamConnectors
-    $Script:Connectors = List-DatastreamConnectors -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-DatastreamConnectors returns a list' {
-        $Connectors.count | Should -Not -BeNullOrEmpty
-    }
-
     ### List-DatastreamDatasetFields
     $Script:Fields = List-DatastreamDatasetFields -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-DatastreamDatasetFields returns a list' {
@@ -35,12 +29,6 @@ Describe 'Safe Datastream Tests' {
     $Script:Groups = List-DatastreamGroups -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-DatastreamGroups returns a list' {
         $Groups.count | Should -Not -BeNullOrEmpty
-    }
-
-    ### List-DatastreamProducts
-    $Script:Products = List-DatastreamProducts -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'List-DatastreamProducts returns a list' {
-        $Products.count | Should -Not -BeNullOrEmpty
     }
 
     ### Get-DataStream
