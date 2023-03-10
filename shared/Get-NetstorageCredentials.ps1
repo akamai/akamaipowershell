@@ -14,17 +14,17 @@ Get-NetstorageCredentials -AuthFile /path/to/auth -Section MySection
 techdocs.akamai.com
 #>
 
-function Get-NetstorageCredentials{
+function Get-NetstorageCredentials {
     param(
         [Parameter(Mandatory = $false)] [string] $AuthFile,
         [Parameter(Mandatory = $false)] [string] $Section
     )
 
     ## Assign defaults if values not provided
-    if($AuthFile -eq ''){
+    if ($AuthFile -eq '') {
         $AuthFile = '~/.akamai-cli/.netstorage/auth'
     }
-    if($Section -eq ''){
+    if ($Section -eq '') {
         $Section = 'default'
     }
 
@@ -43,7 +43,7 @@ function Get-NetstorageCredentials{
     )
 
     $Auth = New-Object -TypeName PSCustomObject
-    $AuthElements | foreach{
+    $AuthElements | foreach {
         $Auth | Add-Member -MemberType NoteProperty -Name $_ -Value $null
     }
 
@@ -52,22 +52,22 @@ function Get-NetstorageCredentials{
     #----------------------------------------------------------------------------------------------
     
     ## 'default' section is implicit. Otherwise env variable starts with section prefix
-    if($Section -eq 'default'){
+    if ($Section -eq 'default') {
         $EnvPrefix = 'NETSTORAGE_'
     }
-    else{
+    else {
         $EnvPrefix = "NETSTORAGE_$Section`_"
     }
 
     $AuthElements | foreach {
         $UpperEnv = "$EnvPrefix$_".ToUpper()
-        if(Test-Path Env:\$UpperEnv){
+        if (Test-Path Env:\$UpperEnv) {
             $Auth.$_ = (Get-Item -Path Env:\$UpperEnv).Value
         }
     }
 
     ## Check essential elements and return
-    if($null -ne $Auth.key -and $null -ne $Auth.id -and $null -ne $Auth.group -and $null -ne $Auth.host -and $null -ne $Auth.cpcode){
+    if ($null -ne $Auth.key -and $null -ne $Auth.id -and $null -ne $Auth.group -and $null -ne $Auth.host -and $null -ne $Auth.cpcode) {
         ## Env creds valid
         Write-Debug "Obtained credentials from environment variables in section '$Section'"
         return $Auth
@@ -78,26 +78,29 @@ function Get-NetstorageCredentials{
     #----------------------------------------------------------------------------------------------
 
     # Get credentials from Auth file
-    if(Test-Path $AuthFile){
+    if (Test-Path $AuthFile) {
         $AuthFileContent = Get-Content $AuthFile
-        for($i = 0; $i -lt $AuthFileContent.length; $i++){
+        for ($i = 0; $i -lt $AuthFileContent.length; $i++) {
             $line = $AuthFileContent[$i]
-            $SanitizedLine = $line.Replace(" ","")
+            $SanitizedLine = $line.Replace(" ", "")
 
-            if($line.contains("[") -and $line.contains("]")){
-                $SectionHeader = $SanitizedLine.Substring($Line.indexOf('[')+1)
-                $SectionHeader = $SectionHeader.SubString(0,$SectionHeader.IndexOf(']'))
+            if ($line.contains("[") -and $line.contains("]")) {
+                $SectionHeader = $SanitizedLine.Substring($Line.indexOf('[') + 1)
+                $SectionHeader = $SectionHeader.SubString(0, $SectionHeader.IndexOf(']'))
             }
 
-            if($SanitizedLine.ToLower().StartsWith('key'))      { $Auth.key = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
-            if($SanitizedLine.ToLower().StartsWith('id'))       { $Auth.id = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
-            if($SanitizedLine.ToLower().StartsWith('group'))    { $Auth.group = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
-            if($SanitizedLine.ToLower().StartsWith('host'))     { $Auth.host = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
-            if($SanitizedLine.ToLower().StartsWith('cpcode'))   { $Auth.cpcode = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            ## Skip sections other than desired one
+            if ($SectionHeader -ne $Section) { continue }
+
+            if ($SanitizedLine.ToLower().StartsWith('key')) { $Auth.key = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if ($SanitizedLine.ToLower().StartsWith('id')) { $Auth.id = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if ($SanitizedLine.ToLower().StartsWith('group')) { $Auth.group = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if ($SanitizedLine.ToLower().StartsWith('host')) { $Auth.host = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if ($SanitizedLine.ToLower().StartsWith('cpcode')) { $Auth.cpcode = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
         }
 
         ## Check essential elements and return
-        if($null -ne $Auth.key -and $null -ne $Auth.id -and $null -ne $Auth.group -and $null -ne $Auth.host -and $null -ne $Auth.cpcode){
+        if ($null -ne $Auth.key -and $null -ne $Auth.id -and $null -ne $Auth.group -and $null -ne $Auth.host -and $null -ne $Auth.cpcode) {
             Write-Debug "Obtained credentials from auth file '$AuthFile' in section '$Section'"
             return $Auth
         }
