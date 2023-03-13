@@ -1,27 +1,25 @@
-function Purge-Cache
-{
+function Purge-Cache {
     Param(
-        [Parameter(Mandatory=$false)] [string] [ValidateSet('invalidate', 'delete')] $Method = 'Invalidate',
-        [Parameter(ParameterSetName='url', Mandatory=$true)]    [string] $URLs,
-        [Parameter(ParameterSetName='cpcode', Mandatory=$true)] [string] $CPCodes,
-        [Parameter(ParameterSetName='tag', Mandatory=$true)]    [string] $Tags,
-        [Parameter(Mandatory=$false)] [string] [ValidateSet('staging', 'production')] $Network = 'production',
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory=$false)] [string] $Section = 'ccu',
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory = $false)] [string] [ValidateSet('invalidate', 'delete')] $Method = 'Invalidate',
+        [Parameter(ParameterSetName = 'url', Mandatory = $true)]    [string] $URLs,
+        [Parameter(ParameterSetName = 'cpcode', Mandatory = $true)] [string] $CPCodes,
+        [Parameter(ParameterSetName = 'tag', Mandatory = $true)]    [string] $Tags,
+        [Parameter(Mandatory = $false)] [string] [ValidateSet('staging', 'production')] $Network = 'production',
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
-    if($AccountSwitchKey)
-    {
+    if ($AccountSwitchKey) {
         Write-Host -ForegroundColor Yellow "The FastPurge API currently does not support Account Switching. Sorry"
         return
         #
     }
 
     $Objects = @()
-    if($URLs){
-        if($URLs.Contains(",")) {
-            $URLs = $URLs.Replace(" ","")
+    if ($URLs) {
+        if ($URLs.Contains(",")) {
+            $URLs = $URLs.Replace(" ", "")
             $StrArray = $URLs.Split(",")
             $Objects += $StrArray
         }
@@ -30,33 +28,33 @@ function Purge-Cache
         }
     }
 
-    if($CPCodes){
+    if ($CPCodes) {
         # Validate data is only numberic plus comma
-        if($CPCodes -notmatch "^[0-9,\s]+$"){
+        if ($CPCodes -notmatch "^[0-9,\s]+$") {
             throw "Format of CPCodes must be one or more numeric strings, separated by commas. '$CPCodes' is invalid"
         }
 
-        if($CPCodes.Contains(",")) {
-            $CPCodes = $CPCodes.Replace(" ","")
+        if ($CPCodes.Contains(",")) {
+            $CPCodes = $CPCodes.Replace(" ", "")
             $StrArray = $CPCodes.Split(",")
             # Convert strings to ints
             $IntArray = @()
-            for($i = 0; $i -lt $StrArray.count; $i++){
+            for ($i = 0; $i -lt $StrArray.count; $i++) {
                 $IntArray += [int] $StrArray[$i]
             }
             $Objects += $IntArray
         }
-        else{
+        else {
             $Objects += [int] $CPCodes
         }
     }
-    if($Tags){
-        if($Tags.Contains(",")) {
-            $Tags = $Tags.Replace(" ","")
+    if ($Tags) {
+        if ($Tags.Contains(",")) {
+            $Tags = $Tags.Replace(" ", "")
             $StrArray = $Tags.Split(",")
             $Objects += $StrArray
         }
-        else{
+        else {
             $Objects += $Tags
         }
     }
@@ -65,14 +63,12 @@ function Purge-Cache
 
     $Path = "/ccu/v3/$Method/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())"
 
-    try
-    {
+    try {
         $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $PostJson
         return $Result
     }
-    catch
-    {
-       throw $_ 
+    catch {
+        throw $_ 
     }
 }
 
