@@ -1,17 +1,16 @@
-function Add-BucketHostnames
-{
+function Add-BucketHostnames {
     Param(
-        [Parameter(Mandatory=$false,ParameterSetName='name')] [string]   $PropertyName,
-        [Parameter(Mandatory=$false,ParameterSetName='id')]   [string]   $PropertyID,
-        [Parameter(Mandatory=$true)]  [string] [ValidateSet('STAGING','PRODUCTION')] $Network,
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]  [object[]] $NewHostnames,
-        [Parameter(Mandatory=$false)] [string] $GroupID,
-        [Parameter(Mandatory=$false)] [string] $ContractId,
-        [Parameter(Mandatory=$false)] [switch] $IncludeCertStatus,
-        [Parameter(Mandatory=$false)] [switch] $ValidateHostnames,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory=$false)] [string] $Section,
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory = $false, ParameterSetName = 'name')] [string]   $PropertyName,
+        [Parameter(Mandatory = $false, ParameterSetName = 'id')]   [string]   $PropertyID,
+        [Parameter(Mandatory = $true)]  [string] [ValidateSet('STAGING', 'PRODUCTION')] $Network,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]  [object[]] $NewHostnames,
+        [Parameter(Mandatory = $false)] [string] $GroupID,
+        [Parameter(Mandatory = $false)] [string] $ContractId,
+        [Parameter(Mandatory = $false)] [switch] $IncludeCertStatus,
+        [Parameter(Mandatory = $false)] [switch] $ValidateHostnames,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
     <#
@@ -19,26 +18,26 @@ function Add-BucketHostnames
         single items with the Process section executing for each one.
     #>
 
-    begin{
+    begin {
         # nullify false switches
         $IncludeCertStatusString = $IncludeCertStatus.IsPresent.ToString().ToLower()
-        if(!$IncludeCertStatus){ $IncludeCertStatusString = '' }
+        if (!$IncludeCertStatus) { $IncludeCertStatusString = '' }
         $ValidateHostnamesString = $ValidateHostnames.IsPresent.ToString().ToLower()
-        if(!$ValidateHostnames){ $ValidateHostnamesString = '' }
+        if (!$ValidateHostnames) { $ValidateHostnamesString = '' }
 
         # Capitalise $Network, API seems to care
         $Network = $Network.ToUpper()
 
         # Find property if user has specified PropertyName
-        if($PropertyName){
-            try{
+        if ($PropertyName) {
+            try {
                 $Property = Find-Property -PropertyName $PropertyName -latest -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
                 $PropertyID = $Property.propertyId
-                if($PropertyID -eq ''){
+                if ($PropertyID -eq '') {
                     throw "Property '$PropertyName' not found"
                 }
             }
-            catch{
+            catch {
                 throw $_
             }
         }
@@ -47,22 +46,22 @@ function Add-BucketHostnames
         $CombinedHostnameArray = New-Object -TypeName System.Collections.ArrayList
     }
 
-    process{
-        foreach($Hostname in $NewHostnames){
+    process {
+        foreach ($Hostname in $NewHostnames) {
             $CombinedHostnameArray.Add($Hostname) | Out-Null
         }
     }
 
-    end{
+    end {
         $BodyObj = @{
             network = $Network
-            add = $CombinedHostnameArray 
+            add     = $CombinedHostnameArray 
         }
         $Body = $BodyObj | ConvertTo-Json -Depth 100
 
         try {
             $Result = Invoke-AkamaiRestMethod -Method PATCH -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-            return $Result.hostnames.items
+            return $Result.hostnames
         }
         catch {
             throw $_
