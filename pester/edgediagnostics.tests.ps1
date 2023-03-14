@@ -83,9 +83,9 @@ Describe 'Safe Edge Diagnostics Tests' {
         $GetErrorTranslation.requestId | Should -Be $NewErrorTranslation.requestId
     }
 
-    ### Get-DiagnosticLink
-    $Script:DiagLink = Get-DiagnosticLink -URL "https://$TestHostname" -Note $TestDiagnosticsNote  -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Get-DiagnosticLink executes successfully' {
+    ### New-DiagnosticLink
+    $Script:DiagLink = New-DiagnosticLink -URL "https://$TestHostname" -Note $TestDiagnosticsNote  -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-DiagnosticLink executes successfully' {
         $DiagLink.note | Should -Be $TestDiagnosticsNote
     }
 
