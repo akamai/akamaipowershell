@@ -1,4 +1,4 @@
-function New-DiagnosticLink
+function Get-DiagnosticLink
 {
     [CmdletBinding(DefaultParameterSetName = 'url')]
     Param(
