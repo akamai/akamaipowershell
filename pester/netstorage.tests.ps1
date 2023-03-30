@@ -42,24 +42,6 @@ Describe 'Safe Netstorage Tests' {
         $Zones.zones.count | Should -Not -BeNullOrEmpty
     }
 
-    ### Set-NSStorageGroup by pipeline
-    $Script:SetGroupByPipeline = ( $Group | Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -EdgeRCFile $EdgeRCFile -Section $Section )
-    it 'Set-NSStorageGroup updates details' {
-        $SetGroupByPipeline.storageGroupId | Should -Be $TestStorageGroupID
-    }
-
-    ### Set-NSStorageGroup by param
-    $Script:SetGroupByParam = Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -StorageGroup $Group -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Set-NSStorageGroup updates details' {
-        $SetGroupByParam.storageGroupId | Should -Be $TestStorageGroupID
-    }
-
-    ### Set-NSStorageGroup by json
-    $Script:SetGroupByBody = Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -Body (ConvertTo-Json $Group -Depth 10) -EdgeRCFile $EdgeRCFile -Section $Section
-    it 'Set-NSStorageGroup updates details' {
-        $SetGroupByBody.storageGroupId | Should -Be $TestStorageGroupID
-    }
-
     ### Set-NSUploadAccount by pipeline
     $Script:SetAccountByPipeline = ( $UploadAccount | Set-NSUploadAccount -UploadAccountID $TestUploadAccountID -EdgeRCFile $EdgeRCFile -Section $Section )
     it 'Set-NSUploadAccount updates details' {
@@ -119,6 +101,24 @@ Describe 'Unsafe Netstorage Tests' {
     $Script:NewAccountByBody = New-NSUploadAccount -Body (ConvertTo-Json $UploadAccount -Depth 10) -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Set-NSUploadAccount updates details' {
         $NewGroupByBody | Should -Not -BeNullOrEmpty
+    }
+
+    ### Set-NSStorageGroup by pipeline
+    $Script:SetGroupByPipeline = ( $Group | Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -EdgeRCFile $SafeEdgeRCFile -Section $Section )
+    it 'Set-NSStorageGroup updates details' {
+        $SetGroupByPipeline.storageGroupId | Should -Be $TestStorageGroupID
+    }
+
+    ### Set-NSStorageGroup by param
+    $Script:SetGroupByParam = Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -StorageGroup $Group -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Set-NSStorageGroup updates details' {
+        $SetGroupByParam.storageGroupId | Should -Be $TestStorageGroupID
+    }
+
+    ### Set-NSStorageGroup by json
+    $Script:SetGroupByBody = Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -Body (ConvertTo-Json $Group -Depth 10) -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Set-NSStorageGroup updates details' {
+        $SetGroupByBody.storageGroupId | Should -Be $TestStorageGroupID
     }
 }
 

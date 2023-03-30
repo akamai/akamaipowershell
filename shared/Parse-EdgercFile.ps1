@@ -14,10 +14,10 @@ function Parse-EdgeRCFile{
     $SectionFound = $false
     for($i = 0; $i -lt $EdgeRCContent.length; $i++){
         $line = $EdgeRCContent[$i]
-        $SanitisedLine = $line.Replace(" ","")
+        $SanitizedLine = $line.Replace(" ","")
 
-        if($SanitisedLine.contains("[") -and $SanitisedLine.contains("]")){
-            $SectionHeader = $SanitisedLine.Substring($SanitisedLine.indexOf('[')+1)
+        if($SanitizedLine.contains("[") -and $SanitizedLine.contains("]")){
+            $SectionHeader = $SanitizedLine.Substring($SanitizedLine.indexOf('[')+1)
             $SectionHeader = $SectionHeader.SubString(0,$SectionHeader.IndexOf(']'))
             if($SectionHeader -eq $Section){
                 $SectionFound = $true
@@ -27,11 +27,11 @@ function Parse-EdgeRCFile{
         # Skip other sections
         if($SectionHeader -ne $Section){ continue }
 
-        if($SanitisedLine.ToLower().StartsWith("client_token")) { $ClientToken = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith("access_token")) { $ClientAccessToken = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith("host"))         { $EdgeRCHost = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith("client_secret")){ $ClientSecret = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-        if($SanitisedLine.ToLower().StartsWith("account_key")){ $AccountKey = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith("client_token")) { $ClientToken = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith("access_token")) { $ClientAccessToken = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith("host"))         { $EdgeRCHost = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith("client_secret")){ $ClientSecret = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+        if($SanitizedLine.ToLower().StartsWith("account_key")){ $AccountKey = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
     }
 
     # Validate auth contents

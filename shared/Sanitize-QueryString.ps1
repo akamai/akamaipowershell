@@ -1,87 +1,55 @@
-function Invalidate-CachedObjects
+# Will remove null query parameters and encode invalid characters
+function Sanitize-QueryString
 {
-    Param(
-        [Parameter(ParameterSetName='url', Mandatory=$true)]    [string] $URLs,
-        [Parameter(ParameterSetName='cpcode', Mandatory=$true)] [string] $CPCodes,
-        [Parameter(ParameterSetName='tag', Mandatory=$true)]    [string] $Tags,
-        [Parameter(Mandatory=$false)] [string] [ValidateSet('staging', 'production')] $Network = 'production',
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory=$false)] [string] $Section = 'ccu',
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+  [alias('Sanitise-QueryString')]
+    param(
+        [Parameter(Mandatory=$true)] [string] $QueryString
     )
+    
+    $ValidParameters = New-Object -TypeName System.Collections.ArrayList
 
-    Write-Host -ForegroundColor Yellow "Warning: This cmdlet is deprecated and will be removed in a future release"
-
-    if($AccountSwitchKey)
+    # Remove invalid characters
+    $QueryString = $QueryString.Replace(" ","%20")
+    
+    # Parse Elements
+    if($QueryString.Contains("&"))
     {
-        Write-Host -ForegroundColor Yellow "The FastPurge API currently does not support Account Switching. Sorry"
-        return
-        #
+        $Parameters = $QueryString.Split("&")
+    }
+    else {
+        $Parameters = $QueryString
     }
 
-    $Objects = @()
-    if($URLs){
-        if($URLs.Contains(",")) {
-            $URLs = $URLs.Replace(" ","")
-            $StrArray = $URLs.Split(",")
-            $Objects += $StrArray
+    foreach($Parameter in $Parameters)
+    {
+        if(!$Parameter.Contains("="))
+        {
+            Write-Host -ForegroundColor Red "ERROR: '$Parameter' has no value"
+            return $QueryString
         }
         else {
-            $Objects += $URLs
-        }
-    }
-
-    if($CPCodes){
-        # Validate data is only numberic plus comma
-        if($CPCodes -notmatch "^[0-9,\s]+$"){
-            throw "Format of CPCodes must be one or more numeric strings, separated by commas. '$CPCodes' is invalid"
-        }
-
-        if($CPCodes.Contains(",")) {
-            $CPCodes = $CPCodes.Replace(" ","")
-            $StrArray = $CPCodes.Split(",")
-            # Convert strings to ints
-            $IntArray = @()
-            for($i = 0; $i -lt $StrArray.count; $i++){
-                $IntArray += [int] $StrArray[$i]
+            if($Parameter.Length -gt $Parameter.IndexOf("=") + 1)
+            {
+                $ValidParameters.Add($Parameter) | Out-Null
             }
-            $Objects += $IntArray
-        }
-        else{
-            $Objects += [int] $CPCodes
         }
     }
-    if($Tags){
-        if($Tags.Contains(",")) {
-            $Tags = $Tags.Replace(" ","")
-            $StrArray = $Tags.Split(",")
-            $Objects += $StrArray
-        }
-        else{
-            $Objects += $Tags
-        }
-    }
-    $PostBody = @{ 'objects' = $Objects }
-    $PostJson = $PostBody | ConvertTo-Json -Depth 100
 
-    $Path = "/ccu/v3/invalidate/$($PSCmdlet.ParameterSetName)/$($Network.ToLower())"
-
-    try
+    if($ValidParameters.Count -eq 0)
     {
-        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey -Body $PostJson
-        return $Result
+        return $null
     }
-    catch
-    {
-       throw $_ 
+    else {
+        $JoinedParameters = $ValidParameters -join "&"
+        return $JoinedParameters
     }
 }
 
 # SIG # Begin signature block
 # MIIoaAYJKoZIhvcNAQcCoIIoWTCCKFUCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUOH0FfYwpnCAFEzZj+vKXeUCW
-# CgWggiGYMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUZU2Fpta58zM56CM2r2m07iWN
+# W0OggiGYMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -265,33 +233,33 @@ function Invalidate-CachedObjects
 # NCBDb2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAmLoHzPJwiL
 # ybVDfGQhkOcwCQYFKw4DAhoFAKBwMBAGCisGAQQBgjcCAQwxAjAAMBkGCSqGSIb3
 # DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEV
-# MCMGCSqGSIb3DQEJBDEWBBRa/FSuSY3yBzlqPZHQmb3jc4bYdTANBgkqhkiG9w0B
-# AQEFAASCAgCW6La5vFPHA4tPccmXQKRpFkysqFQGx2wDaWmyWdzxaZvemHPbi2Qi
-# QdvRbJMKKT34Sd3xPE7BRAOARi4TMKv0KLX9CLVgmryH2JNGdno4GuzEbcdYdlep
-# fv/9F4cECDi9D56U9x1QO63HvtHAQ2jXI3uSblUA+91O+O6TznZdKftiXLF19wYu
-# awpaPrXbWr9pHZO0H1l9mVivqNQo/mDcweyRZHH/947kIqnx7TtKW0k3iIhTNpYD
-# +k3e1BDxeV23QDtVBoEI2V61274rUOzHxyn2ANvMq0h6AQU2H2ewoqFnLKNR5GgO
-# fFaW9eUuYxkkz5NIvL3ctzgVeiA7yOUnEcBh8N2sXSNjE4VsLcedeZLIfnf7fhEK
-# LbsaA6j/zPVyh82WJkWVzp29vyrFbLhElrMiZM04Lx+IfkJBPq0n3hXgOQuzhBzV
-# j8bRfGOzO1VtRLyJd2Wxek8H0K4bET2jhKIwOkJYrGdvWPbdiOnLLHZYxeA0P73e
-# +a8VsZH5Om6oR2n6I1G1heqd48q3rivFzQfXtCHlwwC/Gzr7adFBPhrWht9N1pwy
-# 03NK/cukJJIVd6Hbs1hwLLxsdbGEMec0rygADWfXgITsYPg/tehudvvSAMQJx2Xp
-# AOhklKlbhfO8+yNM4JZ7Rd7fupOpco7r1rNyH7eU1JWPjqkVsuwhraGCAyAwggMc
+# MCMGCSqGSIb3DQEJBDEWBBSXY9h/U2azE7hhwjgPRw6Es4gyVjANBgkqhkiG9w0B
+# AQEFAASCAgAT+S9Au0dpl6q9FOcwjvcI3Wz4F2l9M3W1rwnrZvh60f+/o8qX+6vt
+# h4xZ84lgy6SLdF04FckoMz3+X2V5R2oXXKSaMcK3bp88lFnoBYS8EXS0/N0GX8yZ
+# Btk71dou9TG/Lu90/sHw6S1j+wqoX0vYAnxVd6yZR7B3tE2NnQKs1MMpAERhmHFY
+# rM6nLXAfE/Xh76EQzHjtFNfRY+u/QBATxUql1FaiV62zdCcc33sKEAIcEXysmfIQ
+# FVUAz7I2ULwXczl2biBVS7/s0/YP3kM+8EOWm1pgrYBejceiIXU89TKBQStCfQ8F
+# Yeo2S7AiR9FB0bL3pw91kxrQKAx+JDRZo60LfLy1LW7Z9/B/TY7c/ZTxbCAaQKuU
+# CLDu/ZbBe0RAjIY0KzhdsXeJEQM5fuOhBAo16CM5CfHWiY53LG3UJFkqUxaOVP//
+# G2TA55DDTHycdyaMVn8IT3qR636SFR4xLxvYHNlhhoqM3GE8pIH2fOFQA68pL3rC
+# gLgI+w4pSoBTys8F6vDi/yhT2nM4GoWQdwp+uw5FDNxsX+TDl/IHFY7dL0wpv6D/
+# j5uwbnf5gqvZwWQnrZelFbeQ+iuAdaobDDqfLlJySrAMX+fEaXaCVQlSDh/wVBGH
+# vcpIWlaZU3gB1sLqVeZ3r9iEC3zGEzdCRmQwxHJpKevWCpt1AbK9mqGCAyAwggMc
 # BgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQK
 # Ew5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBS
 # U0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAxNaXJLlPo8Kko9KQeAPVow
 # DQYJYIZIAWUDBAIBBQCgaTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
-# SIb3DQEJBTEPFw0yMzAyMjcxNTQzMzNaMC8GCSqGSIb3DQEJBDEiBCAuLglJSs4l
-# xmfPyXLufmmJQys5X+DPDMCPeXZxhAf5HzANBgkqhkiG9w0BAQEFAASCAgC+Ojxo
-# 5Dl1ZN04ZSTwZgexgFLj+Bw4s6oAwtJv5tFN+YskdhZy1gw6E5xdEdeSQyLQ5XdH
-# EX0zlqEH0le064g0E4CshSsgq8qNzSogjYpyYFL/O7Pev9oDzaa+26GN/xebiaxG
-# SlIMJvUS4KQLg5jq9fZ0PrWvK6PgfhTnJOMLLrLTBAQCBj9zZEGvA+jJXfKqhR4F
-# DN5YEKyM6g64gA46dAkfgsDzS/qDH5MdZ/ck8wGkboMRnh83x8WBleMpQstJEuFp
-# OSi9YqRoozD2kwCTLDhbHxrwBxego9A716Fe+5ie/ZXZ14bHo0bCUVrkzqSdvkte
-# phrV9a9nm4m4UV0xSp59EURjW7kIj0iB5gi5MqopCEB/irF3Oe/4EQafqE7tzwg1
-# 0R5ZQGCdSX0+PC4wfQ4KksCclpHxBSS3wzIK/nAyYmttXSts9w7aZjf8ZnAuLU9Q
-# UfPHMnDdp7P3G4rcPbGYnrnl+pWe6LbOWPYI/zS+vzkl4rsy2NZmN7EAR8vS+ntf
-# skPng3KNAWRkNXc/Pc6guv8fKoAsC0GLuR+lEYNnw3MKzsn6kupAiUU5vRN4yRkF
-# KqRKh3ceh+22jOlJPHgk9aMF+FDnrevMofUOzN+7vAWbJoi+rjQgwARqNDalySo2
-# 44wwQ7Ddv0Cz6ttt5Ek1JzXYkDaR5hFx/JovdA==
+# SIb3DQEJBTEPFw0yMzAyMjcxNjM1MzFaMC8GCSqGSIb3DQEJBDEiBCCj2YeRVx2W
+# e7shTUFykZW2pilL6KHrw+NNIQLSyeqvozANBgkqhkiG9w0BAQEFAASCAgBea8Em
+# xPxqPBRfXGXWMl3a9n6pk8ztqinKFNn3DHc3OwDBEufeq7yXfauy5fMjsEMnQmyd
+# NxAMvkKFsHw2UDuSLcb4vLl4i/C6cSY7QXN+kT55mlsOSQrRLqU0P9SDaE2HU2p2
+# uDS7MlsWFDt6aQPjSorNwdvNa8f3I1Q3nF7uXFcltnh8XYxFjnJkU3COtNiqVmv5
+# Cb4my9tYyQGOt0R/A9Rqyip6joQ/1CZm3o5glDn4C3fP93UVj/jlH9DQ9pYF39f/
+# /BlKrV5ISR11RNgIAMJs9SPYQG6eFnNP74VAPOhJ+mwkHnHcLKeVPDOXbjvCSPVF
+# LgZUWd0MRXJ/TiRAxqpPTx0u+k5joCg6RT00cNnBOvnVUZeA/SboPkuaBSWI1eHO
+# 8tcduYJ9eV/PqlXAWSjLqXuaocK88/sdK0UGcF0LG8uQuY4ly9O5dDV2cTBg/c5C
+# jDGqz93h1dYoc3IG/mOFiJ4NiT9fmwRZ6o9/kHxgnbAClIx1APCzdYpOG+blyy6o
+# K1XJNv5KVPt64w8NkM0UrolrCkm8nu1458zolrDppT2wKNPiJeXtSKGzhwXXOv/l
+# DKSNeKaYo/IxX8kKcPurdzLvkJDVlZw0qu01P34JgPPpCsIWA0e5b8ETRgjJGT1O
+# eoopG0KfwOpU83kN88lyfpeeUManoYm03Wz7Dg==
 # SIG # End signature block

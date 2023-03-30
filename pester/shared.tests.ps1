@@ -7,10 +7,10 @@ $Script:Section = 'default'
 $Script:ClearTextString = 'This is my test string!'
 $Script:Base64EncodedString = 'VGhpcyBpcyBteSB0ZXN0IHN0cmluZyE='
 $Script:URLEncodedString = 'This%20is%20my%20test%20string!'
-$Script:UnsanitisedQuery = 'one=1&two=&three=3&four='
-$Script:SanitisedQuery = 'one=1&three=3'
-$Script:UnsanitisedFileName = 'This\looks!Kinda<"bad">.txt'
-$Script:SanitisedFileName = 'This%5Clooks!Kinda%3C%22bad%22%3E.txt'
+$Script:UnsanitizedQuery = 'one=1&two=&three=3&four='
+$Script:SanitizedQuery = 'one=1&three=3'
+$Script:UnsanitizedFileName = 'This\looks!Kinda<"bad">.txt'
+$Script:SanitizedFileName = 'This%5Clooks!Kinda%3C%22bad%22%3E.txt'
 
 Describe 'Safe Shared Tests' {
 
@@ -54,16 +54,16 @@ Describe 'Safe Shared Tests' {
         $RandomHex | Should -Match "[a-f0-9]{16}"
     }
 
-    ### Sanitise-QueryString
-    $Script:ParsedQuery = Sanitise-QueryString -QueryString $Script:UnsanitisedQuery
-    it 'Sanitise-QueryString strips empty query params' {
-        $ParsedQuery | Should -Be $SanitisedQuery
+    ### Sanitize-QueryString
+    $Script:ParsedQuery = Sanitize-QueryString -QueryString $Script:UnsanitizedQuery
+    it 'Sanitize-QueryString strips empty query params' {
+        $ParsedQuery | Should -Be $SanitizedQuery
     }
 
-    ### Sanitise-Filename
-    $Script:ParsedFileName = Sanitise-FileName -Filename $Script:UnsanitisedFileName
-    it 'Sanitise-Filename encodes invalid characters' {
-        $ParsedFileName | Should -Be $SanitisedFilename
+    ### Sanitize-Filename
+    $Script:ParsedFileName = Sanitize-FileName -Filename $Script:UnsanitizedFileName
+    it 'Sanitize-Filename encodes invalid characters' {
+        $ParsedFileName | Should -Be $SanitizedFilename
     }
 
     ### Test-OpenAPI

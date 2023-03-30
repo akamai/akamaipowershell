@@ -1,44 +1,39 @@
-function Get-DS1AggregateLogs
+# Will encode invalid filename characters
+function Sanitize-FileName
 {
-    Param(
-        [Parameter(Mandatory=$true)]  [string] $StreamID,
-        [Parameter(Mandatory=$true)]  [string] $Start,
-        [Parameter(Mandatory=$true)]  [string] $End,
-        [Parameter(Mandatory=$false)] [string] $AggregateMetric,
-        [Parameter(Mandatory=$false)] [string] $Page,
-        [Parameter(Mandatory=$false)] [string] $Size,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory=$false)] [string] $Section,
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+    [alias('Sanitise-FileName')]
+    param(
+        [Parameter(Mandatory=$true)] [string] $Filename
+    )
+    
+    $BadCharacters = @(
+        '\',
+        '/',
+        ':',
+        '*',
+        '?',
+        '"',
+        '<',
+        '>',
+        '|'
     )
 
-    # Support 'now' for End
-    if($End -eq "now"){
-        $utime = (Get-Date).ToUniversalTime().AddSeconds(-61) # Datastream needs end to be at least 1 minute in the past
-        $End = Get-Date -Date $utime -Format yyyy-MM-ddTHH:mm:ssZ
+    $SanitizedFilename = $Filename
+    foreach($BadCharacter in $BadCharacters){
+        $SanitizedFilename = $SanitizedFilename.Replace($BadCharacter, [System.Web.HttpUtility]::UrlEncode($BadCharacter))
     }
 
-    $DateTimeMatch = '[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}Z'
-    if($Start -notmatch $DateTimeMatch -or $End -notmatch $DateTimeMatch){
-        throw "ERROR: Start & End must be in the format 'YYYY-MM-DDThh:mm:ssZ'"
-    }
-
-    $Path = "/datastream-pull-api/v1/streams/$StreamID/raw-logs?start=$Start&end=$End&aggregateMetric=$AggregateMetric&page=$Page&size=$Size"
-
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result
-    }
-    catch {
-        throw $_
-    }
+    #Special Handling for asterisk, which the HttpUtility doesn't encode
+    $SanitizedFilename = $SanitizedFilename.Replace('*','%2A')
+    
+    return $SanitizedFilename
 }
 
 # SIG # Begin signature block
 # MIIoaAYJKoZIhvcNAQcCoIIoWTCCKFUCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQURw4QGY+EKKtPNxH+QQXIuW/V
-# SRGggiGYMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUTlG3wJULzDOvhycWNFZmtiDW
+# usiggiGYMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -222,33 +217,33 @@ function Get-DS1AggregateLogs
 # NCBDb2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAmLoHzPJwiL
 # ybVDfGQhkOcwCQYFKw4DAhoFAKBwMBAGCisGAQQBgjcCAQwxAjAAMBkGCSqGSIb3
 # DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEV
-# MCMGCSqGSIb3DQEJBDEWBBRDwnyiXVUqMuWqexD/Nm0v1stlizANBgkqhkiG9w0B
-# AQEFAASCAgBc+4FdyMvbe3Hh8Y6b4VI4r4YtkRBR/dMs6Avls81PEj1t3TMpPs/R
-# KGqeA0OHL76DlHqrWBGzQ9YaDT3BT06ChjJ3WzA/4kAMY4IxHbq0MQwp4WxRjWjf
-# MQ3AVVCK/ZAFtR8P1PgsjbCCQlo43bZOIxSzQh43f9XHMDKsR0Ca2rUrlGJq00Dd
-# wKpDYAC/K+9h6jjKpocQ90KgCC0lgMJ7od24hv+4LxiaKlWgXtYi9wthf34hkWCU
-# McsJJdduOR3riRY67Bd/U1lHnjhnArtCPjjdwSA4fWn+NASZhDco6H0+ALrLm3RL
-# mSusMRnAqWVig6QYrh7QPe3NMOpr2f+zMZd8CFcCzpIuyINIHSxgG+9ZkjhHUPEe
-# LCHVmhfAXl8XRJt7FdM1Ec2YhjHm4BRtzDHhjotXLaavkDmqKcGc9NwMttygvCRK
-# GTHCUlxZyhLiHGlVqTW/GMie4JY48lvR4SNPH6ple0BU8Tz7E2xXst8lNfF4xHtA
-# BSQaQFjTIPqVSpv2+ksUHJJZbmkNjdlvWFe0IlQ7i1YbofHv2LwTnXlcFVDupcbD
-# GU3o+mzqUjXmCnx0xw4pq4g1l1DEC1VvQyjbBX4f9ty4Jp8VjKSJV+lbxbl4dQHJ
-# 6bF1vwdw0T7KPGdoXEKdoy47/lDCb+XzsBEmvp2aPMt5wRtDuoY2taGCAyAwggMc
+# MCMGCSqGSIb3DQEJBDEWBBTAe72Dg39Q0jKj/PEv2ZBMDXBYzjANBgkqhkiG9w0B
+# AQEFAASCAgCQHnQujSra9fN3vTXP8KjIETMqKqbUAj31icPKkj6lKW4Pd1N4d2R4
+# Vkj9WSP2lkKdS3uUJQiUhq/bgvezHQjso/U4tBcXj+9zzDJQUpYHS5YV8PH/NFDD
+# Eww7TiRhQVnwt6dlPbZwKMK1fyR2bXm+qMXqAG8Iy5C+vxiF+qb8SwrtSIq3t/5/
+# uYc/+zjRgYSoJSGljjTCn12L3AOrXu5+2gsHgfSvPd0hNkBn82CykmmE5dF4fi3k
+# Xmi7vlYMK/61YT559FmDRjIauYbY7k8KmGLDIUDmN/abMUi8DZrKhb7ZTLHHnMxM
+# wBii80AxA1bggDLmdcNL8K0pscJeBzgsWDSskuE+9KsH4zVD5VDHSDu/GD4sQMsZ
+# wA6uSL66ZFWG75fvCWOkUXqty1qG4dxJRIlModLgLNkSHxCrjU/bbtrbzxhZU8Id
+# FvkZQHUyuTCN7i5Xhm5/A+Zej1mYhME/alPzeyLV6mDKZk1PJ2NhNxSf2HCEgS7i
+# 1wFEAZhHiq1UDPlzpaduX97gkz9raFBe4ZI6Z5+tapn9aYYulSt+RM9/lUQX0NNH
+# c7/JLZ+oB3fKqsA7m+mNc/IRWYEakSWti5ru318fGfSxVf2MD6V0DsOAkkaIwD7n
+# Q4F3NpzzVirJ6OFIXtxbzQtxPNS0oRI4kObjKLfrPcZECNPkMEBvHqGCAyAwggMc
 # BgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQK
 # Ew5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBS
 # U0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAxNaXJLlPo8Kko9KQeAPVow
 # DQYJYIZIAWUDBAIBBQCgaTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
-# SIb3DQEJBTEPFw0yMzAyMjcxNTUxMTlaMC8GCSqGSIb3DQEJBDEiBCCyCxUKqpv7
-# LlDK5ihIDdMEyxq9hUBKSK1eObFNfpqWRzANBgkqhkiG9w0BAQEFAASCAgCpQWFv
-# KRl/AAUDhAvjpFoI7856ZQ4myYLs0zSIEPOLU8zPEmCVjVG/vL7D/ZHFiLwI6sOK
-# PN+yPoekGOLkw/MpfvWCxFKU/GDHalGCVN6faaiMmWHqFRnu4juJACkZCXA3dvHP
-# tiadL35sFccHirozy6RFzi9IqbMpHWe4MbL6H9+oN2cGsl9eWOI01Hhz7bPdC6UY
-# sgn6Tfbaz+D/Fq4Kt+WrDYQSNxM4YcZs4mXfGjNwAOL1v24JbemiuKumhIXEPSO6
-# C3dNlhqwV8bgHzTNhPBWcYqsj+25/KFkOAnAy9nGc/Gl0LkBFL0bOqjjY3irNnMn
-# s+abBNPpkId0W+i1ic2seRNVohTHIW9v61rh6xoXPc66I678JBCAR9ICoF1Is2Dr
-# eU73rT8T4QWVakut4n56dD9Ee3RhGLPmgpI5ME60U36XAtt9qpNqQURFQULka0i9
-# 4S6hswPtCsvwo+JMRZN73fDZUFG3/h3SeX+Y7qPC8Vu1IjQ3+rlazC59mlF2lbEy
-# MukdkjFNRvZxWjyK41S4diVfJrBT6qQYABHW7PjHR4L1fi0pj+NqWtzkCcfEIWhK
-# 9C3w+FeZacOIUXnZd91IRW46qCCuWjON+z6RKS4vJfj8L4RBFAP5tR3u5MZiL4Xq
-# eZE8S7lejfn6kRrJ8Q1W/R94RMeCDeHsDtkLPg==
+# SIb3DQEJBTEPFw0yMzAyMjcxNjM1MjdaMC8GCSqGSIb3DQEJBDEiBCB+ZyIwfEPU
+# pvoLRmS9IMvlulvGLhNDWGyfjYaseo4A1jANBgkqhkiG9w0BAQEFAASCAgCmPP9Z
+# 6I3PJK0jaw04OPWdnyrwbYQzfJigYhJoAAg+htZA+yX12thm9480JDr2Estlz8Pg
+# pswGps1heXJ5AAwFXAxcJpnM6AP33xELZZhnkbsxKBkDV0J2upjw15DkWY0SoO7H
+# sB1b/TxS4tUgktQZm1lj0Eu1G+w15rlY7sNphqKc50/Em9gSARbZmoTMo09VEu3W
+# hQDZ4ktKDY9lXOLcBkm2QQC7V2yitUSSWjPguIulEE0pV4wN16Cc6jvj6IT7J9Kw
+# D8F5ctOZNBY3jLPUu8V7Bk57mies4NL2UOlTgjmLIf+e7SGrDMehjjKxUMUMbuEs
+# WQ+VgjYHY0tGdg2wYtb7HLJ1Rgy8qbluw5ct3zyqqaWBKsp5kVvk6gm9iLaw1ASC
+# 1nZnMJmBZ55VFgAzQHLtNjr4tNlV682BzQ8WCwIbuN1dNXlBhV7EysIgo5vkw/c9
+# MkRmGcldvktdm75PF8mtToRK1DkljVTnuFycoZbXSGB4mvcvnPMvBVq4lTe24E1v
+# 2FFbq4wI2TfSG0OVJ9g4goFyrEaaf4nNGVPwxlor1nr7LbyzIPfdSUQBeoDZbY0N
+# sF1XZoD6j9GCOQySa+l9uSCLwf1whqXsGgxoCwdmOc1HSim6v85uoJFNI5rtJp2t
+# xof77nFkMRjvPz3vyJDYqE2FW3CbAdkxw9JuhQ==
 # SIG # End signature block

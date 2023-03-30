@@ -249,7 +249,7 @@ Describe 'Safe PAPI Tests' {
     }
 
     ### Get-PropertyActivation
-    # Sanitise activation ID from previous response
+    # Sanitize activation ID from previous response
     $Script:ActivationID = ($Activation.activationLink -split "/")[-1]
     if ($ActivationID.contains("?")) {
         $ActivationID = $ActivationID.Substring(0, $ActivationID.IndexOf("?"))

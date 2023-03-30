@@ -81,17 +81,17 @@ function Invoke-AkamaiRestMethod {
         $Path += "accountSwitchKey=$($Auth.account_key)"
     }
 
-    # Sanitise query string
+    # Sanitize query string
     if ($Path.Contains('?')) {
         $PathElements = $Path.Split('?')
         $PathOnly = $PathElements[0]
         $QueryString = $PathElements[1]
-        $SanitisedQuery = Sanitise-QueryString -QueryString $QueryString
+        $SanitizedQuery = Sanitize-QueryString -QueryString $QueryString
         Write-Debug "Original Query = $QueryString"
-        Write-Debug "Sanitised Query = $SanitisedQuery"
+        Write-Debug "Sanitized Query = $SanitizedQuery"
         # Reconstruct Path
-        if ($SanitisedQuery) {
-            $Path = $PathOnly + '?' + $SanitisedQuery
+        if ($SanitizedQuery) {
+            $Path = $PathOnly + '?' + $SanitizedQuery
         }
         else {
             $Path = $PathOnly

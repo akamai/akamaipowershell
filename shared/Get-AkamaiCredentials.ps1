@@ -108,22 +108,22 @@ function Get-AkamaiCredentials{
     if(Test-Path $EdgeRCFile){
         $EdgeRCContent = Get-Content $EdgeRCFile
         foreach($line in $EdgeRCContent){
-            $SanitisedLine = $line.Replace(" ","")
+            $SanitizedLine = $line.Replace(" ","")
 
             ## Set SectionHeader variable if line is a header.
-            if($SanitisedLine.contains("[") -and $SanitisedLine.contains("]")){
-                $SectionHeader = $SanitisedLine.Substring($SanitisedLine.indexOf('[')+1)
+            if($SanitizedLine.contains("[") -and $SanitizedLine.contains("]")){
+                $SectionHeader = $SanitizedLine.Substring($SanitizedLine.indexOf('[')+1)
                 $SectionHeader = $SectionHeader.SubString(0,$SectionHeader.IndexOf(']'))
             }
 
             ## Skip sections other than desired one
             if($SectionHeader -ne $Section){ continue }
 
-            if($SanitisedLine.ToLower().StartsWith("client_token")) { $Auth.client_token = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-            if($SanitisedLine.ToLower().StartsWith("access_token")) { $Auth.access_token = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-            if($SanitisedLine.ToLower().StartsWith("host"))         { $Auth.host = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-            if($SanitisedLine.ToLower().StartsWith("client_secret")){ $Auth.client_secret = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
-            if($SanitisedLine.ToLower().StartsWith("account_key")){ $Auth.account_key = $SanitisedLine.SubString($SanitisedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith("client_token")) { $Auth.client_token = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith("access_token")) { $Auth.access_token = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith("host"))         { $Auth.host = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith("client_secret")){ $Auth.client_secret = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
+            if($SanitizedLine.ToLower().StartsWith("account_key")){ $Auth.account_key = $SanitizedLine.SubString($SanitizedLine.IndexOf("=") + 1) }
         }
 
         ## Explicit ASK wins over edgerc file entry

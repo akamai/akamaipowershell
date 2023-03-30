@@ -27,7 +27,7 @@ function Get-ChildRuleTemplate {
 
     $OSSlashChar = Get-OSSlashCharacter
     
-    $SafeName = Sanitise-FileName -FileName $Rules.Name
+    $SafeName = Sanitize-FileName -FileName $Rules.Name
     $ChildPath = "$Path$OSSlashChar$SafeName"
     $NewDepth = $CurrentDepth + 1
 
@@ -39,7 +39,7 @@ function Get-ChildRuleTemplate {
         }
         for($i = 0; $i -lt $Rules.children.count; $i++) {
             Get-ChildRuleTemplate -Rules $Rules.children[$i] -Path $ChildPath -CurrentDepth $NewDepth -MaxDepth $MaxDepth
-            $SafeChildName = Sanitise-FileName -FileName $Rules.children[$i].Name
+            $SafeChildName = Sanitize-FileName -FileName $Rules.children[$i].Name
             $Rules.children[$i] = "#include:$SafeName$OSSlashChar$SafeChildName.json"
         }
     }
@@ -132,7 +132,7 @@ function Get-PropertyRuleTemplates {
 
     for($i = 0; $i -lt $Rules.rules.children.count; $i++) {
         Get-ChildRuleTemplate -Rules $Rules.rules.children[$i] -Path $OutputDir -CurrentDepth 0 -MaxDepth $MaxDepth
-        $SafeName = Sanitise-FileName -FileName $Rules.rules.children[$i].Name
+        $SafeName = Sanitize-FileName -FileName $Rules.rules.children[$i].Name
         $Rules.rules.children[$i] = "#include:$SafeName.json"
     }
 
