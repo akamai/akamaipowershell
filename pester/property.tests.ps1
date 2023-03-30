@@ -8,6 +8,7 @@ $Script:TestGroupName = 'AkamaiPowershell'
 $Script:TestPropertyName = 'akamaipowershell-testing'
 $Script:TestIncludeName = 'akamaipowershell-include'
 $Script:AdditionalHostname = 'new.host'
+$Script:TestBucketPropertyName = 'akamaipowershell-bucket'
 
 Describe 'Safe PAPI Tests' {
     ### Get-AccountID
@@ -34,7 +35,7 @@ Describe 'Safe PAPI Tests' {
     }
 
     ### Confirm Test Group exists
-    $Script:TestGroup = $Groups | where {$_.groupName -eq $TestGroupName}
+    $Script:TestGroup = $Groups | Where-Object { $_.groupName -eq $TestGroupName }
     it 'Test group exists' {
         $TestGroup | Should -Not -BeNullOrEmpty
         break
@@ -214,7 +215,7 @@ Describe 'Safe PAPI Tests' {
     $HostnameToAdd = @{ 
         cnameType = "EDGE_HOSTNAME"
         cnameFrom = $AdditionalHostname
-        cnameTo = $PropertyHostnames[0].cnameTo
+        cnameTo   = $PropertyHostnames[0].cnameTo
     }
     $Script:PropertyHostnames = Add-PropertyHostnames -PropertyName $TestPropertyName -PropertyVersion latest -NewHostnames $HostnameToAdd  -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Add-PropertyHostnames works via param' {
@@ -250,8 +251,8 @@ Describe 'Safe PAPI Tests' {
     ### Get-PropertyActivation
     # Sanitize activation ID from previous response
     $Script:ActivationID = ($Activation.activationLink -split "/")[-1]
-    if($ActivationID.contains("?")){
-        $ActivationID = $ActivationID.Substring(0,$ActivationID.IndexOf("?"))
+    if ($ActivationID.contains("?")) {
+        $ActivationID = $ActivationID.Substring(0, $ActivationID.IndexOf("?"))
     }
     $Script:ActivationResult = Get-PropertyActivation -PropertyName $TestPropertyName -ActivationID $ActivationID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-Activation finds the correct activation' {
@@ -273,7 +274,7 @@ Describe 'Safe PAPI Tests' {
     it 'New-PropertyInclude creates an include' {
         $NewInclude.includeLink | Should -Not -BeNullOrEmpty
     }
-    $NewIncludeID = $NewInclude.includeLink.Replace('/papi/v1/includes/','')
+    $NewIncludeID = $NewInclude.includeLink.Replace('/papi/v1/includes/', '')
     $NewIncludeID = [int] ($NewIncludeID.SubString(0, $NewIncludeID.IndexOf('?')))
 
     ### List-PropertyIncludes
@@ -342,6 +343,22 @@ Describe 'Safe PAPI Tests' {
         $RemoveInclude.message | Should -Be "Deletion Successful."
     }
 
+    #************************************************#
+    #                Hostname Buckets                #
+    #************************************************#
+
+    ### List-BucketActivations
+    $Script:BucketActivations = List-BucketActivations -PropertyName $TestBucketPropertyName -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-BucketActivations returns a list' {
+        $BucketActivations[0].hostnameActivationId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-BucketActivation
+    $Script:BucketActivation = Get-BucketActivation -PropertyName $TestBucketPropertyName -ActivationID $BucketActivations[0].hostnameActivationId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-BucketActivation returns the correct data' {
+        $BucketActivation.hostnameActivationId | Should -Be $BucketActivations[0].hostnameActivationId
+    }
+
     AfterAll {
         ### Cleanup files
         Remove-Item rules.json -Force
@@ -383,6 +400,10 @@ Describe 'Unsafe PAPI Tests' {
         $Deactivation.activationLink | Should -Not -BeNullOrEmpty
     }
 
+    #************************************************#
+    #                    Includes                    #
+    #************************************************#
+
     ### Activate-PropertyInclude
     $Script:ActivateInclude = Activate-PropertyInclude -IncludeID 123456 -IncludeVersion 1 -Network Staging -NotifyEmails 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Activate-PropertyInclude activates successfully' {
@@ -405,6 +426,47 @@ Describe 'Unsafe PAPI Tests' {
     $Script:IncludeActivations = List-PropertyIncludeActivations -IncludeID 123456 -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'List-PropertyIncludeActivations returns a list' {
         $IncludeActivations[0].includeId | Should -Not -BeNullOrEmpty
+    }
+
+    #************************************************#
+    #                Hostname Buckets                #
+    #************************************************#
+
+    ### Add-BucketHostnames
+    $BucketHostnameToAdd = @{ 
+        cnameType            = "EDGE_HOSTNAME"
+        cnameFrom            = $AdditionalHostname
+        cnameTo              = $PropertyHostnames[0].cnameTo
+        edgeHostnameId       = $PropertyHostnames[0].edgeHostnameId
+        certProvisioningType = 'CPS_MANAGED'
+    }
+    $Script:AddBucketHostnames = Add-BucketHostnames -PropertyID 123456 -Network STAGING -NewHostnames $BucketHostnameToAdd -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Add-BucketHostnames returns the correct data' {
+        $AddBucketHostnames[0].cnameFrom | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-BucketHostnames
+    $Script:BucketHostnames = List-BucketHostnames -PropertyID 123456 -Network STAGING -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'List-BucketHostnames returns a list' {
+        $BucketHostnames[0].cnameFrom | Should -Not -BeNullOrEmpty
+    }
+
+    ### Compare-BucketHostnames
+    $Script:BucketComparison = Compare-BucketHostnames -PropertyID 123456 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Compare-BucketHostnames returns the correct data' {
+        $BucketComparison[0].cnameFrom | Should -Not -BeNullOrEmpty
+    }
+
+    ### Remove-BucketHostnames
+    $Script:RemoveBucketHostnames = Remove-BucketHostnames -PropertyID 123456 -Network STAGING -HostnamesToRemove $AdditionalHostname -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Remove-BucketHostnames returns the correct data' {
+        $RemoveBucketHostnames[0].cnameFrom | Should -Not -BeNullOrEmpty
+    }
+
+    ### Remove-BucketActivation
+    $Script:BucketActivationCancellation = Remove-BucketActivation -PropertyID 123456 -ActivationID 987654 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Remove-BucketActivation returns the correct data' {
+        $BucketActivationCancellation.hostnameActivationId | Should -Not -BeNullOrEmpty
     }
 }
 

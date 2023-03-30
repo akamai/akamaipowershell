@@ -8,6 +8,7 @@ function New-Property
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch] $CopyHostnames,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string] $ClonePropertyID,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [int]    $ClonePropertyVersion,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch] $UseHostnameBucket,
         [Parameter(ParameterSetName='postbody', Mandatory=$true)]    [string] $Body,
         [Parameter(Mandatory=$true)]  [string] $GroupID,
         [Parameter(Mandatory=$true)]  [string] $ContractId,
@@ -31,6 +32,7 @@ function New-Property
         if($ClonePropertyID){ $CloneFrom["propertyId"] = $ClonePropertyID}
         if($ClonePropertyVersion){ $CloneFrom["version"] = $ClonePropertyVersion}
         if($CloneFromVersionEtag -or $CopyHostnames -or $ClonePropertyID -or $ClonePropertyVersion){ $PostObject["cloneFrom"] = $CloneFrom}
+        if($UseHostnameBucket){ $PostObject['useHostnameBucket'] = $true }
 
         $Body = $PostObject | ConvertTo-Json -Depth 100
     }
