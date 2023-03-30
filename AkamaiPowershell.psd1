@@ -683,6 +683,3 @@
     # DefaultCommandPrefix = ''
 
 }
-
-}
-

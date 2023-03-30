@@ -24,7 +24,7 @@ function Remove-BucketActivation {
         }
     }
 
-    $Path = "/papi/v1/properties/$PropertyID/hostname-activations/$ActivationID`?&contractId=$ContractId&groupId=$GroupID&offset=$OffSet&limit=$Limit"
+    $Path = "/papi/v1/properties/$PropertyID/hostname-activations/$ActivationID`?contractId=$ContractId&groupId=$GroupID&offset=$OffSet&limit=$Limit"
 
     try {
         $Result = Invoke-AkamaiRestMethod -Method DELETE -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey

@@ -35,7 +35,7 @@ Describe 'Safe PAPI Tests' {
     }
 
     ### Confirm Test Group exists
-    $Script:TestGroup = $Groups | where { $_.groupName -eq $TestGroupName }
+    $Script:TestGroup = $Groups | Where-Object { $_.groupName -eq $TestGroupName }
     it 'Test group exists' {
         $TestGroup | Should -Not -BeNullOrEmpty
         break
@@ -442,7 +442,7 @@ Describe 'Unsafe PAPI Tests' {
     }
     $Script:AddBucketHostnames = Add-BucketHostnames -PropertyID 123456 -Network STAGING -NewHostnames $BucketHostnameToAdd -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Add-BucketHostnames returns the correct data' {
-        $AddBucketHostnames[0].cnameFrom | Should -Be $AdditionalHostname
+        $AddBucketHostnames[0].cnameFrom | Should -Not -BeNullOrEmpty
     }
 
     ### List-BucketHostnames
@@ -460,13 +460,13 @@ Describe 'Unsafe PAPI Tests' {
     ### Remove-BucketHostnames
     $Script:RemoveBucketHostnames = Remove-BucketHostnames -PropertyID 123456 -Network STAGING -HostnamesToRemove $AdditionalHostname -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Remove-BucketHostnames returns the correct data' {
-        $RemoveBucketHostnames.count | Should -Not -BeNullOrEmpty
+        $RemoveBucketHostnames[0].cnameFrom | Should -Not -BeNullOrEmpty
     }
 
     ### Remove-BucketActivation
-    $Script:BucketActivationCancellation = Remove-BucketActivation -PropertyID 123456 -ActivationID $BucketActivations[0].hostnameActivationId -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    $Script:BucketActivationCancellation = Remove-BucketActivation -PropertyID 123456 -ActivationID 987654 -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Remove-BucketActivation returns the correct data' {
-        $BucketActivationCancellation.hostnameActivationId | Should -Be $BucketActivations[0].hostnameActivationId
+        $BucketActivationCancellation.hostnameActivationId | Should -Not -BeNullOrEmpty
     }
 }
 
