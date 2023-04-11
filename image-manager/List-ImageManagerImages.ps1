@@ -1,22 +1,21 @@
-function List-ImageManagerImages
-{
+function List-ImageManagerImages {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PolicySetAPIKey,
-        [Parameter(Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
-        [Parameter(Mandatory=$false)] [string] $PolicyID,
-        [Parameter(Mandatory=$false)] [string] $URL,
-        [Parameter(Mandatory=$false)] [string] $Limit,
-        [Parameter(Mandatory=$false)] [string] $ContractID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory=$false)] [string] $Section,
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory = $true)]  [string] $PolicySetAPIKey,
+        [Parameter(Mandatory = $true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
+        [Parameter(Mandatory = $false)] [string] $PolicyID,
+        [Parameter(Mandatory = $false)] [string] $URL,
+        [Parameter(Mandatory = $false)] [string] $Limit,
+        [Parameter(Mandatory = $false)] [string] $ContractID,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v0/network/$Network/images/?limit=$limit&policyId=$PolicyID&url=$URL"
+    $Path = "/imaging/v2/network/$Network/images?limit=$limit&policyId=$PolicyID&url=$URL"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
-    if($ContractID -ne ''){
+    if ($ContractID -ne '') {
         $AdditionalHeaders['Contract'] = $ContractID
     }
 

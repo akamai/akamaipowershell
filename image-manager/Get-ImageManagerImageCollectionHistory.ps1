@@ -1,21 +1,20 @@
-function Get-ImageManagerImageCollectionHistory
-{
+function Get-ImageManagerImageCollectionHistory {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PolicySetAPIKey,
-        [Parameter(Mandatory=$true)]  [string] $ImageCollectionID,
-        [Parameter(Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
-        [Parameter(Mandatory=$false)] [string] $Limit,
-        [Parameter(Mandatory=$false)] [string] $ContractID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory=$false)] [string] $Section,
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory = $true)]  [string] $PolicySetAPIKey,
+        [Parameter(Mandatory = $true)]  [string] $ImageCollectionID,
+        [Parameter(Mandatory = $true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
+        [Parameter(Mandatory = $false)] [string] $Limit,
+        [Parameter(Mandatory = $false)] [string] $ContractID,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v0/network/$Network/imagecollections/$ImageCollectionID/history?limit=$limit"
+    $Path = "/imaging/v2/network/$Network/imagecollections/history/$ImageCollectionID`?limit=$limit"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
-    if($ContractID -ne ''){
+    if ($ContractID -ne '') {
         $AdditionalHeaders['Contract'] = $ContractID
     }
 
