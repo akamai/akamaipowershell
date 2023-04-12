@@ -11,7 +11,6 @@ function List-ImageManagerImages {
         [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
-    $Network = $Network.ToLower()
     $Path = "/imaging/v2/network/$Network/images?limit=$limit&policyId=$PolicyID&url=$URL"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 

@@ -2,7 +2,6 @@ function Get-ImageManagerImageCollectionHistory {
     Param(
         [Parameter(Mandatory = $true)]  [string] $PolicySetAPIKey,
         [Parameter(Mandatory = $true)]  [string] $ImageCollectionID,
-        [Parameter(Mandatory = $true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(Mandatory = $false)] [string] $Limit,
         [Parameter(Mandatory = $false)] [string] $ContractID,
         [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
@@ -10,8 +9,7 @@ function Get-ImageManagerImageCollectionHistory {
         [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
-    $Network = $Network.ToLower()
-    $Path = "/imaging/v2/network/$Network/imagecollections/history/$ImageCollectionID`?limit=$limit"
+    $Path = "/imaging/v2/imagecollections/history/$ImageCollectionID`?limit=$limit"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if ($ContractID -ne '') {

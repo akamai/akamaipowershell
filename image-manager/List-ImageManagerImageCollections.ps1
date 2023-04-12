@@ -1,7 +1,6 @@
 function List-ImageManagerImageCollections {
     Param(
         [Parameter(Mandatory = $true)]  [string] $PolicySetAPIKey,
-        [Parameter(Mandatory = $true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
         [Parameter(Mandatory = $false)] [string] $Limit,
         [Parameter(Mandatory = $false)] [string] $ContractID,
         [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
@@ -9,8 +8,7 @@ function List-ImageManagerImageCollections {
         [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
-    $Network = $Network.ToLower()
-    $Path = "/imaging/v2/network/$Network/imagecollections?limit=$limit"
+    $Path = "/imaging/v2/imagecollections?limit=$limit"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
     if ($ContractID -ne '') {
