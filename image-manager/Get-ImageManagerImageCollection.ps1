@@ -1,20 +1,18 @@
-function Get-ImageManagerImageCollection
-{
+function Get-ImageManagerImageCollection {
     Param(
-        [Parameter(Mandatory=$true)]  [string] $PolicySetAPIKey,
-        [Parameter(Mandatory=$true)]  [string] $ImageCollectionID,
-        [Parameter(Mandatory=$true)]  [string] [ValidateSet('Staging', 'Production')] $Network,
-        [Parameter(Mandatory=$false)] [string] $ContractID,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory=$false)] [string] $Section,
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory = $true)]  [string] $PolicySetAPIKey,
+        [Parameter(Mandatory = $true)]  [string] $ImageCollectionID,
+        [Parameter(Mandatory = $false)] [string] $ContractID,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
     $Network = $Network.ToLower()
-    $Path = "/imaging/v0/network/$Network/imagecollections/$ImageCollectionID"
+    $Path = "/imaging/v2/imagecollections/$ImageCollectionID"
     $AdditionalHeaders = @{ 'Luna-Token' = $PolicySetAPIKey }
 
-    if($ContractID -ne ''){
+    if ($ContractID -ne '') {
         $AdditionalHeaders['Contract'] = $ContractID
     }
 
