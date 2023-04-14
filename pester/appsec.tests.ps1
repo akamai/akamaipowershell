@@ -24,7 +24,7 @@ $Script:TestRatePolicy2Name = 'Rate Policy 2'
 $Script:TestRatePolicyBody = '{"averageThreshold":10,"burstThreshold":50,"clientIdentifier":"ip","matchType":"path","name":"PlaceHolder","path":{"positiveMatch":true,"values":["/*"]},"pathMatchType":"Custom","pathUriPositiveMatch":true,"requestType":"ClientRequest","sameActionOnIpv6":false,"type":"WAF","useXForwardForHeaders":false}'.replace('PlaceHolder', $TestRatePolicy1Name)
 $Script:TestRatePolicy = ConvertFrom-Json $TestRatePolicyBody
 $TestRatePolicy.name = $TestRatePolicy2Name
-$Script:TestSiemSettingsBody ='{"enableSiem":true,"enableForAllPolicies":true, "siemDefinitionId": 1}'
+$Script:TestSiemSettingsBody = '{"enableSiem":true,"enableForAllPolicies":true, "siemDefinitionId": 1}'
 $Script:TestSiemSettings = ConvertFrom-Json $TestSiemSettingsBody
 $Script:TestReputationProfile1Name = "AkamaiPowerShell Reputation Profile 1"
 $Script:TestReputationProfile2Name = "AkamaiPowerShell Reputation Profile 2"
@@ -114,7 +114,7 @@ Describe 'Safe AppSec Tests' {
 
     ### List-AppSecFailoverHostnames
     it 'List-AppSecFailoverHostnames does not throw' {
-        {$Script:FailoverHostnames = List-AppSecFailoverHostnames -ConfigID $NewConfig.configId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+        { $Script:FailoverHostnames = List-AppSecFailoverHostnames -ConfigID $NewConfig.configId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
     }
 
     #************************************************#
@@ -157,6 +157,12 @@ Describe 'Safe AppSec Tests' {
     $Script:SelectedHostnames = List-AppSecSelectedHostnames -ConfigID $NewConfig.configId -VersionNumber 1 -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-AppSecSelectedHostnames gets a list' {
         $SelectedHostnames | Should -Contain $TestHostnames
+    }
+
+    ### List-AppSecAvailableHostnames
+    $Script:SelectableHostnames = List-AppSecAvailableHostnames -ContractID $TestContract -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-AppSecAvailableHostnames gets a list' {
+        $SelectableHostnames[0].hostname | Should -Not -BeNullOrEmpty
     }
 
     #************************************************#
@@ -1021,7 +1027,7 @@ Describe 'Safe AppSec Tests' {
 
     ### Remove-AppSecPolicy
     it 'Remove-AppSecPolicy completes successfully' {
-        {Remove-AppSecPolicy -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+        { Remove-AppSecPolicy -ConfigID $NewConfig.configId -VersionNumber 1 -PolicyID $NewPolicy.policyId -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
     }
 
     ### Remove-AppSecReputationProfile
@@ -1031,7 +1037,7 @@ Describe 'Safe AppSec Tests' {
 
     ### Remove-AppSecCustomDenyAction
     it 'Get-AppSecCustomDenyAction completes successfully' {
-        {Remove-AppSecCustomDenyAction -ConfigID $NewConfig.configId -VersionNumber 1 -CustomDenyID $NewCustomDenyAction.id -EdgeRCFile $EdgeRCFile -Section $Section} | Should -Not -Throw
+        { Remove-AppSecCustomDenyAction -ConfigID $NewConfig.configId -VersionNumber 1 -CustomDenyID $NewCustomDenyAction.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
     }
 
     ### Remove-AppSecCustomRule
