@@ -14,7 +14,7 @@ function Deactivate-Property
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   [ValidateSet('NONE', 'OTHER', 'NO_PRODUCTION_TRAFFIC', 'EMERGENCY')] $NoncomplianceReason,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $OtherNoncomplianceReason,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $CustomerEmail,
-        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $PeerReviewdBy,
+        [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $PeerReviewedBy,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [switch]   $UnitTested,
         [Parameter(ParameterSetName='attributes', Mandatory=$false)] [string]   $TicketID,
         [Parameter(Mandatory=$false)]                                [string]   $EdgeRCFile = '~\.edgerc',
@@ -67,7 +67,7 @@ function Deactivate-Property
         }
 
         if($NoncomplianceReason -eq 'NONE' -and $Network -eq 'Production'){
-            if($CustomerEmail -eq '' -or $PeerReviewdBy -eq '' -or $UnitTested -eq $false){
+            if($CustomerEmail -eq '' -or $PeerReviewedBy -eq '' -or $UnitTested -eq $false){
                 throw "You must supply the following when NonComplianceReason is 'NONE': CustomerEmail, PeerReviewedBy & UnitTested"
             }
         }
@@ -90,8 +90,8 @@ function Deactivate-Property
         if($CustomerEmail){
             $ComplianceRecord['customerEmail'] = $CustomerEmail
         }
-        if($PeerReviewdBy){
-            $ComplianceRecord['peerReviewedBy'] = $PeerReviewdBy
+        if($PeerReviewedBy){
+            $ComplianceRecord['peerReviewedBy'] = $PeerReviewedBy
         }
         if($UnitTested){
             $ComplianceRecord['unitTested'] = $UnitTested.ToBool()
