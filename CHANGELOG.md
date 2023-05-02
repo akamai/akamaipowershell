@@ -2,6 +2,29 @@
 
 # Changelog
 
+## 1.11.0 - (2/5/2023)
+
+### Hostname Bucket support, cleanup & many fixes
+
+- [Property] - Added functions to cover the new Hostname Buckets feature
+- [Cleanup] - Functions for the following deprecated APIs have been removed: Diagnostic Tools, DataStream 1, SPS
+- [Image & Video Manager] - Added PolicySet functions, and moved various existing endpoints from v0 to v2
+- [AppSec] - Updated Activate-AppSecConfiguration to use new endpoint, broken due to the previous path being deprecated
+- [AppSec] - Added new function List-AppSecAvailableHostnames
+- [Property] - Fixed Type in PeerReviewedBy parameter
+- [Reporting] - Updated $ReportType variable to $Name, in-line with API definition. -ReportType can still be used due to a backward-compatible alias
+- [SiteShield] - Updated $SiteShieldID variable to $ID, in-line with API definition. -SiteshieldID can still be used due to a backward-compatible alias
+- [Cloudlets] - Fixed a bug in New-CloudletPolicy which did not clone existing policy rules
+- [Cloudlets] - Fixed a typo which prevented List-CloudletLoadBalancers from appearing
+- [Purge] - Deprecated functions removed and section default has been changed from 'ccu' to 'default', in-line with other commands
+- [MediaDeliveryReports] - Fixed a bug which prevented Get-AMDDeliveryData from functioning corrected
+- [EdgeDiagnostics] - Changed Get-DiagnosticLink to New-DiagnosticLink, in-line with its method
+- [Netstorage] - Fixed a bug which did not read credentials correctly from auth file sections other than 'default'
+- [MSL] - Fixed missing Path variable in New-MSLOrigin and Set-MSLOrigin
+- [GTM] - Fixed path bug in Get-GTMDatacenterLatency
+
+> Note: This is likely to be the last release of version 1 of the AkamaiPowershell module. We are working on a completely overhauled version 2, so all new features will be available there. Any major bugs will still be back-ported to v1
+
 ## 1.10.0 - (23/02/2023)
 
 ### Adding support for alternate auth options and structural improvements
