@@ -227,6 +227,7 @@ function Invoke-AkamaiRestMethod {
     }
     
     if ($null -ne $ENV:https_proxy) { $params.Proxy = $ENV:https_proxy }
+    if ($null -ne $ENV:proxy_use_default_credentials) { $params.ProxyUseDefaultCredentials = $true }
 
     if ($Method -in "PUT","POST","PATCH") {
         if ($Body) { $params.Body = $Body }
