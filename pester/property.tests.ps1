@@ -162,7 +162,7 @@ Describe 'Safe PAPI Tests' {
     #>
 
     ### Get-PropertyRuleTemplates
-    Get-PropertyRuleTemplates -PropertyName $TestPropertyName -PropertyVersion latest -OutputDir templates -EdgeRCFile $EdgeRCFile -Section $Section
+    Get-PropertyRuleTemplates -PropertyId $FoundProperty.propertyId -PropertyVersion latest -OutputDir templates -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-PropertyRuleTemplates creates expected files' {
         'templates\main.json' | Should -Exist
     }
