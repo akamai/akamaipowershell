@@ -69,15 +69,15 @@ function Invoke-AkamaiRestMethod {
 
     # Get auth creds from various potential sources
     $Auth = Get-AkamaiCredentials -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-    if($Debug){
+    if ($Debug) {
         ## Check creds if in Debug mode
         Test-Auth -Auth $Auth
     }
 
     # Add account switch key from $Auth, if present
-    if($Auth.account_key){
-        if($Path.Contains('?')){ $Path += '&' }
-        else{ $Path += '?' }
+    if ($Auth.account_key) {
+        if ($Path.Contains('?')) { $Path += '&' }
+        else { $Path += '?' }
         $Path += "accountSwitchKey=$($Auth.account_key)"
     }
 
@@ -135,10 +135,10 @@ function Invoke-AkamaiRestMethod {
         }
         elseif ($InputFile) {
             $Body_SHA256 = [System.Security.Cryptography.SHA256]::Create()
-            if($PSVersionTable.PSVersion.Major -le 5) {
+            if ($PSVersionTable.PSVersion.Major -le 5) {
                 $Bytes = Get-Content $InputFile -Encoding Byte
             }
-            else{
+            else {
                 $Bytes = Get-Content $InputFile -AsByteStream
             }
 
@@ -186,16 +186,17 @@ function Invoke-AkamaiRestMethod {
     $Headers = @{}
 
     ## Calculate custom UA
-    if($PSVersionTable.PSVersion.Major -ge 6){ #< 6 is missing the OS member of PSVersionTable, so we use env variables
+    if ($PSVersionTable.PSVersion.Major -ge 6) {
+        #< 6 is missing the OS member of PSVersionTable, so we use env variables
         $UserAgent = "AkamaiPowershell/$($Env:AkamaiPowershellVersion) (Powershell $PSEdition $($PSVersionTable.PSVersion) $PSCulture, $($PSVersionTable.OS))"
     }
-    else{
+    else {
         $UserAgent = "AkamaiPowershell/$($Env:AkamaiPowershellVersion) (Powershell $PSEdition $($PSVersionTable.PSVersion) $PSCulture, $($Env:OS))"
     }
     
     # Add headers
-    $Headers.Add('Authorization',$AuthorizationHeader)
-    $Headers.Add('Accept','application/json')
+    $Headers.Add('Authorization', $AuthorizationHeader)
+    $Headers.Add('Accept', 'application/json')
     $Headers.Add('Content-Type', 'application/json; charset=utf-8')
     $Headers.Add('User-Agent', $UserAgent)
 
@@ -220,15 +221,16 @@ function Invoke-AkamaiRestMethod {
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 
     $params = @{
-        Method = $Method
-        Uri = $ReqURL
-        Headers = $Headers
-        ContentType =  $ContentType
+        Method      = $Method
+        Uri         = $ReqURL
+        Headers     = $Headers
+        ContentType = $ContentType
     }
     
     if ($null -ne $ENV:https_proxy) { $params.Proxy = $ENV:https_proxy }
+    if ($null -ne $ENV:proxy_use_default_credentials) { $params.ProxyUseDefaultCredentials = $true }
 
-    if ($Method -in "PUT","POST","PATCH") {
+    if ($Method -in "PUT", "POST", "PATCH") {
         if ($Body) { $params.Body = $Body }
         if ($InputFile) { $params.InFile = $InputFile }
     }
@@ -247,7 +249,7 @@ function Invoke-AkamaiRestMethod {
         }
     }
 
-    if($OutputFile){
+    if ($OutputFile) {
         $params.OutFile = $OutputFile
     }
     
@@ -273,7 +275,7 @@ function Invoke-AkamaiRestMethod {
     }
     
     # PS <5 handling
-    if ($null -ne ($Response.PSObject.members | Where-Object { $_.Name -eq "redirectLink" }) -and $method -notin "PUT","POST","PATCH") {
+    if ($null -ne ($Response.PSObject.members | Where-Object { $_.Name -eq "redirectLink" }) -and $method -notin "PUT", "POST", "PATCH") {
         try {
             Write-Debug "Redirecting to $($Response.redirectLink)"
             $Response = Invoke-AkamaiRestMethod -Method $Method -Path $Response.redirectLink -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
