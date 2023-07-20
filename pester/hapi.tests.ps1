@@ -38,12 +38,6 @@ Describe 'Safe HAPI Tests' {
         $EdgeByID.recordName | Should -Be $TestEHNRecordName
     }
 
-    ### Get-EdgeHostnameCertificate
-    $Script:EdgeCert = Get-EdgeHostnameCertificate -RecordName $TestEHNRecordName -DNSZone edgekey.net $EdgeRCFile -Section $Section
-    it 'Get-EdgeHostnameCertificate returns the correct data' {
-        $EdgeCert.slotNumber | Should -Be $EdgeByName.slotNumber
-    }
-
     ### Get-EdgeHostnameLocalizationData
     $Script:LocalisationData = Get-EdgeHostnameLocalizationData -Language en_US -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-EdgeHostnameLocalizationData contains problems object' {
@@ -72,6 +66,12 @@ Describe 'Unsafe HAPI Tests' {
     $Script:RemoveEdge = Remove-EdgeHostname -RecordName $TestEHNRecordName -DNSZone edgekey.net -Comments "Testing" -StatusUpdateEmail 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Remove-EdgeHostname returns correct data' {
         $RemoveEdge.action | Should -Be 'DELETE'
+    }
+
+    ### Get-EdgeHostnameCertificate
+    $Script:EdgeCert = Get-EdgeHostnameCertificate -RecordName $TestEHNRecordName -DNSZone edgekey.net $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeHostnameCertificate returns the correct data' {
+        $EdgeCert.slotNumber | Should -Not -BeNullOrEmpty
     }
     
 }

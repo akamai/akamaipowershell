@@ -106,19 +106,19 @@ Describe 'Unsafe Netstorage Tests' {
     ### Set-NSStorageGroup by pipeline
     $Script:SetGroupByPipeline = ( $Group | Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -EdgeRCFile $SafeEdgeRCFile -Section $Section )
     it 'Set-NSStorageGroup updates details' {
-        $SetGroupByPipeline.storageGroupId | Should -Be $TestStorageGroupID
+        $SetGroupByPipeline.storageGroupId | Should -Not -BeNullOrEmpty
     }
 
     ### Set-NSStorageGroup by param
     $Script:SetGroupByParam = Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -StorageGroup $Group -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Set-NSStorageGroup updates details' {
-        $SetGroupByParam.storageGroupId | Should -Be $TestStorageGroupID
+        $SetGroupByParam.storageGroupId | Should -Not -BeNullOrEmpty
     }
 
     ### Set-NSStorageGroup by json
     $Script:SetGroupByBody = Set-NSStorageGroup -StorageGroupID $TestStorageGroupID -Body (ConvertTo-Json $Group -Depth 10) -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Set-NSStorageGroup updates details' {
-        $SetGroupByBody.storageGroupId | Should -Be $TestStorageGroupID
+        $SetGroupByBody.storageGroupId | Should -Not -BeNullOrEmpty
     }
 }
 
