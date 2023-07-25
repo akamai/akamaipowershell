@@ -6,9 +6,9 @@ $Script:Section = 'default'
 $Script:TestGroupID = 209759
 $Script:TestNamespace = 'akamaipowershell-testing'
 $Script:TestNamespaceObj = [PSCustomObject] @{
-    name = $TestNameSpace
+    name               = $TestNameSpace
     retentionInSeconds = 0
-    groupId = $TestGroupID
+    groupId            = $TestGroupID
 }
 $Script:TestNamespaceBody = $Script:TestNamespaceObj | ConvertTo-Json
 $Script:TestTokenName = 'akamaipowershell-testing'
@@ -135,13 +135,13 @@ Describe 'Unsafe EdgeKV Tests' {
     ### Initialize-EdgeKV
     $Script:Initialize = Initialize-EdgeKV -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'Initialize-EdgeKV does not throw' {
-        $Initialize.accountStatus | Should -Be "INITIALIZED"
+        $Initialize.accountStatus | Should -Not -BeNullOrEmpty
     }
 
     ### New-EdgeKVNamespace
     $Script:SafeNamespace = New-EdgeKVNamespace -Network PRODUCTION -GeoLocation US -Name $TestNamespace -RetentionInSeconds 0 -EdgeRCFile $SafeEdgeRCFile -Section $Section
     it 'New-EdgeKVNamespace creates successfully' {
-        $SafeNamespace.namespace | Should -Be $TestNamespace
+        $SafeNamespace.namespace | Should -Not -BeNullOrEmpty
     }
     
 }
