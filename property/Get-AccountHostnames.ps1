@@ -19,10 +19,9 @@ function Get-AccountHostnames {
         $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
         $TotalHostnames = $Result.hostnames.items
         if ($Result.hostnames.nextLink -match '.*offset=([\d]+)&limit=([\d]+).*') {
-            Write-Warning "Retrieving next page of response. Please wait..."
             $NextOffset = $Matches[1]
             $NextLimit = $Matches[2]
-            Write-Debug "Retrieving paged result with offset = $NextOffset and limit = $NextLimit"
+            Write-Debug "Retrieving next page of response with offset = $NextOffset and limit = $NextLimit. Please wait..."
             $NextParams = @{
                 OffSet           = $NextOffset
                 Limit            = $NextLimit

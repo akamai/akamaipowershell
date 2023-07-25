@@ -19,7 +19,7 @@ Describe 'Safe PAPI Tests' {
     }
     
     ### Get-AccountHostnames
-    $Script:AccountHostnames = Get-AccountHostnames -EdgeRCFile $EdgeRCFile -Section $Section 3>&1 | Out-Null
+    $Script:AccountHostnames = Get-AccountHostnames -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-AccountHostnames returns a list' {
         $AccountHostnames.count | Should -Not -BeNullOrEmpty
     }
