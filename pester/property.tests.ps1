@@ -6,6 +6,7 @@ $Script:Section = 'default'
 $Script:TestContract = '1-1NC95D'
 $Script:TestGroupName = 'AkamaiPowershell'
 $Script:TestPropertyName = 'akamaipowershell-testing'
+$Script:TestHostname = 'akamaipowershell-testing.edgesuite.net'
 $Script:TestIncludeName = 'akamaipowershell-include'
 $Script:AdditionalHostname = 'new.host'
 $Script:TestBucketPropertyName = 'akamaipowershell-bucket'
@@ -15,6 +16,12 @@ Describe 'Safe PAPI Tests' {
     $Script:AccountID = Get-AccountID -EdgeRCFile $EdgeRCFile -Section $Section
     it 'Get-AccountID gets an account ID' {
         $AccountID | Should -Not -BeNullOrEmpty
+    }
+    
+    ### Get-AccountHostnames
+    $Script:AccountHostnames = Get-AccountHostnames -EdgeRCFile $EdgeRCFile -Section $Section 3>&1 | Out-Null
+    it 'Get-AccountHostnames returns a list' {
+        $AccountHostnames.count | Should -Not -BeNullOrEmpty
     }
 
     ### List-Contracts
@@ -263,6 +270,12 @@ Describe 'Safe PAPI Tests' {
     $Script:Activations = List-PropertyActivations -PropertyName $TestPropertyName -EdgeRCFile $EdgeRCFile -Section $Section
     it 'List-PropertyActivations returns a list' {
         $Activations.count | Should -Not -Be 0
+    }
+    
+    ### Get-HostnameAuditHistory
+    $Script:AuditHistory = Get-HostnameAuditHistory -Hostname $TestHostname -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-HostnameAuditHistory returns the correct data' {
+        $AuditHistory[0].cnameTo | Should -Not -BeNullOrEmpty
     }
 
     #************************************************#
