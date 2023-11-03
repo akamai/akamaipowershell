@@ -23,8 +23,6 @@ function Generate-Report {
     # Encode specific params
     if ($Start) { $Start = [System.Uri]::EscapeDataString($Start) }
     if ($End) { $End = [System.Uri]::EscapeDataString($End) }
-    if ($Filters) { $Filters = [System.Uri]::EscapeDataString($Filters) }
-    if ($Metrics) { $Metrics = [System.Uri]::EscapeDataString($Metrics) }
 
     $Path = "/reporting-api/v1/reports/$Name/versions/$Version/report-data?start=$Start&end=$End&interval=$Interval&limit=$Limit"
 
@@ -36,12 +34,18 @@ function Generate-Report {
 
         # Metrics
         if ($Metrics) {
-            $BodyObj['metrics'] = ($Metrics -split ",")
+            $BodyObj['metrics'] = @()
+            $Metrics -split ',' | ForEach-Object {
+                $BodyObj['metrics'] += [System.Uri]::EscapeDataString($_)
+            }
         }
 
         # Filters
-        if ($Metrics) {
-            $BodyObj['metrics'] = ($Metrics -split ",")
+        if ($Filters) {
+            $BodyObj['filters'] = @()
+            $Filters -split ',' | ForEach-Object {
+                $BodyObj['filters'] += [System.Uri]::EscapeDataString($_)
+            }
         }
 
         $Body = $BodyObj | ConvertTo-Json -Depth 100
