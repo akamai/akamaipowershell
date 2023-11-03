@@ -2,6 +2,18 @@
 
 # Changelog
 
+## 1.12.0 (3/11/2023)
+
+### Signing updates, proxy credential support & bugfixes
+
+- [Shared] - Requests now use utf8 encoding for generating the signature, which means non-ascii characters will not break signing
+- [Shared] - Incorporated proxy credential support change from https://github.com/akamai/akamaipowershell/pull/47. Thanks to rootadin! (and sorry for the delay...)
+- [Property] - New functions to list all hostnames in an account (Get-AccountHostnames) and hostname audit history (Get-HostnameAuditHistory)
+- [Property] - Better handling of 'latest' version for Get-PropertyRuleTemplates
+- [Reporing] - Bugfixes for use of -Metrics and -Filters options where options were encoded incorrectly
+
+> Note: This really is the last release of version 1. We really mean it this time...
+
 ## 1.11.0 - (2/5/2023)
 
 ### Hostname Bucket support, cleanup & many fixes
