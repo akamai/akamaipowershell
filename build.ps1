@@ -15,7 +15,7 @@ param(
 
 Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
 
-$PS1Files = Get-ChildItem $PSScriptRoot -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
+$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
 $Aliases = New-Object -TypeName System.Collections.ArrayList
 foreach ($File in $PS1Files) {
     try {

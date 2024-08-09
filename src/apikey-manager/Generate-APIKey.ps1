@@ -1,38 +1,37 @@
-function Generate-APIKeys
-{
+function Generate-APIKey {
     Param(
-        [Parameter(Mandatory=$true)]  [int]    $CollectionID,
-        [Parameter(Mandatory=$true)]  [int]    $Count,
-        [Parameter(Mandatory=$false)] [string] $Description,
-        [Parameter(Mandatory=$false)] [bool]   $IncrementLabel,
-        [Parameter(Mandatory=$false)] [string] $Label,
-        [Parameter(Mandatory=$false)] [string] $Tags,
-        [Parameter(Mandatory=$false)] [string] $TerminationAt,
-        [Parameter(Mandatory=$false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory=$false)] [string] $Section,
-        [Parameter(Mandatory=$false)] [string] $AccountSwitchKey
+        [Parameter(Mandatory = $true)]  [int]    $CollectionID,
+        [Parameter(Mandatory = $true)]  [int]    $Count,
+        [Parameter(Mandatory = $false)] [string] $Description,
+        [Parameter(Mandatory = $false)] [bool]   $IncrementLabel,
+        [Parameter(Mandatory = $false)] [string] $Label,
+        [Parameter(Mandatory = $false)] [string] $Tags,
+        [Parameter(Mandatory = $false)] [string] $TerminationAt,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
     )
 
     $Path = "/apikey-manager-api/v1/keys"
     $BodyObj = @{
         collectionId = $CollectionID
-        count = $Count
-        value = $Value
+        count        = $Count
+        value        = $Value
     }
 
-    if($Description){
+    if ($Description) {
         $BodyObj['description'] = $Description
     }
-    if($Label){
+    if ($Label) {
         $BodyObj['label'] = $Label
     }
-    if($Tags){
+    if ($Tags) {
         $BodyObj['tags'] = $Tags -split ','
     }
-    if($IncrementLabel){
+    if ($IncrementLabel) {
         $BodyObj['incrementLabel'] = $IncrementLabel
     }
-    if($TerminationAt){
+    if ($TerminationAt) {
         $BodyObj['terminationAt'] = $TerminationAt
     }
 

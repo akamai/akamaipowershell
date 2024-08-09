@@ -45,6 +45,9 @@ if ($null -eq $env:AkamaiPowerShellDisableUpdateCheck) {
 
 Remove-Variable -Name ModuleData
 Remove-Variable -Name Details
+
+Write-Warning "The AkamaiPowershell module v1 is now deprecated and we strongly recommend you upgrade to version 2. See the documentation for details here https://techdocs.akamai.com/powershell/docs/overview"
+
 # SIG # Begin signature block
 # MIIpogYJKoZIhvcNAQcCoIIpkzCCKY8CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
