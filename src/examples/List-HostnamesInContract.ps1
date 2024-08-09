@@ -1,49 +1,47 @@
-#------------------------------------------------------------------------
+#************************************************************************
 #
-#	Name: build.ps1
+#	Name: List-HostnamesInContract
 #	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
+#	Purpose: Uses PAPI to get all properties in contract and list hostnames
+#	Date: 04/02/2019
 #	Version: 1 - Initial
 #
-#------------------------------------------------------------------------
+#************************************************************************
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
+Param(
+    [Parameter(Mandatory = $false)] [string] $EdgeRCFile = "~\.edgerc",
+    [Parameter(Mandatory = $false)] [string] $Section,
+    [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
 )
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
+if (!(Get-Module AkamaiPowershell)) {
+    Write-Host -ForegroundColor Yellow "Please import the Akamai Powershell module before running this script"
+    return
+}
 
-$PS1Files = Get-ChildItem $PSScriptRoot -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
-    try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
+$Results = @()
+$Properties = Get-AllProperties -Section $Section -AccountSwitchKey $AccountSwitchKey
+Write-Host -ForegroundColor yellow "Found $($Properties.Count) properties"
+
+foreach ($Property in $Properties) {
+    $PropHostnames = @(List-PropertyHostnames -GroupID $Property.groupId -ContractId $Property.contractId -PropertyId $Property.propertyId -PropertyVersion $Property.LatestVersion -Section $Section -AccountSwitchKey $AccountSwitchKey)
+    $PropHostnames | ForEach-Object {
+        #$Results += @{ "Property" = $Property.propertyName; "Hostname" = $_.cnameFrom}
+        $Result = New-Object -TypeName PSObject
+        $Result | Add-Member -MemberType NoteProperty -Name "Property" -Value $Property.propertyName
+        $Result | Add-Member -MemberType NoteProperty -Name "Hostname" -Value $_.cnameFrom
+        $Results += $Result
     }
-    catch {
-
-    }
 }
 
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
-}
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
+Write-Host -ForegroundColor Yellow "Found $($results.Count) hosts"
+return $Results
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCClGw30bylUQ5vr
+# DEBf+IKOTT22wCrlePffLer78MHfgaCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +124,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQglQW4p2VszB1dLX4y82rsFM3s9Nsjvsobs4XzO0a9vlEw
+# DQYJKoZIhvcNAQEBBQAEggIASYEKpJmr4RtFqXUgGU6xVSo5JXbCHb1MJUSEQ/YC
+# u7z0KjzpTgYXVGLOCHr/YkEpI6BVuArjojYkgDPrMK/UCKk1S/oo6f8V5DHU4jFv
+# Y2fstYVh5LWBxw8PlPCWh1+dZKYkd3VWpmK97p+s7z1FTDfuLchp/pC6xVhJMyON
+# jM4bE5eOvhZvqu7cl8DZzsAWiDY+GrZw0P3NEsMG5/sw8i/c6hWT1fY4To8yZJWV
+# c3ei09nzswc5CDsdVnif3C8ZYSe3IkW6NqXtSCviF9+oKc+kLz/7Zf8+Y0QD9tl7
+# uqJUnuH4zNnRwohOJyHSqNMSQvlMtO36OV31nqPEzxCm6qjwXMFHXvrnhcnYkW+V
+# CBE3kbesfW/w64F8H/Ue5nNyjlv2K1Gsp0E75XP6JceYjuz52FVgPidLMTI+Jp4C
+# qLs0gFodRtyDp/OdVJ/7UE41QxwjVo+0ebIknZIlvqht1jsQAqOI4FJHyJag99pG
+# MYXCn2SueOBw/CuN/xPEzpsmnw2cD2CxRovyhtIQON32Y3LnaFQkaLGQ6U8yt/6u
+# WCU08tfu+t633CbPN8SMFNbY/+2EB54tVYhzGxiR8+gNeBbFd/xKRFlegjXuENoa
+# mMXJpfkg2Zl8e/qjz8Dq4794yIhoG+n4RjABauiu5W/BFkHhDfY93JaN75p/R0l2
+# IOGhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg2FgrIHr8GED17DS9XtaAnRGhhBV0
+# ZLYoJUQeIQzZV9cCEGyvQgoYLLTvW6CM1MuCgtwYDzIwMjMxMTA2MTcwNDU1WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +245,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcwNDU1WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQg9RCmWZDLJOi1XH6GY5EIKBEUffZnBWhj9Wn8VR6pGE4wNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAW+EFG1If/yFDzX9cHBf8zcFdLms7+MKxPUFc
+# EaImQln4jj2wB+ymS7cTkCcifdoMPrMzKLUtSIvqJkSCpGQU2s5eEEwmBN2fx+4K
+# sMii4/0KZ8VSI1IZ62jSnm5MnYBZidWn1g/hZt1R8azINseacMv0vioLzFavT1QE
+# Fh7lRh07dGtquqKWe1vuNCxaeH1FJApq2gkvDx9k58nj0IiPDFBoNkjV+ZOIpLCX
+# Xv7ILUplKwL2+mjil7RJdEAxhJXPfxfM/sfsRdJWYwF5yywORLOSFxspjd2Zs72i
+# iEPsNOHoTjJaODowxqI5Nr8sl0W0SiVebgqo5mlJuckqfdV3wOrt17n0DP0tibbv
+# 0i+G5a1A/VfOnvScFv/W10BtEKo7ufwGo3FXzlon7PPH3OTVNE2+Thmvj8rnUrI9
+# pd4mukR4GKSm1SRDf17mne3AkFMLozIt88AuQSgmuCgNMzfamGbuHTQWKdAZGhIt
+# TYcwbqV1uWH9KbofSFOcDw92OlxRnGxz86XXzdHOmfY9oaALoVY+io58LTvvmNVB
+# SCPwAalRBZq+YgwPOsQxchPtOAaokAGLyeHphRKiJ4OPeSyOOw97AlaD5fkunu57
+# p6pXq43jnOr/Ju5zcrrvrcHzCrc+XOWJwnidr9r41XUWAaK97TkH3IidkLTuiDf6
+# JRJi8bg=
 # SIG # End signature block
