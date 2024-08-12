@@ -1,30 +1,156 @@
-function Get-CPSDVHistory {
-    Param(
-        [Parameter(Mandatory = $true)]  [string] $EnrollmentID,
-        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory = $false)] [string] $Section,
-        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
-    )
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestGroupID = 209759
+$Script:TestNamespace = 'akamaipowershell-testing'
+$Script:TestNamespaceObj = [PSCustomObject] @{
+    name               = $TestNameSpace
+    retentionInSeconds = 0
+    groupId            = $TestGroupID
+}
+$Script:TestNamespaceBody = $Script:TestNamespaceObj | ConvertTo-Json
+$Script:TestTokenName = 'akamaipowershell-testing'
+$Script:Tomorrow = (Get-Date).AddDays(7)
+$Script:TommorowsDate = Get-Date $Tomorrow -Format yyyy-MM-dd
+$Script:NewItemID = 'pester'
+$Script:NewItemContent = 'new'
 
-    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history"
-    $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.dv-history.v1+json'
+Describe 'Safe EdgeKV Tests' {
+
+    BeforeDiscovery {
+        
     }
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result.data
+    ### New-EdgeKVAccessToken
+    $Script:Token = New-EdgeKVAccessToken -Name $TestTokenName -AllowOnStaging -Expiry $TommorowsDate -Namespace $TestNameSpace -Permissions r -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-EdgeKVAccessToken returns list of tokens' {
+        $Token.name | Should -Be $TestTokenName
     }
-    catch {
-        throw $_
-    }  
+
+    ### List-EdgeKVGroups
+    $Script:Groups = List-EdgeKVGroups -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeKVGroups returns the correct data' {
+        $Groups[0].groupId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-EdgeKVGroup
+    $Script:Group = Get-EdgeKVGroup -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeKVGroup returns the correct group' {
+        $Group.groupId | Should -Be $TestGroupID
+    }
+
+    ### Get-EdgeKVInitializationStatus
+    $Script:Status = Get-EdgeKVInitializationStatus -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeKVInitializationStatus returns status' {
+        $Status.accountStatus | Should -Be "INITIALIZED"
+    }
+
+    ### List-EdgeKVNamespaces
+    $Script:Namespaces = List-EdgeKVNamespaces -Network STAGING -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeKVNamespaces returns list of namespaces' {
+        $Namespaces.count | Should -Not -Be 0
+    }
+
+    ### Get-EdgeKVNamespace
+    $Script:Namespace = Get-EdgeKVNamespace -Network STAGING -NamespaceID $TestNamespace -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeKVNamespace returns namespace' {
+        $Namespace.namespace | Should -Be $TestNamespace
+    }
+
+    ### Set-EdgeKVNamespace with attributes
+    $Script:SetNamespaceByAttr = Set-EdgeKVNamespace -Network STAGING -NamespaceID $TestNamespace -Name $TestNameSpace -RetentionInSeconds 0 -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-EdgeKVNamespace returns namespace' {
+        $SetNamespaceByAttr.namespace | Should -Be $TestNamespace
+    }
+
+    ### Set-EdgeKVNamespace with pipeline
+    $Script:SetNamespaceByObj = $TestNamespaceObj | Set-EdgeKVNamespace -Network STAGING -NamespaceID $TestNamespace -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-EdgeKVNamespace returns namespace' {
+        $SetNamespaceByObj.namespace | Should -Be $TestNamespace
+    }
+
+    ### Set-EdgeKVNamespace with body
+    $Script:SetNamespaceByBody = Set-EdgeKVNamespace -Network STAGING -NamespaceID $TestNamespace -Body $TestNamespaceBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-EdgeKVNamespace returns namespace' {
+        $SetNamespaceByBody.namespace | Should -Be $TestNamespace
+    }
+
+    ### Move-EdgeKVNamespace
+    $Script:MoveNamespace = Move-EdgeKVNamespace -NamespaceID $TestNamespace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Move-EdgeKVNamespace returns the correct group' {
+        $MoveNamespace.groupId | Should -Be $TestGroupID
+    }
+
+    ### List-EdgeKVAccessTokens
+    $Script:Tokens = List-EdgeKVAccessTokens -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeKVAccessTokens returns list of tokens' {
+        $Tokens.count | Should -Not -Be 0
+    }
+
+    ### Get-EdgeKVAccessToken
+    $Script:Token = Get-EdgeKVAccessToken -TokenName $TestTokenName -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-EdgeKVAccessToken returns list of tokens' {
+        $Token.name | Should -Be $TestTokenName
+    }
+
+    ### New-EdgeKVItem
+    $Script:NewItem = New-EdgeKVItem -ItemID $NewItemID -Value $NewItemContent -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-EdgeKVItem creates successfully' {
+        $NewItem | Should -Match 'Item was upserted in database'
+    }
+
+    ### List-EdgeKVItems
+    $Script:Items = List-EdgeKVItems -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeKVItems returns list of items' {
+        $Items.count | Should -Not -Be 0
+    }
+
+    ### Get-EdgeKVItem
+    $Script:Item = Get-EdgeKVItem -ItemID $NewItemID -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeKVItem returns item data' {
+        $Item | Should -Not -BeNullOrEmpty
+    }
+
+    ### Remove-EdgeKVAccessToken
+    $Script:TokenRemoval = Remove-EdgeKVAccessToken -TokenName $TestTokenName -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-EdgeKVAccessToken removes token successfully' {
+        $TokenRemoval.name | Should -Be $TestTokenName
+    }
+
+    ### Remove-EdgeKVItem
+    $Script:Removal = Remove-EdgeKVItem -ItemID $NewItemID -Network STAGING -NamespaceID $TestNameSpace -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-EdgeKVItem creates successfully' {
+        $Removal | Should -Match 'Item was marked for deletion from database'
+    }
+
+    AfterAll {
+        
+    }
+    
+}
+
+Describe 'Unsafe EdgeKV Tests' {
+    ### Initialize-EdgeKV
+    $Script:Initialize = Initialize-EdgeKV -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Initialize-EdgeKV does not throw' {
+        $Initialize.accountStatus | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-EdgeKVNamespace
+    $Script:SafeNamespace = New-EdgeKVNamespace -Network PRODUCTION -GeoLocation US -Name $TestNamespace -RetentionInSeconds 0 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'New-EdgeKVNamespace creates successfully' {
+        $SafeNamespace.namespace | Should -Not -BeNullOrEmpty
+    }
+    
 }
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyKWVZB/SwMsGa
-# CpKiBvZQXX5Sfn3LOQKgxck2CF/jEqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBwBQ6Bv5FD3gvZ
+# UH4uJzTmrOIRwEekgNlmImGzl1sgBqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -107,22 +233,22 @@ function Get-CPSDVHistory {
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQg4GI+FckGVONJxRRIxL+fGZAEANgYPyDtPGIU0pjBakAw
-# DQYJKoZIhvcNAQEBBQAEggIAdk7U+MJ+rxGgZFvWK/UzpOySLC2bJnXjnK8D4oP/
-# vp+NQBLR1z4FxJwxJjNLfMZxKxEkCLhtZn0d0SG3gDu485qCkgwYgINNiDt+i8G0
-# BEByUba88wFHCJgJEyXK5pdWz/6kDM03NTZ/AcCX03MnA1eHseyTEUt4XGEjzJ5/
-# PNyM9yiGcxmucQ946K8Q+VYVmbH0FKTXhmdni3cCboNDangb4qm4814O+vaEqb2K
-# KhOgaAUZxiijJ+rbuoFAGnREuPN0Ui2lWJhYZWABSaZ4IKSCTUxiJUeVtQ1HyqlH
-# DfKyam6q14MdgVBj/1RebPUPPv3N/0+Xf1Ny9VkJgM316OmGLtWDpwdKfeH1D/wh
-# AHIq6S+O7qGBdKngUn3hI7KGCye83Spte+jCJc9V+kDPAlo718gCim7j6ruTirBI
-# GrRQfT9OAOTm1w7bIVVPWO5FXjZEk018KGqLZQ3X8uzj2z2wJTBQ4hSUsDLB7OEL
-# rLrHNc8Gv4DmxavxVpJfcw+VKrftgaOIGRKdM3iX0o/wpPjBRznXlddWhcpk8//E
-# fgmKUhwHJaIvsqY3x5dTIqrjyrRVm8pUUqbPIG5LqP1OYvJHYeI30F6NVwkIeNmA
-# t4RG6p57kepeE/z0Ilu8JgNpEgOWdCNQvv3yvZ35ndcye28IfXvdNo3qsNhoOGqi
-# Xh6hghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQg9ibHtHkbgtkUdBPL8wmc+lm3cN5xFrsEKGmIXAqyU5Qw
+# DQYJKoZIhvcNAQEBBQAEggIAEZeJjPjPXwehRDqZswp5Q1ycDrYk4wqQxEqc1Unl
+# wpySHrWTXXMJ2mjbY1Ue7TnpQlrFS8F2cCnTDEg05mNPBtj8/vnegDktIoyzLGxn
+# iXjCArf3N651JhpjAo1phtkwTc+b6mXleWdEilYpnGCN6UsR3lAofiNfGU6wDxyn
+# pqCLxOA0x6twObJtU3qYtUCjOmZps/2BdbFIWW73dJLgNf7IQivlcPS0FYIxtfW3
+# /um6ATTJvPM+mOkqNCZmL79udZBzzvz32UbGoJKhUp79aLd8BQUOGzK6xCxsgQjb
+# Tzl2RhwUOvEaldtv0hOP/W7ZkUWIBdRC81c4qXtHHo9fysILy12QyIPoI7dz20CJ
+# ERO1nxRyJij35g48I6VMwBYVOkDo8BVjsyWYOcrqv/UHMbBSot2d7aRHr/nO8oeB
+# kQti/qz3YSBkBlUCd8MPN6fpPrbl8vHyAbrkV6XA2JYNZc/Bb7yAZQwQ+UszOi5c
+# dA0aNDyCkS8gPYLTCqGZ1y8EA8cFtSA2fmIsVYHBP7Uo3a4zgZQMnFFyhB7vPoBs
+# E5P79R6OYrDg3hXbLNqstm/eB61bb7/4cyWvKFBd+TBKyXTiSJ/5YhoSa29/trkj
+# u2NkFQDTWGh6of9HrhVOxDc7vMGNyoW2RBdTVVaztXloMVe87r15GQvZFdHM06x4
+# /HGhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgvaF+8z8lK8Hmh5fW1rDWN5jX2U/I
-# 9JwRNstEfqQKixECEFhCHGpy9TcvpRBwKIubEKwYDzIwMjMxMTA2MTY1OTMyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgVg8RV/ulCD2BnyJm1zJ75JdLqwZu
+# snCPXy6HORsVe5ECEGdZ6ZjnxKaY5yKV/dkRVXgYDzIwMjMxMTA2MTcxMTM5WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -228,20 +354,20 @@ function Get-CPSDVHistory {
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY1OTMyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTM5WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgfXq52TXsnw22Dt9aGNGDF0GYoLw9Gaibo+jjpGSIBc8wNwYLKoZI
+# 9w0BCQQxIgQgaaRwU3GWaPTEQb/gOJyATgVUpY8AS0U+YltF8ISbV1IwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAD5QvnN+3/0rYLgSRCsOe9mzgTv+9ZJwseczi
-# MpkRq8hDCedjlq2hdkIqq62HQTyP731PzoVEpKPK96mHMlFF/RMzHpNgCFYaKtfI
-# LLYHnsUKnQqM0T3s5RsCUohj9BHc7XdZHM6wX1U4uvXnVquCAawGvdK9d/W6gXGv
-# 4ZHnyYdQx6JsbdA4UEfGitrD1BfOWyKl3p3Bc1JxaE7SO2fWI+VPjrBER9hese/Q
-# T63jicemzmN4W+VldSuqqgJMglpZ298BrwVdS/S7OinRAEK8FQNfqh6QGnmpw6vy
-# MkJ8wAJdq0zzileAQKGGkLUhAtUsaGctt2xTzg4vp33o0+VdQMpDeAKwOqOQQmIG
-# 6qBkTrKheH9ooWlKP4HXYYiSopo1MlAOX8Pipiz1wyJI2mzNsddhawrsENCvrESh
-# mVN/tsvO60NyLy7Xaeuw4NaKKZBcH4A30Dm9r5pXl3Qdp62zrBdhrGZvTwIScR5I
-# PHHxHTu/7zGatS7Lxz5Spq8McUCy/W5r9MPyJohbk/JBHi3wg3/JYe1hVWWKeNT4
-# PZpiNdcxvJ3wjjek8ilba2tHoyXmJtGIvSM2GdhEAVOw0BV6v5GW7Kd2reMolUCo
-# Gj1V02pHXrx80llYHuL8CKc2H1x53nD3K+QiCrFTYFNy58c7RrbnwZOGiffiQ6KW
-# /ETT1qA=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAIoVrKaAT4hR+kLBfFxa8/GiGH+ZtE7we7DU/
+# 4cZMsdng2TgG0l2hdPuEAGOmxwNoJQqKwjImv2DWb/wBuZ6tPiajFMdxq59FfNlt
+# olccZPMej3dPuOUzmEfDQvDGpJ6ETr/XYtSgDcvJIGZ9iT9bmfABKYsr7Y/qJESz
+# rGD6ByvJOy0pBCfLtrBPOJ5r+m4WxE5Uc5CTG49MLmcDVGbvoRPHgACEyXUI/tT3
+# uhZLLyTE/gh01hXcWwotQ1W1PtWeNe1M74wlz1aHju+kEGA7hej7BbvkCyRCRolG
+# KkbIELtVNbcPJT+Bl6ErB+vdnoesEyMLJ59i4jmv7dgj+FPrbyQkrFCoa1C/cXSS
+# BZzXiZUjw1c1lKcaWLPad5TQBsDcojEUGtNNv9z3H4VxAtNYgXAU2gYoK6gAvLP2
+# VM4nQ2YZm1esXj5G4/rOYoKoSUmWgc2BbuORtvKMXTnbUExJ1zG3kd+GjiRCncpv
+# gZDB0d+ApcmsgTdJr8t8l24GquiLfV8+RQjjqM7ooZq5feKImvpzhIX1dpVqisLs
+# ipSm2lNZAEQWF/GEWY25rUTtiit3uMzo6G/VWHCOVDwj5hb++1OqZ5UYfZjFHh+i
+# w6YBNDlzWuwIeGgDwo4QxfwqbpBQRR6navZPph2sfZJi7OemTMjqKI5wxFqIgZ21
+# 2GdOYUE=
 # SIG # End signature block

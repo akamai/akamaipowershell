@@ -1,30 +1,61 @@
-function Get-CPSDVHistory {
-    Param(
-        [Parameter(Mandatory = $true)]  [string] $EnrollmentID,
-        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory = $false)] [string] $Section,
-        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
-    )
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestGroupName = 'AkamaiPowershell'
+$Script:TestReportType = 'load-balancing-dns-traffic-by-datacenter'
 
-    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history"
-    $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.dv-history.v1+json'
+Describe 'Safe Reporting Tests' {
+    BeforeDiscovery {
+        
     }
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result.data
+    ### List-ReportTypes
+    $Script:ReportTypes = List-ReportTypes -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-ReportTypes returns a list' {
+        $ReportTypes.count | Should -Not -Be 0
     }
-    catch {
-        throw $_
-    }  
+
+    ### List-ReportTypeVersions
+    $Script:Versions = List-ReportTypeVersions -ReportType $TestReportType -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-ReportTypeVersions returns a list' {
+        $Versions.count | Should -Not -Be 0
+    }
+
+    ### List-ReportTypeVersions
+    $Script:Report = Get-ReportType -ReportType $TestReportType -Version $Versions[0].Version -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-ReportType returns the correct data' {
+        $Report.name | Should -Be $TestReportType
+    }
+
+    AfterAll {
+        
+    }
+    
+}
+
+Describe 'Unsafe Reporting Tests' {
+    ### Get-CacheableReport
+    $Script:CacheableReport = Get-CacheableReport -ReportType hits-by-time -Version 1 -Start 2022-12-21T00:00:00Z -End 2022-12-22T00:00:00Z -Interval HOUR -ObjectIds 123456 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-CacheableReport gets some data' {
+        $CacheableReport.data.count | Should -Not -Be 0
+    }
+
+    ### Generate-Report
+    $Script:NonCacheableReport = Generate-Report -ReportType hits-by-time -Version 1 -Start 2022-12-21T00:00:00Z -End 2022-12-22T00:00:00Z -Interval HOUR -ObjectIDs 123456 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Generate-Report gets some data' {
+        $NonCacheableReport.data.count | Should -Not -Be 0
+    }
+
 }
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyKWVZB/SwMsGa
-# CpKiBvZQXX5Sfn3LOQKgxck2CF/jEqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDEW0D38CGOUxuy
+# +mQkU2vjlSjw+g5H6cJNjMzdvFUmIaCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -107,22 +138,22 @@ function Get-CPSDVHistory {
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQg4GI+FckGVONJxRRIxL+fGZAEANgYPyDtPGIU0pjBakAw
-# DQYJKoZIhvcNAQEBBQAEggIAdk7U+MJ+rxGgZFvWK/UzpOySLC2bJnXjnK8D4oP/
-# vp+NQBLR1z4FxJwxJjNLfMZxKxEkCLhtZn0d0SG3gDu485qCkgwYgINNiDt+i8G0
-# BEByUba88wFHCJgJEyXK5pdWz/6kDM03NTZ/AcCX03MnA1eHseyTEUt4XGEjzJ5/
-# PNyM9yiGcxmucQ946K8Q+VYVmbH0FKTXhmdni3cCboNDangb4qm4814O+vaEqb2K
-# KhOgaAUZxiijJ+rbuoFAGnREuPN0Ui2lWJhYZWABSaZ4IKSCTUxiJUeVtQ1HyqlH
-# DfKyam6q14MdgVBj/1RebPUPPv3N/0+Xf1Ny9VkJgM316OmGLtWDpwdKfeH1D/wh
-# AHIq6S+O7qGBdKngUn3hI7KGCye83Spte+jCJc9V+kDPAlo718gCim7j6ruTirBI
-# GrRQfT9OAOTm1w7bIVVPWO5FXjZEk018KGqLZQ3X8uzj2z2wJTBQ4hSUsDLB7OEL
-# rLrHNc8Gv4DmxavxVpJfcw+VKrftgaOIGRKdM3iX0o/wpPjBRznXlddWhcpk8//E
-# fgmKUhwHJaIvsqY3x5dTIqrjyrRVm8pUUqbPIG5LqP1OYvJHYeI30F6NVwkIeNmA
-# t4RG6p57kepeE/z0Ilu8JgNpEgOWdCNQvv3yvZ35ndcye28IfXvdNo3qsNhoOGqi
-# Xh6hghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgwOFrNXVKjaMbwMCDQeyWKrlk5rU8UfZA2b59Ij7CH9Qw
+# DQYJKoZIhvcNAQEBBQAEggIAETxDJh944PEp5/hZKn8OAKrt58WwPIxZQc3k/xU3
+# ovq0DIUn9qsRPF9ng0i/MTn8wguPkpqZJ/6TgVxwJDOrjdjd1QHTVwY4VV2psYZp
+# FCk+WOgf3SmRqaqQTrvSUMEZuRZNtYA82WHVpahIlutNO3EtGjErmSfOBQlpMSz7
+# ncVBETgFiM8IcCWxB2u8NsI30uti89X/030lcVc1iyVmdpDU+sX7iiHFQzLnal6l
+# S3SxLznZV0xuTYYzoDjX8Moidy0p9dn//V031J6dvqeuspdzllbgxc+1qTkOX5jL
+# W5vOgPt3I2qKpt6AH2rDFMpcOYERAwuF5XcDSvtInCATIAOn0krY/gSyNQ0lS/Aw
+# cGOAjDn1V8q45lmBeNccql6blp78FEzaDXsCN6UK9Cs7nH33k2ynTMTlG9Y0T0WK
+# 8i/Ef8WNZ++b/FItMDTDg7C0sLBbMk4iqI8+kuYNL5q0YIW1XmgKKe/MGCEjCZzZ
+# aFw4bsa5JQxzDnquWHBgvu/bqokDMFMXFKpurPsmqr2PXzP/+Pbb2TK6i7r3LG29
+# +jGlc4172N5Xec1hizC0ElJxPAtWvZxx8D6cPf62gM6RGfGA593bkzxwCI+QnbNy
+# pkGk3J2Q16qdjX9eFIiMaKz3uT3QUz7r17HUbjpIrRkppJ5rOhYsoaka95hI9Kje
+# d9qhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgvaF+8z8lK8Hmh5fW1rDWN5jX2U/I
-# 9JwRNstEfqQKixECEFhCHGpy9TcvpRBwKIubEKwYDzIwMjMxMTA2MTY1OTMyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgHTqp7vqsm9rHx6DBNg6BzF8deTkk
+# W2tMY8BdyM2yVJ8CEE9zWhq8hHHGF5VYQQCyV4UYDzIwMjMxMTA2MTcxMTU3WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -228,20 +259,20 @@ function Get-CPSDVHistory {
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY1OTMyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTU3WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgfXq52TXsnw22Dt9aGNGDF0GYoLw9Gaibo+jjpGSIBc8wNwYLKoZI
+# 9w0BCQQxIgQgleZi8IFWKl1gw0w8j0utjnCzbIuGbQCa/25csIucVKAwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAD5QvnN+3/0rYLgSRCsOe9mzgTv+9ZJwseczi
-# MpkRq8hDCedjlq2hdkIqq62HQTyP731PzoVEpKPK96mHMlFF/RMzHpNgCFYaKtfI
-# LLYHnsUKnQqM0T3s5RsCUohj9BHc7XdZHM6wX1U4uvXnVquCAawGvdK9d/W6gXGv
-# 4ZHnyYdQx6JsbdA4UEfGitrD1BfOWyKl3p3Bc1JxaE7SO2fWI+VPjrBER9hese/Q
-# T63jicemzmN4W+VldSuqqgJMglpZ298BrwVdS/S7OinRAEK8FQNfqh6QGnmpw6vy
-# MkJ8wAJdq0zzileAQKGGkLUhAtUsaGctt2xTzg4vp33o0+VdQMpDeAKwOqOQQmIG
-# 6qBkTrKheH9ooWlKP4HXYYiSopo1MlAOX8Pipiz1wyJI2mzNsddhawrsENCvrESh
-# mVN/tsvO60NyLy7Xaeuw4NaKKZBcH4A30Dm9r5pXl3Qdp62zrBdhrGZvTwIScR5I
-# PHHxHTu/7zGatS7Lxz5Spq8McUCy/W5r9MPyJohbk/JBHi3wg3/JYe1hVWWKeNT4
-# PZpiNdcxvJ3wjjek8ilba2tHoyXmJtGIvSM2GdhEAVOw0BV6v5GW7Kd2reMolUCo
-# Gj1V02pHXrx80llYHuL8CKc2H1x53nD3K+QiCrFTYFNy58c7RrbnwZOGiffiQ6KW
-# /ETT1qA=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAFzU9axEwOVpaBa8ua1y3coZ9GHC72z1hLJ/o
+# KRZ5PYPA+drcmzAevS6Hvh64UWkdIKg4FT6k9M3CsrCedKBqrqVZkGyZZtyLq/TR
+# yw88Ndo3+xcK1FNPyuJk7QqfdVadml/vbwrFsTBPdAPfTDxjTcfjOO5KgRCia6mG
+# bhYbrfGIGVTSItOBEUxTlvRaEDHiKhqyAE7nlIiz8ErC6N0cnxj5N7Gl4Bov/oMa
+# vQltaEOa56WN51TTIUgBNUeNKl91SNeecG1lf7c1kYuxD4pWliff8BYHMGPOvuPD
+# KeO1RREOxcGGetlbNjZAvByk+MJwf7Y0PuXNPMj/eIpKy2CBz4zNyR0M0eczlXKj
+# hquLwhf7oucXzfGk9fZqr2VRkjJ7bl2VvztOUHcG4B3/hybkMLOslCi+QB3WNxxV
+# UhY4CBv6+/v1d7+NNjb61n2xWTBPtw1UIBFoRfd6qeJX2O7RnXyLqlkMk/zOUE0B
+# aBVz8tYWexvE6yPBGK91JyFrzJfH+EVKtDYGMNNSbqJ9N91c6qKrn6TIdrERAql8
+# HrGX6OizUcp0xyx3PvV9NCGXD4y7MzHpHtLXYxsqL3DippFSKkZh+lELEfWc/xnE
+# 7WI0cKK6qViMt8aKRHsY3qJapK5XMuIHgUYgzAnlc+ApmC6U7pwberqRECCjpRHq
+# 7RUcsok=
 # SIG # End signature block

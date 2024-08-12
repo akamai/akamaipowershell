@@ -1,30 +1,101 @@
-function Get-CPSDVHistory {
-    Param(
-        [Parameter(Mandatory = $true)]  [string] $EnrollmentID,
-        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory = $false)] [string] $Section,
-        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
-    )
 
-    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history"
-    $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.dv-history.v1+json'
+Describe 'Safe NSAPI Tests' {  
+    BeforeAll {
+        Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+        # Setup shared variables
+        $TestDirectory = "akamaipowershell"
+        $AuthFile = $env:PesterAuthFile
+        $NewDirName = "temp"
+        $NewFileName = "temp.txt"
+        $NewFileContent = "new"
+        $NewFileContent | Out-File $NewFileName
+        $SymlinkFileName = "symlink.txt"
+        $RenamedFileName = "renamed.txt"
+
+        $PD = @{}
     }
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result.data
+    AfterAll {
+        Remove-Item $NewFileName -Force
     }
-    catch {
-        throw $_
-    }  
+
+    ### New-NetstorageDirectory
+    it 'New-NetstorageDirectory creates successfully' {
+        $PD.NewDir = New-NetstorageDirectory -Path "/$TestDirectory/$NewDirName" -AuthFile $AuthFile
+        $PD.NewDir | Should -Match 'successful'
+    }
+
+    ### Upload-NetstorageFile
+    it 'Upload-NetstorageFile lists content' {
+        Upload-NetstorageFile -LocalPath $NewFileName -RemotePath "/$TestDirectory/$NewDirName/$NewFileName" -AuthFile $AuthFile
+    }
+
+    ### Dir-NetstorageDirectory
+    it 'Dir-NetstorageDirectory lists content' {
+        $PD.Dir = Dir-NetstorageDirectory -Path $TestDirectory -AuthFile $AuthFile
+        $PD.Dir.count | Should -Not -Be 0
+    }
+
+    ### List-NetstorageDirectory
+    it 'List-NetstorageDirectory lists content' {
+        $PD.List = List-NetstorageDirectory -Path $TestDirectory -AuthFile $AuthFile
+        $PD.List.count | Should -Not -Be 0
+    }
+
+    ### Du-NetstorageDirectory
+    it 'Du-NetstorageDirectory returns stats' {
+        $PD.Du = Du-NetstorageDirectory -Path $TestDirectory -AuthFile $AuthFile
+        $PD.Du.files | Should -Not -BeNullOrEmpty
+    }
+
+    ### Symlink-NetstorageFile
+    it 'Symlink-NetstorageObject creates a symlink' {
+        $PD.Symlink = Symlink-NetstorageObject -Path "/$TestDirectory/$NewDirName/$SymlinkFileName" -Target "/$TestDirectory/$NewDirName/$NewFileName" -AuthFile $AuthFile
+        $PD.Symlink | Should -Match 'successful'
+    }
+
+    ### Download-NetstorageFile
+    it 'Download-NetstorageFile downloads successfully' {
+        Download-NetstorageFile -RemotePath "/$TestDirectory/$NewDirName/$NewFileName" -LocalPath $NewFileName -AuthFile $AuthFile
+        $NewFileName | Should -FileContentMatchExactly $NewFileContent
+    }
+
+    ### Set-NetstorageFileMTime
+    it 'Set-NetstorageFileMTime sets mtime' {
+        $PD.MTime = Set-NetstorageFileMTime -Path "/$TestDirectory/$NewDirName/$NewFileName" -mtime 0 -AuthFile $AuthFile
+        $PD.MTime | Should -Match 'successful'
+    }
+
+    ### Stat-NetstorageDirectory
+    it 'Stat-NetstorageObject gets object stats' {
+        $PD.Stat = Stat-NetstorageObject -Path "/$TestDirectory/$NewDirName/$NewFileName" -AuthFile $AuthFile
+        $PD.Stat.name | Should -Be $NewFileName
+    }
+
+    ### Rename-NetstorageFile
+    it 'Rename-NetstorageFile renames a file' {
+        $PD.Rename = Rename-NetstorageFile -Path "/$TestDirectory/$NewDirName/$NewFileName" -NewFilename $RenamedFileName -AuthFile $AuthFile
+        $PD.Rename | Should -Match 'renamed'
+    }
+
+    ### Remove-NetstorageFile
+    it 'Remove-NetstorageFile removes a file' {
+        $PD.RemoveFile = Remove-NetstorageFile -Path "/$TestDirectory/$NewDirName/$SymlinkFileName" -AuthFile $AuthFile
+        $PD.RemoveFile | Should -Match 'deleted'
+    }
+
+    ### Remove-NetstorageDirectory
+    it 'Remove-NetstorageDirectory removes a dir' {
+        $PD.RemoveDir = Remove-NetstorageDirectory -Path "/$TestDirectory/$NewDirName" -ImReallyReallySure -AuthFile $AuthFile
+        $PD.RemoveDir | Should -Match "quick-delete scheduled"
+    } 
 }
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyKWVZB/SwMsGa
-# CpKiBvZQXX5Sfn3LOQKgxck2CF/jEqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCC3seKjDfGOkL2B
+# TH+6OrNKtBq9k2II1y3qulakW8hAUKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -107,22 +178,22 @@ function Get-CPSDVHistory {
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQg4GI+FckGVONJxRRIxL+fGZAEANgYPyDtPGIU0pjBakAw
-# DQYJKoZIhvcNAQEBBQAEggIAdk7U+MJ+rxGgZFvWK/UzpOySLC2bJnXjnK8D4oP/
-# vp+NQBLR1z4FxJwxJjNLfMZxKxEkCLhtZn0d0SG3gDu485qCkgwYgINNiDt+i8G0
-# BEByUba88wFHCJgJEyXK5pdWz/6kDM03NTZ/AcCX03MnA1eHseyTEUt4XGEjzJ5/
-# PNyM9yiGcxmucQ946K8Q+VYVmbH0FKTXhmdni3cCboNDangb4qm4814O+vaEqb2K
-# KhOgaAUZxiijJ+rbuoFAGnREuPN0Ui2lWJhYZWABSaZ4IKSCTUxiJUeVtQ1HyqlH
-# DfKyam6q14MdgVBj/1RebPUPPv3N/0+Xf1Ny9VkJgM316OmGLtWDpwdKfeH1D/wh
-# AHIq6S+O7qGBdKngUn3hI7KGCye83Spte+jCJc9V+kDPAlo718gCim7j6ruTirBI
-# GrRQfT9OAOTm1w7bIVVPWO5FXjZEk018KGqLZQ3X8uzj2z2wJTBQ4hSUsDLB7OEL
-# rLrHNc8Gv4DmxavxVpJfcw+VKrftgaOIGRKdM3iX0o/wpPjBRznXlddWhcpk8//E
-# fgmKUhwHJaIvsqY3x5dTIqrjyrRVm8pUUqbPIG5LqP1OYvJHYeI30F6NVwkIeNmA
-# t4RG6p57kepeE/z0Ilu8JgNpEgOWdCNQvv3yvZ35ndcye28IfXvdNo3qsNhoOGqi
-# Xh6hghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgW9piCjuj8tv5ebQVweOimvuJPvDszDtDSiyZV8mLre8w
+# DQYJKoZIhvcNAQEBBQAEggIArApgaR2k2bgrYuncvn9YKJrA/GB9I7LNLP3Strp0
+# hLd5wf9qK4mszNk0+lmS15Abifrxbx6edoRxgD5ulXHaWBCdokR2Y13hWztSxjZY
+# xjKk0LAky/m5AitD2Qjc84JIBHoT1ZYA1lOPDJnfWVznWkR8XP0IAheAmwIL546N
+# 8SeETcKC8jBIJwHo8TumL/N05Ftw2dJs3iq2zU65EV+NnGeHd6AwDg9b610jRPIm
+# zEDzXkuRd5V3w1TA2qqZBl540QjHEV0K4ekqYfsVcWGl9WWPldmWDrR653f2enzL
+# s7yU54Q6YLunmAtg8dioxC8qhJBTIlbvoRapmQnZGT616k4tBZfTJ76q/ufnDLmO
+# PDgilLEuPCCpEjQsNAeQQX4Hvo+9qIHZuRKQ5cHhgVNk1IiLKmk0vtCoBdgFQxWa
+# UMsOZnScQ86JY5iVTM8titeQXK0Rt3EzxlSpLoEHQVAIzdW+Cp/Rv763hIAgz1ZZ
+# kFluENhLgwwyDWKlfpeXaq9OWwFxXDK60zj/dl+5hMLJJYxfTUYLvBGvD947EECS
+# KwKJlxLQ2rHoUg+yMM4UG/qS7z9C9LCcc3T9O0ZHx4mpkfz3KVPZQWp+GYNRApyq
+# awIY0D2jb5dp8roFb+0bBZhcH8Z1y3xl2+wf0fCwdR7qZcFyPvFDa6QI/I391vep
+# 5oyhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgvaF+8z8lK8Hmh5fW1rDWN5jX2U/I
-# 9JwRNstEfqQKixECEFhCHGpy9TcvpRBwKIubEKwYDzIwMjMxMTA2MTY1OTMyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg16o9ShIRcBebf0DuHiwXn4YYz8dj
+# /4ABLdiWzwXn0ZwCEGYOskZzZuDJTezh1w4n+xUYDzIwMjMxMTA2MTcxMTUyWqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -228,20 +299,20 @@ function Get-CPSDVHistory {
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY1OTMyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTUyWjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgfXq52TXsnw22Dt9aGNGDF0GYoLw9Gaibo+jjpGSIBc8wNwYLKoZI
+# 9w0BCQQxIgQgISvnmLuZ09xdcJ8pHkNBCSf8eVZM0E3yn4ZIp6Qk9UAwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAD5QvnN+3/0rYLgSRCsOe9mzgTv+9ZJwseczi
-# MpkRq8hDCedjlq2hdkIqq62HQTyP731PzoVEpKPK96mHMlFF/RMzHpNgCFYaKtfI
-# LLYHnsUKnQqM0T3s5RsCUohj9BHc7XdZHM6wX1U4uvXnVquCAawGvdK9d/W6gXGv
-# 4ZHnyYdQx6JsbdA4UEfGitrD1BfOWyKl3p3Bc1JxaE7SO2fWI+VPjrBER9hese/Q
-# T63jicemzmN4W+VldSuqqgJMglpZ298BrwVdS/S7OinRAEK8FQNfqh6QGnmpw6vy
-# MkJ8wAJdq0zzileAQKGGkLUhAtUsaGctt2xTzg4vp33o0+VdQMpDeAKwOqOQQmIG
-# 6qBkTrKheH9ooWlKP4HXYYiSopo1MlAOX8Pipiz1wyJI2mzNsddhawrsENCvrESh
-# mVN/tsvO60NyLy7Xaeuw4NaKKZBcH4A30Dm9r5pXl3Qdp62zrBdhrGZvTwIScR5I
-# PHHxHTu/7zGatS7Lxz5Spq8McUCy/W5r9MPyJohbk/JBHi3wg3/JYe1hVWWKeNT4
-# PZpiNdcxvJ3wjjek8ilba2tHoyXmJtGIvSM2GdhEAVOw0BV6v5GW7Kd2reMolUCo
-# Gj1V02pHXrx80llYHuL8CKc2H1x53nD3K+QiCrFTYFNy58c7RrbnwZOGiffiQ6KW
-# /ETT1qA=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAUpgHqS2f0rvuFE0JVyqF/Aw9ObbYASTggvO8
+# 9JVPhOTvhuOYj+RZLdgOPAyFLFIwJ11fSIUwGcCBNNpaq6fP2HHoZkSysgb6+fG5
+# ocHd9bGN52tlKJDVORuaOPRSUDEm2Uj0eQQ5FFMAmKJLXZAMasNpRYhugONuasWr
+# fcHg1eaAx4kPiaLPrmqWDC2dIvYDYnBvO9fyNiD5j7LliBtdG58oMxMVk1oX5a3k
+# uvnMOUJK2cHN/Ud7NfO7lYEClbjRv0rK124vwK+ib4boql3KjJst+Lt4tYRBsLzT
+# paoFWsny8o6W86nJudDNNuDzCryC8hHYkF2Ia1K9woxw9lkpWIYAAY5n7As3A91B
+# nftTCbBfMA6Bf/n9rHel67lUzPuN453fD+Bv4KK2HkDiifeOfaDKM2tYUxcOHZzw
+# TCv5dWmkKYPZmhxsaRO9gF67OTIsrOsjC2r+CpSb9ZzBle+c1zao7sYoATby0m5M
+# hSTQOCsNarnJdBR9OICeX680uo9hCVG/F3QwnE2sFZNortbYZnrsgiJt3cmrtMtV
+# VN2hds3RI8mHqbbNgv+Ei+BJLT5ze7D6h08g8H6yX46myH/gUqMHtwDv79FmGemD
+# +1pxE1Qo5KybxzL3eUtNnjs4BpHiHN3+3o2s+Bzca7MwOFdchjzhfLXDdhGEKTGJ
+# pY3ypIg=
 # SIG # End signature block

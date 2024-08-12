@@ -1,30 +1,86 @@
-function Get-CPSDVHistory {
-    Param(
-        [Parameter(Mandatory = $true)]  [string] $EnrollmentID,
-        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory = $false)] [string] $Section,
-        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
-    )
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestEHN = 'akamaipowershell-testing.edgesuite.net'
+$Script:TestSecureEHN = 'akamaipowershell-testing.edgekey.net'
+$Script:TestEHNRecordName = 'akamaipowershell-testing'
 
-    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history"
-    $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.dv-history.v1+json'
+Describe 'Safe HAPI Tests' {
+
+    BeforeDiscovery {
+        
     }
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result.data
+    ### List-EdgeHostnames
+    $Script:Edges = List-EdgeHostnames -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeHostnames returns a list' {
+        $Edges.count | Should -Not -Be 0
     }
-    catch {
-        throw $_
-    }  
+
+    ### List-EdgeHostnameProducts
+    $Script:Products = List-EdgeHostnameProducts -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeHostnameProducts returns a list' {
+        $Products.count | Should -Not -Be 0
+    }
+
+    ### Get-EdgeHostname by name
+    $Script:EdgeByName = Get-EdgeHostname -EdgeHostname $TestSecureEHN -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeHostname by name returns the correct data' {
+        $EdgeByName.recordName | Should -Be $TestEHNRecordName
+    }
+
+    ### Get-EdgeHostname by ID
+    $Script:EdgeByID = Get-EdgeHostname -EdgeHostnameID $EdgeByName.edgeHostnameID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeHostname by ID returns the correct data' {
+        $EdgeByID.recordName | Should -Be $TestEHNRecordName
+    }
+
+    ### Get-EdgeHostnameLocalizationData
+    $Script:LocalisationData = Get-EdgeHostnameLocalizationData -Language en_US -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeHostnameLocalizationData contains problems object' {
+        $LocalisationData.problems | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-EdgeHostnameChangeRequests
+    it 'List-EdgeHostnameChangeRequests does not error' {
+        { List-EdgeHostnameChangeRequests -Status PENDING -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    AfterAll {
+        
+    }
+    
+}
+
+Describe 'Unsafe HAPI Tests' {
+    ## Set-EdgeHostname
+    $Script:UpdatedEdge = Set-EdgeHostname -RecordName $TestEHNRecordName -DNSZone edgekey.net -Path ttl -Value 300 -Comments "Testing" -StatusUpdateEmail 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Set-EdgeHostname returns correct data' {
+        $UpdatedEdge.action | Should -Be 'EDIT'
+    }
+
+    ## Remove-EdgeHostname
+    $Script:RemoveEdge = Remove-EdgeHostname -RecordName $TestEHNRecordName -DNSZone edgekey.net -Comments "Testing" -StatusUpdateEmail 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Remove-EdgeHostname returns correct data' {
+        $RemoveEdge.action | Should -Be 'DELETE'
+    }
+
+    ### Get-EdgeHostnameCertificate
+    $Script:EdgeCert = Get-EdgeHostnameCertificate -RecordName $TestEHNRecordName -DNSZone edgekey.net $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeHostnameCertificate returns the correct data' {
+        $EdgeCert.slotNumber | Should -Not -BeNullOrEmpty
+    }
+    
 }
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyKWVZB/SwMsGa
-# CpKiBvZQXX5Sfn3LOQKgxck2CF/jEqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCR+bTykJOhSonJ
+# XRxExAo7YVXeUaVJcPF9OS7WadC5wKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -107,22 +163,22 @@ function Get-CPSDVHistory {
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQg4GI+FckGVONJxRRIxL+fGZAEANgYPyDtPGIU0pjBakAw
-# DQYJKoZIhvcNAQEBBQAEggIAdk7U+MJ+rxGgZFvWK/UzpOySLC2bJnXjnK8D4oP/
-# vp+NQBLR1z4FxJwxJjNLfMZxKxEkCLhtZn0d0SG3gDu485qCkgwYgINNiDt+i8G0
-# BEByUba88wFHCJgJEyXK5pdWz/6kDM03NTZ/AcCX03MnA1eHseyTEUt4XGEjzJ5/
-# PNyM9yiGcxmucQ946K8Q+VYVmbH0FKTXhmdni3cCboNDangb4qm4814O+vaEqb2K
-# KhOgaAUZxiijJ+rbuoFAGnREuPN0Ui2lWJhYZWABSaZ4IKSCTUxiJUeVtQ1HyqlH
-# DfKyam6q14MdgVBj/1RebPUPPv3N/0+Xf1Ny9VkJgM316OmGLtWDpwdKfeH1D/wh
-# AHIq6S+O7qGBdKngUn3hI7KGCye83Spte+jCJc9V+kDPAlo718gCim7j6ruTirBI
-# GrRQfT9OAOTm1w7bIVVPWO5FXjZEk018KGqLZQ3X8uzj2z2wJTBQ4hSUsDLB7OEL
-# rLrHNc8Gv4DmxavxVpJfcw+VKrftgaOIGRKdM3iX0o/wpPjBRznXlddWhcpk8//E
-# fgmKUhwHJaIvsqY3x5dTIqrjyrRVm8pUUqbPIG5LqP1OYvJHYeI30F6NVwkIeNmA
-# t4RG6p57kepeE/z0Ilu8JgNpEgOWdCNQvv3yvZ35ndcye28IfXvdNo3qsNhoOGqi
-# Xh6hghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgvtflUvnL54f/LAoaNRTEJV5lT30BPwt3n5zMp1HdaBkw
+# DQYJKoZIhvcNAQEBBQAEggIAfQ6UKKBBaGYpShC/ZFDxAFY/b2i5a0o4/85tDIu8
+# 8g/KAZphYm5KuYNIvr8vLRDtdQ+W//aCy6wDp6b8NKb5ZVUZTZdJk8C4DijkEClk
+# 6zEv+XAx44nfr8S95w8pSYJmkj75RhxJMUE3z6NIp/9hOwO+4vuD+fT1iPQJ3c7K
+# jgEDSOth/b43YYYxvgFazwsgXNcA6znlgbhk3Wd64z+rQDIidkBe9ELp60Ke8t+2
+# MpKVOxrUepBNFcp4ee5gw2fsRL2ugTSGXp9gG2gHbrAJ6zO3u7i4GWB6vKXNGwoQ
+# D8trFQPHeQHLbSAwplAi2AIp56UhHmHxUsKBw3MjJPKmzaZ632pszPQErys2lA0V
+# H7//z6q4wZdH+foezl27lmtwRpA4LXeCgSG9V3hZL5ncg5hGQAqGwEPcZkBPcdTv
+# FmoOR7ZGAtj3b+37Rtr0hXkeTirjltf6NJTK/QEj0L7uXfblde/+bt4WCtmO2Gq6
+# pAexH4u6T08vBqyc/+udnLN77/fh/DgZQ9UrhHG6c3C4A9e/uNz/FxkJR4hlEdTF
+# dBzyuari89THmTM2KgZ2gC+e/JJQ3f7WsS2yhjRaCV7XySLSjsIQAwv+2fZYgSow
+# YQx3oJKeY2DmEx3//fQ8wagZUzor6UfE/cOlG+tgie3Q5sW7MIVJxmSeb5Ufh60N
+# gxmhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgvaF+8z8lK8Hmh5fW1rDWN5jX2U/I
-# 9JwRNstEfqQKixECEFhCHGpy9TcvpRBwKIubEKwYDzIwMjMxMTA2MTY1OTMyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgxVMI/VabTdBDV0b606pjMARUQk+G
+# 8ZyNh8n/lqvU7iwCECVxlr63IHRBUUnKTo5oJnkYDzIwMjMxMTA2MTcxMTQ0WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -228,20 +284,20 @@ function Get-CPSDVHistory {
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY1OTMyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTQ0WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgfXq52TXsnw22Dt9aGNGDF0GYoLw9Gaibo+jjpGSIBc8wNwYLKoZI
+# 9w0BCQQxIgQgkI59htpYNtOvvmffgKtYFBc7XSqUayM6xhBb+2RfgFIwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAD5QvnN+3/0rYLgSRCsOe9mzgTv+9ZJwseczi
-# MpkRq8hDCedjlq2hdkIqq62HQTyP731PzoVEpKPK96mHMlFF/RMzHpNgCFYaKtfI
-# LLYHnsUKnQqM0T3s5RsCUohj9BHc7XdZHM6wX1U4uvXnVquCAawGvdK9d/W6gXGv
-# 4ZHnyYdQx6JsbdA4UEfGitrD1BfOWyKl3p3Bc1JxaE7SO2fWI+VPjrBER9hese/Q
-# T63jicemzmN4W+VldSuqqgJMglpZ298BrwVdS/S7OinRAEK8FQNfqh6QGnmpw6vy
-# MkJ8wAJdq0zzileAQKGGkLUhAtUsaGctt2xTzg4vp33o0+VdQMpDeAKwOqOQQmIG
-# 6qBkTrKheH9ooWlKP4HXYYiSopo1MlAOX8Pipiz1wyJI2mzNsddhawrsENCvrESh
-# mVN/tsvO60NyLy7Xaeuw4NaKKZBcH4A30Dm9r5pXl3Qdp62zrBdhrGZvTwIScR5I
-# PHHxHTu/7zGatS7Lxz5Spq8McUCy/W5r9MPyJohbk/JBHi3wg3/JYe1hVWWKeNT4
-# PZpiNdcxvJ3wjjek8ilba2tHoyXmJtGIvSM2GdhEAVOw0BV6v5GW7Kd2reMolUCo
-# Gj1V02pHXrx80llYHuL8CKc2H1x53nD3K+QiCrFTYFNy58c7RrbnwZOGiffiQ6KW
-# /ETT1qA=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAFeiZY3VtKmzs3kXOvL7iR9ez1WLhRmekk/gO
+# Mw242K3mM8C61nsjzo5APtGDvcE99VkczmNx+e0+RrUXydPthlrvgcxox4GBIwtb
+# 0dt8w0VmiY15DG9q0KaY5nyJ9aAeI2m8+XJqYcv5M8HTpYr3a4fLIt2ipZj+IwrG
+# pInQCS1scw8Kt/3iy1DuH/K7J4jfGEnIz8YePZr6HugDruiKXxdMpJ4xyiuCpg+G
+# CwyVgmhEbUbWwcjxnaMPaWsezq/UnnKbIzfKeP11KptsXBA0XdV0u7AWdmvJflYH
+# k2Y8o4HOWEP7QhjduXesLgGsZPCcON0rfc3htW2wwLBuYR+cEG0Yr7Xg4+ht6C8b
+# 7ZLiXzfklrf1mMoGI7ZJbw/ZIvZnW8XQaAQkeRZscTs1EJ3Pm9t8XIP8bkfwomKV
+# /qGd7M8p1FA26DsRxS6tMlpDzVYdfFwd2q56tLPWT9ycMSEttqfDwBm35qlDnR/k
+# WQlNvCb+We1550prqpVnOhYongw0ajdAwXZK2WhDPTt4D04jkx8wDieWWEZ+c083
+# 22ZZ5XMVZGejiJGYDpiLJKH+FPVnCTrgyR2aI9wUGYCo58teBTtv6JNk/ix7Z2NI
+# QShDn0iUdakHU9LzRJtOOfvt2rOTaPKFXEAtKSkbmsz/3mDJNq3/TyCq33A1t7GK
+# ADVzASY=
 # SIG # End signature block

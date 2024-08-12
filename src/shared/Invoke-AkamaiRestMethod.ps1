@@ -210,35 +210,35 @@ function Invoke-AkamaiRestMethod {
     # Set ContentType param from Content-Type header. This is sent along with bodies to fix string encoding issues in IRM
     $ContentType = $Headers['Content-Type']
 
-    # Add additional headers if POSTing or PUTing
-    If ($Body) {
-        # turn off the "Expect: 100 Continue" header
-        # as it's not supported on the Akamai side.
-        [System.Net.ServicePointManager]::Expect100Continue = $false
-    }
+    # turn off the "Expect: 100 Continue" header
+    # as it's not supported on the Akamai side.
+    [System.Net.ServicePointManager]::Expect100Continue = $false
 
     # Set TLS version to 1.2
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 
     $params = @{
-        Method      = $Method
-        Uri         = $ReqURL
-        Headers     = $Headers
-        ContentType = $ContentType
+        Method             = $Method
+        Uri                = $ReqURL
+        Headers            = $Headers
+        ContentType        = $ContentType
+        MaximumRedirection = 0
     }
     
     if ($null -ne $ENV:https_proxy) { $params.Proxy = $ENV:https_proxy }
     if ($null -ne $ENV:proxy_use_default_credentials) { $params.ProxyUseDefaultCredentials = $true }
 
+    # Add -AllowInsecureRedirect if Pwsh 7.4 or higher
+    if ($PSVersionTable.PSVersion.Major -gt 7 -or ($PSVersionTable.PSVersion.Major -eq 7 -and $PSVersionTable.PSVersion.Minor -ge 4)) {
+        $params.AllowInsecureRedirect = $true
+    }
+
     if ($Method -in "PUT", "POST", "PATCH") {
         if ($Body) { $params.Body = $Body }
         if ($InputFile) { $params.InFile = $InputFile }
     }
-    
     # GET requests typically
     else { 
-        $params.MaximumRedirection = 0
-
         # Differentiate on PS 5 and later as PS 5's Invoke-RestMethod doesn't behave the same as the later versions
         if ($PSVersionTable.PSVersion.Major -le 5) {
             $params.ErrorAction = "SilentlyContinue"

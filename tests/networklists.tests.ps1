@@ -1,30 +1,99 @@
-function Get-CPSDVHistory {
-    Param(
-        [Parameter(Mandatory = $true)]  [string] $EnrollmentID,
-        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory = $false)] [string] $Section,
-        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
-    )
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestGroupID = 209759
+$Script:TestContract = '1-1NC95D'
+$Script:TestListName = 'akamaipowershell-testing'
+$Script:TestElement = '1.1.1.1'
+$Script:NewTestElements = '2.2.2.2, 3.3.3.3'
 
-    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history"
-    $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.dv-history.v1+json'
+Describe 'Safe Network Lists Tests' {
+
+    BeforeDiscovery {
     }
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result.data
+    ### New-NetworkList
+    $Script:NewList = New-NetworkList -Name $TestListName -Type IP -Description "testing" -ContractId $TestContract -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-NetworkList creates a list successfully' {
+        $NewList.name | Should -Be $TestListName
     }
-    catch {
-        throw $_
-    }  
+
+    ### AddTo-NetworkList
+    $Script:Add = AddTo-NetworkList -NetworkListID $NewList.uniqueId -Element $TestElement -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'AddTo-NetworkList adds element' {
+        $Add.list | Should -Contain $TestElement
+    }
+
+    ### List-NetworkLists
+    $Script:NetworkLists = List-NetworkLists -Extended -IncludeElements -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-NetworkLists returns a list of lists' {
+        $NetworkLists.count | Should -BeGreaterThan 0
+    }
+
+    ### Get-NetworkList
+    $Script:List = Get-NetworkList -NetworkListID $NewList.uniqueId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-NetworkList returns specific list' {
+        $List.name | Should -Be $TestListName
+    }
+
+    ### Set-NetworkList by pipeline
+    $Script:SetListByPipeline = $Script:List | Set-NetworkList -NetworkListID $NewList.uniqueId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-NetworkList returns successfully' {
+        $SetListByPipeline.name | Should -Be $TestListName
+    }
+
+    ### Set-NetworkList by body
+    $Script:SetListBody = $Script:List | ConvertTo-Json -Depth 100
+    $Script:SetListByBody = Set-NetworkList -NetworkListID $NewList.uniqueId -Body $SetListBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-NetworkList returns successfully' {
+        $SetListByBody.name | Should -Be $TestListName
+    }
+
+    ### Append-NetworkList
+    $Script:Append = Append-NetworkList -NetworkListID $NewList.uniqueId -Elements $NewTestElements -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Append-NetworkList adds elements to the correct count' {
+        $Append.list.count | Should -Be 3
+    }
+
+    ### RemoveFrom-NetworkList
+    $Script:Remove = RemoveFrom-NetworkList -NetworkListID $NewList.uniqueId -Element $TestElement -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'RemoveFrom-NetworkList removes element' {
+        $Remove.list | Should -Not -Contain $TestElement
+    }
+
+    ### Remove-NetworkList
+    $Script:Removal = Remove-NetworkList -NetworkListID $NewList.uniqueId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-NetworkList removes given list' {
+        $Removal.status | Should -Be 200
+    }
+
+    AfterAll {
+        
+    }
+    
+}
+
+Describe 'Unsafe Network Lists Tests' {
+    ### Activate-NetworkList
+    $Script:Activate = Activate-NetworkList -NetworkListID $NewList.uniqueId -Environment STAGING -Comments "Activating" -NotificationRecipients 'email@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Activate-NetworkList activates correctly' {
+        $Activate.activationStatus | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-NetworkListActivationStatus
+    $Script:Status = Get-NetworkListActivationStatus -NetworkListID $NewList.uniqueId -Environment STAGING -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-NetworkListActivationStatus returns status' {
+        $Status.activationStatus | Should -Not -BeNullOrEmpty
+    }
 }
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyKWVZB/SwMsGa
-# CpKiBvZQXX5Sfn3LOQKgxck2CF/jEqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDdp2UqO2t2j3hR
+# iLX7TarQa8Y4NN53mLFs9ITK4s4QAKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -107,22 +176,22 @@ function Get-CPSDVHistory {
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQg4GI+FckGVONJxRRIxL+fGZAEANgYPyDtPGIU0pjBakAw
-# DQYJKoZIhvcNAQEBBQAEggIAdk7U+MJ+rxGgZFvWK/UzpOySLC2bJnXjnK8D4oP/
-# vp+NQBLR1z4FxJwxJjNLfMZxKxEkCLhtZn0d0SG3gDu485qCkgwYgINNiDt+i8G0
-# BEByUba88wFHCJgJEyXK5pdWz/6kDM03NTZ/AcCX03MnA1eHseyTEUt4XGEjzJ5/
-# PNyM9yiGcxmucQ946K8Q+VYVmbH0FKTXhmdni3cCboNDangb4qm4814O+vaEqb2K
-# KhOgaAUZxiijJ+rbuoFAGnREuPN0Ui2lWJhYZWABSaZ4IKSCTUxiJUeVtQ1HyqlH
-# DfKyam6q14MdgVBj/1RebPUPPv3N/0+Xf1Ny9VkJgM316OmGLtWDpwdKfeH1D/wh
-# AHIq6S+O7qGBdKngUn3hI7KGCye83Spte+jCJc9V+kDPAlo718gCim7j6ruTirBI
-# GrRQfT9OAOTm1w7bIVVPWO5FXjZEk018KGqLZQ3X8uzj2z2wJTBQ4hSUsDLB7OEL
-# rLrHNc8Gv4DmxavxVpJfcw+VKrftgaOIGRKdM3iX0o/wpPjBRznXlddWhcpk8//E
-# fgmKUhwHJaIvsqY3x5dTIqrjyrRVm8pUUqbPIG5LqP1OYvJHYeI30F6NVwkIeNmA
-# t4RG6p57kepeE/z0Ilu8JgNpEgOWdCNQvv3yvZ35ndcye28IfXvdNo3qsNhoOGqi
-# Xh6hghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgV9KXQIXTtyChclSgFrDlvStiPB+mlbDN80X7Rr8+JkMw
+# DQYJKoZIhvcNAQEBBQAEggIADx4wkGsC+EbBAPqltLsdBn6/BAducwru0COF368P
+# al31J3csb+2dynfvoqAUfqZEyvhIWyH1jkilO2pQsOeGSERb1O80G3XaR75bLDFx
+# 3iUymCF6Gq7KlwAOwz5lYYCmwEvjc6sYKCKPttj+gBrPDzMVOXjpESQtrFr/hTKv
+# k2IhxaOppRchkjhzKmIMRdY0EkBTx6lFMaC57Iucr05SzrEkID7FJb7RKlKsmo0P
+# KlSC0kqjj1abkOHpWuIOcFQXpNtj99m4zdDnqCecbn4zeZNL+756wCp/nxaTf+8e
+# ZsJpMQhgaXGGzLhCNovc+ui8Sq/GDIDVHnszJHP7oTHiJOdN8sbsoRFHKotKd/uC
+# gt9sIHLxSn3XATEHOnAPtT1WD6PjxhFkvN5t5AKA8keynGN0cBHpJT+yqcsW3wdg
+# DbL/iisLLUTrhfG50yEhb3QL4zWxajEdDAE2rW4AF7A3dBTGiHX49UR7zb5sMm9t
+# K38HSC9k5wOrKHjI51tkTvYpOSHuc1UsoOdFAIPMn0OrEwZjduFvq0l3JiPiHfLY
+# quO83Jx1S1VxcLJfgRbHwC2lYPXqQ0Cp8PmIOkGm6jJWmyBMhIFNzMhMAT26vUcs
+# +LEyDfmc/obJVPNZkyG8vbVHdN/j5jya+vVgVc+43N9nZmhlFix/C6j55ApDVs6H
+# TMKhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgvaF+8z8lK8Hmh5fW1rDWN5jX2U/I
-# 9JwRNstEfqQKixECEFhCHGpy9TcvpRBwKIubEKwYDzIwMjMxMTA2MTY1OTMyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgNNUoosKB4X26mzUu+VJAaLvM/Hup
+# rEXND8cTw+wppeACEDBiKmsdh7AS0BzIOY0Tcy0YDzIwMjMxMTA2MTcxMTQ5WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -228,20 +297,20 @@ function Get-CPSDVHistory {
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY1OTMyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTQ5WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgfXq52TXsnw22Dt9aGNGDF0GYoLw9Gaibo+jjpGSIBc8wNwYLKoZI
+# 9w0BCQQxIgQgE8luc96XLejxPkD5iScCgrsv7kijq5lYIbvgQnFVX5owNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAD5QvnN+3/0rYLgSRCsOe9mzgTv+9ZJwseczi
-# MpkRq8hDCedjlq2hdkIqq62HQTyP731PzoVEpKPK96mHMlFF/RMzHpNgCFYaKtfI
-# LLYHnsUKnQqM0T3s5RsCUohj9BHc7XdZHM6wX1U4uvXnVquCAawGvdK9d/W6gXGv
-# 4ZHnyYdQx6JsbdA4UEfGitrD1BfOWyKl3p3Bc1JxaE7SO2fWI+VPjrBER9hese/Q
-# T63jicemzmN4W+VldSuqqgJMglpZ298BrwVdS/S7OinRAEK8FQNfqh6QGnmpw6vy
-# MkJ8wAJdq0zzileAQKGGkLUhAtUsaGctt2xTzg4vp33o0+VdQMpDeAKwOqOQQmIG
-# 6qBkTrKheH9ooWlKP4HXYYiSopo1MlAOX8Pipiz1wyJI2mzNsddhawrsENCvrESh
-# mVN/tsvO60NyLy7Xaeuw4NaKKZBcH4A30Dm9r5pXl3Qdp62zrBdhrGZvTwIScR5I
-# PHHxHTu/7zGatS7Lxz5Spq8McUCy/W5r9MPyJohbk/JBHi3wg3/JYe1hVWWKeNT4
-# PZpiNdcxvJ3wjjek8ilba2tHoyXmJtGIvSM2GdhEAVOw0BV6v5GW7Kd2reMolUCo
-# Gj1V02pHXrx80llYHuL8CKc2H1x53nD3K+QiCrFTYFNy58c7RrbnwZOGiffiQ6KW
-# /ETT1qA=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAjPf8W/Y+kxM3aep5OYpB9CdbhYv7vCLScmmg
+# MYW0IAJypsAJpspPUbCTOC9T+u25kbfRqvDM+zVop4qqizGHh5jim/4FP/KqdiQG
+# dGTm4x/b24HAiIpEYxL6NzuMMvYqP7Zhy0sLJyPXZNJic0ECqdPWlx8x7BCSc5pg
+# g01rieM/RUBOvDKNZiXyRC44gGUhBOO2EbRnueidyQiLNZldySGP2NpS/3vSSwag
+# RvF0NbQTpvkA99cnuAezSTjw3DJAS4fOEZJ3xvFtWTbBLyO1isUNOYsqDWHPVqX3
+# pGl+CduFDzlj8KcbL+5/6AwEqp/oS7hbOlOZpkWonjOWNdwJfM7g5xT5nl4f+C9u
+# 3PFMhnCm+0sflk1KseBj8spkVQfc8PN9s6/LKh3uvNbbKN7gf9OMur/eZPPP5EzA
+# D5PMCn45ngM9M+QacWqH/lSS23rBzVpzMOui/CzOJlaZCpTfMop9PP3ZPvmFNjwO
+# m4CMG473aZ/5hBVH72gdH3Ju4lkdwsrsA3YfU2iZXU+dI04rqGNohuEchCN9g820
+# Mr7Dwou/PRPL2QulIvuEtfFtYgonGMr8q61tcT5ayUNTNjrkGoGVX9acMvnlbC8w
+# PBKlbgysw0kehbZdj5A7zTbtlJlDZcHYRUtNXuF5jkoY+Rlyb6cPNmCFdpZzYzod
+# bSoUwLk=
 # SIG # End signature block

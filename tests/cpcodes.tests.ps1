@@ -1,30 +1,133 @@
-function Get-CPSDVHistory {
-    Param(
-        [Parameter(Mandatory = $true)]  [string] $EnrollmentID,
-        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory = $false)] [string] $Section,
-        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
-    )
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestCPCode = 1277303
+$Script:TestReportingGroup = 247962
+$Script:TestReportingGroupBody = '{
+    "reportingGroupName": "akamaipowershell-testing",
+    "contracts": [
+      {
+        "contractId": "1-1NC95D",
+        "cpcodes": [
+          {
+            "cpcodeId": 1277303,
+            "cpcodeName": "akamaipowershell-testing"
+          }
+        ]
+      }
+    ],
+    "accessGroup": {
+      "groupId": 209759,
+      "contractId": "1-1NC95D"
+    }
+}'
+$Script:TestReportingGroupObject = ConvertFrom-Json $TestReportingGroupBody
 
-    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history"
-    $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.dv-history.v1+json'
+Describe 'Safe CP Codes Tests' {
+
+    BeforeDiscovery {
+        
     }
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result.data
+    ### List-CPCodes
+    $Script:CPCodes = List-CPCodes -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-CPCodes returns a list' {
+        $CPCodes.count | Should -Not -Be 0
     }
-    catch {
-        throw $_
-    }  
+
+    ### List-CPReportingGroups
+    $Script:ReportingGroups = List-CPReportingGroups -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-CPReportingGroups returns a list' {
+        $ReportingGroups.count | Should -Not -Be 0
+    }
+
+    ### List-CPCodeWatermarkLimits
+    $Script:WatermarkLimits = List-CPCodeWatermarkLimits -ContractID $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-CPCodeWatermarkLimits returns a list' {
+        $WatermarkLimits.count | Should -Not -Be 0
+    }
+
+    ### Get-CPCode
+    $Script:CPCode = Get-CPCode -CPCode $TestCPCode -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-CPCode returns the correct data' {
+        $CPCode.cpcodeId | Should -Be $TestCPCode
+    }
+
+    ### Set-CPCode by pipeline
+    $Script:SetByPipeline = ( $CPCode | Set-CPCode -CPCode $TestCPCode -EdgeRCFile $EdgeRCFile -Section $Section )
+    it 'Set-CPCode by pipeline returns the correct data' {
+        $SetByPipeline.cpcodeName | Should -Be $CPCode.cpCodeName
+    }
+
+    ### Set-CPCode by param
+    $Script:SetByParam = Set-CPCode -CPCode $TestCPCode -CPCodeObject $CPCode -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-CPCode by param returns the correct data' {
+        $SetByParam.cpcodeName | Should -Be $CPCode.cpCodeName
+    }
+
+    ### Set-CPCode by body
+    $Script:SetByBody = Set-CPCode -CPCode $TestCPCode -Body (ConvertTo-Json -Depth 10 $CPCode) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-CPCode by body returns the correct data' {
+        $SetByBody.cpcodeName | Should -Be $CPCode.cpCodeName
+    }
+
+    ### Rename-CPCode
+    $Script:Rename = Rename-CPCode -CPCode $TestCPCode -NewName $CPCode.cpcodename -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Rename-CPCode returns the correct data' {
+        $Rename.cpcodeName | Should -Be $CPCode.cpCodeName
+    }
+
+    ### Get-CPReportingGroup
+    $Script:ReportingGroup = Get-CPReportingGroup -ReportingGroupID $TestReportingGroup -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-CPReportingGroup returns the correct data' {
+        $ReportingGroup.reportingGroupId | Should -Be $TestReportingGroup
+    }
+
+    ### Set-CPReportingGroup by pipeline
+    $Script:SetRGByPipeline = ( $ReportingGroup | Set-CPReportingGroup -ReportingGroupID $TestReportingGroup -EdgeRCFile $EdgeRCFile -Section $Section )
+    it 'Set-CPReportingGroup by pipeline returns the correct data' {
+        $SetRGByPipeline.reportingGroupName | Should -Be $ReportingGroup.reportingGroupName
+    }
+
+    ### Set-CPReportingGroup by param
+    $Script:SetRGByParam = Set-CPReportingGroup -ReportingGroupID $TestReportingGroup -ReportingGroupObject $ReportingGroup -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-CPReportingGroup by param returns the correct data' {
+        $SetRGByParam.reportingGroupName | Should -Be $ReportingGroup.reportingGroupName
+    }
+
+    ### Set-CPReportingGroup by body
+    $Script:SetRGByBody = Set-CPReportingGroup -ReportingGroupID $TestReportingGroup -Body (ConvertTo-Json -Depth 10 $ReportingGroup) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-CPReportingGroup by body returns the correct data' {
+        $SetRGByBody.reportingGroupName | Should -Be $ReportingGroup.reportingGroupName
+    }
+
+    AfterAll {
+        
+    }
+    
+}
+
+Describe 'Unsafe CP Codes Tests' {
+    ### New-CPReportingGroup
+    $Script:NewReportingGroup = ( $TestReportingGroupObject | New-CPReportingGroup -EdgeRCFile $SafeEdgeRCFile -Section $Section )
+    it 'New-CPReportingGroup returns the correct data' {
+        $NewReportingGroup.reportingGroupName | Should -Not -BeNullOrEmpty
+    }
+
+    ### Remove-CPReportingGroup
+    it 'Remove-CPReportingGroup completes successfully' {
+        { Remove-CPReportingGroup -ReportingGroupID $TestReportingGroup -EdgeRCFile $SafeEdgeRCFile -Section $Section } | Should -Not -Throw
+    }
 }
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyKWVZB/SwMsGa
-# CpKiBvZQXX5Sfn3LOQKgxck2CF/jEqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBt4ANd2Vm+Oo53
+# S73UOt6lq9FrMddMlHOIMtj7t1LBKqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -107,22 +210,22 @@ function Get-CPSDVHistory {
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQg4GI+FckGVONJxRRIxL+fGZAEANgYPyDtPGIU0pjBakAw
-# DQYJKoZIhvcNAQEBBQAEggIAdk7U+MJ+rxGgZFvWK/UzpOySLC2bJnXjnK8D4oP/
-# vp+NQBLR1z4FxJwxJjNLfMZxKxEkCLhtZn0d0SG3gDu485qCkgwYgINNiDt+i8G0
-# BEByUba88wFHCJgJEyXK5pdWz/6kDM03NTZ/AcCX03MnA1eHseyTEUt4XGEjzJ5/
-# PNyM9yiGcxmucQ946K8Q+VYVmbH0FKTXhmdni3cCboNDangb4qm4814O+vaEqb2K
-# KhOgaAUZxiijJ+rbuoFAGnREuPN0Ui2lWJhYZWABSaZ4IKSCTUxiJUeVtQ1HyqlH
-# DfKyam6q14MdgVBj/1RebPUPPv3N/0+Xf1Ny9VkJgM316OmGLtWDpwdKfeH1D/wh
-# AHIq6S+O7qGBdKngUn3hI7KGCye83Spte+jCJc9V+kDPAlo718gCim7j6ruTirBI
-# GrRQfT9OAOTm1w7bIVVPWO5FXjZEk018KGqLZQ3X8uzj2z2wJTBQ4hSUsDLB7OEL
-# rLrHNc8Gv4DmxavxVpJfcw+VKrftgaOIGRKdM3iX0o/wpPjBRznXlddWhcpk8//E
-# fgmKUhwHJaIvsqY3x5dTIqrjyrRVm8pUUqbPIG5LqP1OYvJHYeI30F6NVwkIeNmA
-# t4RG6p57kepeE/z0Ilu8JgNpEgOWdCNQvv3yvZ35ndcye28IfXvdNo3qsNhoOGqi
-# Xh6hghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgBg1BS0wNojNKHeSzg3SiBlLu7TVrNAb4JJABdZJIEXMw
+# DQYJKoZIhvcNAQEBBQAEggIATMHbcuBBtS09+NN+fAuZVyE6Wb8JQvSolrPtjf4h
+# u7EYnr4OMF0uIUHSKleQ2W4YtVrSYhYbXhNP9hiqd7UJ4iCh9E31CIquqRuT+VyT
+# FOUeACpNZFSFOfcbzBZ7z+Dw5OlIJSnyd/IQCwuMGcL7Ejty1J3/ksstwvzQ9S6W
+# q3aoOOarG3uDFmnYJZjJ8YYBXujLUsvQkGU92BJhYNckIHG64L+0H+ex85UeaGKu
+# uvcNZ4PVL7MgUdE2TBZ/iRUhnPDvuLzjwaEAn4en39Cy1q1NBGdqSV24+ib7V0y0
+# CdyD+eSoovw4Xt8yzXEAOuVGSSkkl0Uwo4wRbHzwGfVOXR9Ns4pkwZ6Lk/0ijqII
+# fKxH5xM28Xx7c4BgGw08MAwtsNrqbBqxXQc1+qO++5AypZtqHQz0vVi60X0h/AZ5
+# g3m4PQhN2VSLWprgDHA++OU5ZDPqLFFp9/6rwtgUyF12LdpsIWH9WAFAqDuOjYT5
+# Vt9NgNqV9TBn9rLiJ3xcbGakFTFkdWDi8sSE38gTLXROdTLCGNtTrTbW0+snNl2B
+# eceGjZ3EMtptFCxufWZKFjNAoSuMGH/Su9sDfEv41Dk2eX+naO6GR+wWRSq6I/6p
+# kt0Y43+qN/u4u0dFgmh3aSnyllIiunRKCRHzrtMTkXMGXUuFCNQ7yIQsobmVnw02
+# b4yhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgvaF+8z8lK8Hmh5fW1rDWN5jX2U/I
-# 9JwRNstEfqQKixECEFhCHGpy9TcvpRBwKIubEKwYDzIwMjMxMTA2MTY1OTMyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgGSTnsY8XS4wADXX/q39sjX6+iqnp
+# sndXqOYcPgRzERkCEFuxssEdCszjaNFNZap195cYDzIwMjMxMTA2MTcxMTI4WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -228,20 +331,20 @@ function Get-CPSDVHistory {
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY1OTMyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTI4WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgfXq52TXsnw22Dt9aGNGDF0GYoLw9Gaibo+jjpGSIBc8wNwYLKoZI
+# 9w0BCQQxIgQgWeAJWs5hm27soII/rE9Xz/YEG5rJgX1xZLI+ZMIbXU8wNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAD5QvnN+3/0rYLgSRCsOe9mzgTv+9ZJwseczi
-# MpkRq8hDCedjlq2hdkIqq62HQTyP731PzoVEpKPK96mHMlFF/RMzHpNgCFYaKtfI
-# LLYHnsUKnQqM0T3s5RsCUohj9BHc7XdZHM6wX1U4uvXnVquCAawGvdK9d/W6gXGv
-# 4ZHnyYdQx6JsbdA4UEfGitrD1BfOWyKl3p3Bc1JxaE7SO2fWI+VPjrBER9hese/Q
-# T63jicemzmN4W+VldSuqqgJMglpZ298BrwVdS/S7OinRAEK8FQNfqh6QGnmpw6vy
-# MkJ8wAJdq0zzileAQKGGkLUhAtUsaGctt2xTzg4vp33o0+VdQMpDeAKwOqOQQmIG
-# 6qBkTrKheH9ooWlKP4HXYYiSopo1MlAOX8Pipiz1wyJI2mzNsddhawrsENCvrESh
-# mVN/tsvO60NyLy7Xaeuw4NaKKZBcH4A30Dm9r5pXl3Qdp62zrBdhrGZvTwIScR5I
-# PHHxHTu/7zGatS7Lxz5Spq8McUCy/W5r9MPyJohbk/JBHi3wg3/JYe1hVWWKeNT4
-# PZpiNdcxvJ3wjjek8ilba2tHoyXmJtGIvSM2GdhEAVOw0BV6v5GW7Kd2reMolUCo
-# Gj1V02pHXrx80llYHuL8CKc2H1x53nD3K+QiCrFTYFNy58c7RrbnwZOGiffiQ6KW
-# /ETT1qA=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAR4HPBUufplbHkuaFoKbo2AwStcUUhRIo1MTy
+# IH1nxdNNSU9BBLp9o88B1eC9PlTZQIp38TMz55YQ/ecxBrTFs2N4hoM8fj3JDCov
+# RvvhO84MXkcyjWe0rKmwFO1zNvT4qyf429IMbdkA4eO2YeOWRE2+MkiSTJszWIdy
+# HvPlrPYDZ6mgj+AVKTczOR+ubAJ1AzqRF6VpjmEvpsvq2N3hUX/UDkueURN7RhbA
+# i8kbHhpE6pX7SsJWKbOe6fNond2hhnlwjfuZ3bVQODg2twT5QLcPfKaEL3HxWffl
+# QoTe2eR6KgKjfZUmFQvv+URHyNHYdgQmf1s0QcRf9tDxCkOQlRaQ90/ApzRUiusD
+# 6eR/Ugn0/94Fs+RMPcdNgW/+y69f1aUURT1m2RklMkLV3P5Fbc0LBO6lwfoGEYva
+# cxoZ5yqEo7stJz9B+2wIP0ReVCfKUblMf6GmrD6kDz7WNajiZrT7P1j0cBGxAmjA
+# HfemtgpAS3kWIKfbVP+KzPGzuW1W884K7xTLxS5JZSqJVyEKfotF4ATyZxgO1IgR
+# q+23rgpq66h5ZbOdXa3mNSOl1GUe+QMsGoNcqCUid9ArVY3HFszE/GYa+w+4rIrr
+# UYSe0gFXcMVR2izBq5ryCGxd8z0ftrZ20ZA4lMkz0J4b13yIAQnL48j0WMDsi9iv
+# F+uiJo8=
 # SIG # End signature block

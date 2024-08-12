@@ -1,30 +1,143 @@
-function Get-CPSDVHistory {
-    Param(
-        [Parameter(Mandatory = $true)]  [string] $EnrollmentID,
-        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
-        [Parameter(Mandatory = $false)] [string] $Section,
-        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
-    )
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestGroupID = 209759
+$Script:TestPolicyName = 'akamaipowershell'
+$Script:TestPolicyDescription = 'Testing only'
+$Script:TestCloudletType = 'FR'
+$Script:TestMatchRulesJson = '[{"type":"frMatchRule","id":0,"name":"Test1","start":0,"end":0,"matchURL":null,"matches":[{"matchValue":"www.example.com","matchOperator":"equals","negate":false,"caseSensitive":false,"matchType":"hostname"}],"akaRuleId":"9c3679ff26421404","forwardSettings":{"originId":"originId1"}}]'
+$Script:TestMatchRules = ConvertFrom-Json $TestMatchRulesJson
 
-    $Path = "/cps/v2/enrollments/$EnrollmentID/dv-history"
-    $AdditionalHeaders = @{
-        'accept' = 'application/vnd.akamai.cps.dv-history.v1+json'
+Describe 'Safe Cloudlets Tests' {
+
+    BeforeDiscovery {
+
     }
 
-    try {
-        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -AdditionalHeaders $AdditionalHeaders -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
-        return $Result.data
+    ### List-SharedCloudlets
+    $Script:Cloudlets = List-SharedCloudlets -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-SharedCloudlets returns a list' {
+        $Cloudlets.count | Should -Not -BeNullOrEmpty
     }
-    catch {
-        throw $_
-    }  
+
+    ### List-SharedCloudletPolicies
+    $Script:Policies = List-SharedCloudletPolicies -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-SharedCloudletPolicies returns a list' {
+        $Policies.count | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-SharedCloudletPolicy
+    $Script:NewPolicy = New-SharedCloudletPolicy -Name $TestPolicyName -Description $TestPolicyDescription -GroupId $TestGroupID -CloudletType $TestCloudletType -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-SharedCloudletPolicy creates a policy' {
+        $NewPolicy.name | Should -Be $TestPolicyName
+    }
+
+    ### Get-SharedCloudletPolicy
+    $Script:Policy = Get-SharedCloudletPolicy -PolicyId $NewPolicy.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-SharedCloudletPolicy finds the right policy' {
+        $Policy.name | Should -Be $TestPolicyName
+    }
+
+    ### Set-SharedCloudletPolicy
+    $Script:UpdatedPolicy = Set-SharedCloudletPolicy -PolicyId $NewPolicy.id -GroupID $TestGroupID -Description $TestPolicyDescription -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-SharedCloudletPolicy finds the right policy' {
+        $UpdatedPolicy.description | Should -Be $TestPolicyDescription
+    }
+
+    ### New-SharedCloudletPolicyVersion by description and matchRules
+    $Script:NewVersion = New-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Description $TestPolicyDescription -MatchRules $TestMatchRules -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-SharedCloudletPolicyVersion creates version 1' {
+        $NewVersion.version | Should -Be 1
+    }
+
+    ### List-SharedCloudletPolicyVersions
+    $Script:Versions = List-SharedCloudletPolicyVersions -PolicyID $NewPolicy.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-SharedCloudletPolicyVersions lists versions' {
+        $Versions.count | Should -Not -Be 0
+    }
+
+    ### Get-SharedCloudletPolicyVersion
+    $Script:Version = Get-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version 1 -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-SharedCloudletPolicyVersion gets version 1' {
+        $Version.policyId | Should -Be $NewPolicy.id
+    }
+
+    ### New-SharedCloudletPolicyVersion by pipeline
+    $Script:NewVersionByPipeline = ($Version | New-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'New-SharedCloudletPolicyVersion by pipeline creates a new version' {
+        $NewVersionByPipeline.version | Should -Be ($Version.version + 1)
+    }
+
+    ### New-SharedCloudletPolicyVersion by params
+    $Script:NewVersionByParams = New-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Description $TestPolicyDescription -MatchRules $Version.matchRules -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-SharedCloudletPolicyVersion by params creates a new version' {
+        $NewVersionByParams.version | Should -Be ($NewVersionByPipeline.version + 1)
+    }
+
+    ### New-SharedCloudletPolicyVersion by body
+    $Script:NewVersionByBody = New-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Body (ConvertTo-Json -depth 100 $Version) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-SharedCloudletPolicyVersion by body creates a new version' {
+        $NewVersionByBody.version | Should -Be ($NewVersionByParams.version + 1)
+    }
+
+    ### Set-SharedCloudletPolicyVersion by pipeline
+    $Script:SetVersionByPipeline = ($Version | Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-SharedCloudletPolicyVersion by pipeline updates correctly' {
+        $SetVersionByPipeline.policyId | Should -Be $NewPolicy.id
+    }
+
+    ### Set-SharedCloudletPolicyVersion by params
+    $Script:SetVersionByParams = Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -Description $TestPolicyDescription -MatchRules $Version.matchRules -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-SharedCloudletPolicyVersion by params updates correctly' {
+        $SetVersionByParams.policyId | Should -Be $NewPolicy.id
+    }
+
+    ### Set-SharedCloudletPolicyVersion by body
+    $Script:SetVersionByBody = Set-SharedCloudletPolicyVersion -PolicyID $NewPolicy.id -Version latest -Body (ConvertTo-Json -depth 100 $Version) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-SharedCloudletPolicyVersion by body updates correctly' {
+        $SetVersionByBody.policyId | Should -Be $NewPolicy.id
+    }
+
+    ### Remove-SharedCloudletPolicy
+    it 'Remove-SharedCloudletPolicy succeeds' {
+        { Remove-SharedCloudletPolicy -PolicyId $NewPolicy.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    AfterAll {
+        
+    }
+    
+}
+
+Describe 'Unsafe Cloudlets Tests' {
+    ### List-SharedCloudletPolicyActivations
+    $Script:Activations = List-SharedCloudletPolicyActivations -PolicyID 1001 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'List-SharedCloudletPolicyActivations returns a list' {
+        $Activations[0].id | Should -Not -BeNullOrEmpty
+    }
+
+    ### Activate-SharedCloudletPolicy
+    $Script:ActivateResult = Activate-SharedCloudletPolicy -PolicyID 1001 -Version 1 -Network PRODUCTION -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Activate-SharedCloudletPolicy completes successfully' {
+        $ActivateResult.operation | Should -Be 'ACTIVATION'
+    }
+
+    ### Get-SharedCloudletPolicyActivation
+    $Script:ActivateResult = Get-SharedCloudletPolicyActivation -PolicyID 1001 -ActivationID 3001 -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Activate-SharedCloudletPolicy completes successfully' {
+        $ActivateResult.operation | Should -Be 'ACTIVATION'
+    }
+    
 }
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyKWVZB/SwMsGa
-# CpKiBvZQXX5Sfn3LOQKgxck2CF/jEqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB7NExQaRpxphrB
+# bjtzukuYWdSohmnYcWbPvj/cnyNtYaCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -107,22 +220,22 @@ function Get-CPSDVHistory {
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQg4GI+FckGVONJxRRIxL+fGZAEANgYPyDtPGIU0pjBakAw
-# DQYJKoZIhvcNAQEBBQAEggIAdk7U+MJ+rxGgZFvWK/UzpOySLC2bJnXjnK8D4oP/
-# vp+NQBLR1z4FxJwxJjNLfMZxKxEkCLhtZn0d0SG3gDu485qCkgwYgINNiDt+i8G0
-# BEByUba88wFHCJgJEyXK5pdWz/6kDM03NTZ/AcCX03MnA1eHseyTEUt4XGEjzJ5/
-# PNyM9yiGcxmucQ946K8Q+VYVmbH0FKTXhmdni3cCboNDangb4qm4814O+vaEqb2K
-# KhOgaAUZxiijJ+rbuoFAGnREuPN0Ui2lWJhYZWABSaZ4IKSCTUxiJUeVtQ1HyqlH
-# DfKyam6q14MdgVBj/1RebPUPPv3N/0+Xf1Ny9VkJgM316OmGLtWDpwdKfeH1D/wh
-# AHIq6S+O7qGBdKngUn3hI7KGCye83Spte+jCJc9V+kDPAlo718gCim7j6ruTirBI
-# GrRQfT9OAOTm1w7bIVVPWO5FXjZEk018KGqLZQ3X8uzj2z2wJTBQ4hSUsDLB7OEL
-# rLrHNc8Gv4DmxavxVpJfcw+VKrftgaOIGRKdM3iX0o/wpPjBRznXlddWhcpk8//E
-# fgmKUhwHJaIvsqY3x5dTIqrjyrRVm8pUUqbPIG5LqP1OYvJHYeI30F6NVwkIeNmA
-# t4RG6p57kepeE/z0Ilu8JgNpEgOWdCNQvv3yvZ35ndcye28IfXvdNo3qsNhoOGqi
-# Xh6hghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQg0uLb/exkPw75ZyentM9A/rayXuZKnPc2E9HaPuS9bQkw
+# DQYJKoZIhvcNAQEBBQAEggIAmQ1SE/XxJBQdvao0L+s65h1rjfLV+cYF8fgzkWyu
+# rWfiJemR5547pM+c2J9Oxu7ng//GWBlDaP0VaCHq1jRAnkhm0KEB0fM38q4ZZcre
+# GUQwEgvCfr/hjNRIz3SS9/8DJb1QAfVxvAyePaq0L60AD7f9F3lCDneB03na+yNg
+# i8Md6iv0aQKznE+Bh/THfk8JabQlKwCk4qnm+7exJxv9EN6COo+LTg76Tbsy7NjM
+# Uusjera1sjMePzPkjzC9Y6qKFFX9dUIxZ24CIQ5kKUjoQPKGGOIZN2ZrY+wwjEbS
+# BY5DokMLYtOFlh1Fay5OLgJqGJFkhZxCMeeAGh7abFPZbpYRd65nQVjsmw1pnVMb
+# EwsGqiLTCAY2C9UITaW41oqNtVhq0AlNrRSgvOd/1PeXzYkHiqCufErQD1m+PQfk
+# Ou1gJb1GhtWGd6zeVFDGyDJnxLb0h0gGs1ya79LgRA8Ci1sPm6KAKPOuRP6hCAgZ
+# Eon8UKQMDAFHDzxz/WSQXWSq+lSyX6kZdgWiT5gJjnzeTxBMlK6+of/h23JHqJNx
+# /Y35yCzdWvDYM/FuK4we1tSF1KLByWebRr7w39s28uQC0nlwoMcubJQ/4oGxxoi+
+# xa6M1Sj4h6aSNVAEyVjZcvHt3xxXUbi7hXW/7IVhRBgHv+CwvH2jxOVi8jqvp5L3
+# dAuhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgvaF+8z8lK8Hmh5fW1rDWN5jX2U/I
-# 9JwRNstEfqQKixECEFhCHGpy9TcvpRBwKIubEKwYDzIwMjMxMTA2MTY1OTMyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgb5O7+ZZ1BYfEKdNBEO4zMuvapDjj
+# 2RmoUVJ+UyRAuJMCEEXv1ZJY1tLFGfiuecxYiT4YDzIwMjMxMTA2MTcxMTI2WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -228,20 +341,20 @@ function Get-CPSDVHistory {
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY1OTMyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTI2WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgfXq52TXsnw22Dt9aGNGDF0GYoLw9Gaibo+jjpGSIBc8wNwYLKoZI
+# 9w0BCQQxIgQg0UnefIFZoAeJK/lPGB+/YKD1FWg69BbFxTIFN/mZ/dAwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAD5QvnN+3/0rYLgSRCsOe9mzgTv+9ZJwseczi
-# MpkRq8hDCedjlq2hdkIqq62HQTyP731PzoVEpKPK96mHMlFF/RMzHpNgCFYaKtfI
-# LLYHnsUKnQqM0T3s5RsCUohj9BHc7XdZHM6wX1U4uvXnVquCAawGvdK9d/W6gXGv
-# 4ZHnyYdQx6JsbdA4UEfGitrD1BfOWyKl3p3Bc1JxaE7SO2fWI+VPjrBER9hese/Q
-# T63jicemzmN4W+VldSuqqgJMglpZ298BrwVdS/S7OinRAEK8FQNfqh6QGnmpw6vy
-# MkJ8wAJdq0zzileAQKGGkLUhAtUsaGctt2xTzg4vp33o0+VdQMpDeAKwOqOQQmIG
-# 6qBkTrKheH9ooWlKP4HXYYiSopo1MlAOX8Pipiz1wyJI2mzNsddhawrsENCvrESh
-# mVN/tsvO60NyLy7Xaeuw4NaKKZBcH4A30Dm9r5pXl3Qdp62zrBdhrGZvTwIScR5I
-# PHHxHTu/7zGatS7Lxz5Spq8McUCy/W5r9MPyJohbk/JBHi3wg3/JYe1hVWWKeNT4
-# PZpiNdcxvJ3wjjek8ilba2tHoyXmJtGIvSM2GdhEAVOw0BV6v5GW7Kd2reMolUCo
-# Gj1V02pHXrx80llYHuL8CKc2H1x53nD3K+QiCrFTYFNy58c7RrbnwZOGiffiQ6KW
-# /ETT1qA=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIACd6KnvsOIDCg3K28RHQSmuPI0oVgdLlIQ6of
+# TdJdwaHdCT9qepl48ili7vm/qw2WENWwOoxk7D25q4H91I30P3E2k2+OkLFLra8+
+# 8/0t6kLBbPxlcf9nGSnRrslbMu3atVbxDtaOFFQA8tkOjd9Vra0ZitADSXcQYiaq
+# BzF8TMpyuIC/K9AG50yvJ446B7yOlV6NH2K4W5xDDn0BnZIKVuG3uxaZ07Tbn6oM
+# 4l0jTA8EtRThms5/WUlQmOYqAswD6Po2TNNgIAaWtnCYrh895WfThyudc2H7NFCb
+# Z1CPTlqqw+sMw3fghl3yULPmoK8pQ2AHxWS2gG7VaWosNQw8ObuRDCadn3DrWdlV
+# wG6LrGthwQ95CZ9YLRWYPxng3beR7bnN7T7jFynKWyv95V2Zagm79132BCutoAhN
+# W1pI79vAyaf/3TrwfCVOos/0/ViDwjfjSetS0PSQ3R33E5LR7YyLSSmfjnqaiJ9N
+# oH/9B5ueyp+ONbJ3GWd1QQmdGpnqSM4txRcyzXUWkOb0eElb0rxd1uufVuWl0R+7
+# M4lMsr5noaAWuMoRZ+57+czouEUeJklYog8q+qeHd010a9wMUnSQEXe+3q42zDoF
+# Hd/i8uo3OaPw0vJ8aA9XQt2AhIT8WFXndsQkdhAPh7avCz+5MeyzWrne+71DTohK
+# VtGDxow=
 # SIG # End signature block
