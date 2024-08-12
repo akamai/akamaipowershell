@@ -16,7 +16,9 @@ Version 2 of the Akamai module has been released, so we are now actively pushing
 - [Examples] Fixed List-HostnamesInContract script for PowerShell 5.1 users
 - [ChinaCDN] Fixed missing parameter on several functions
 - [Datastream] Removed functions which called deprecated v1 of the DS API
+- [Image Manager] Removed deprecated ImageCollection functions
 - [Shared] Added option to handle location header in 200 response in pwsh 7.4+
+- [Shared] Removed scoping on code to disable 100-continue 
 
 ## 1.12.0 (3/11/2023)
 
