@@ -1,49 +1,54 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
+function Generate-APIKey {
+    Param(
+        [Parameter(Mandatory = $true)]  [int]    $CollectionID,
+        [Parameter(Mandatory = $true)]  [int]    $Count,
+        [Parameter(Mandatory = $false)] [string] $Description,
+        [Parameter(Mandatory = $false)] [bool]   $IncrementLabel,
+        [Parameter(Mandatory = $false)] [string] $Label,
+        [Parameter(Mandatory = $false)] [string] $Tags,
+        [Parameter(Mandatory = $false)] [string] $TerminationAt,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
+    )
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
+    $Path = "/apikey-manager-api/v1/keys"
+    $BodyObj = @{
+        collectionId = $CollectionID
+        count        = $Count
+        value        = $Value
+    }
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
+    if ($Description) {
+        $BodyObj['description'] = $Description
+    }
+    if ($Label) {
+        $BodyObj['label'] = $Label
+    }
+    if ($Tags) {
+        $BodyObj['tags'] = $Tags -split ','
+    }
+    if ($IncrementLabel) {
+        $BodyObj['incrementLabel'] = $IncrementLabel
+    }
+    if ($TerminationAt) {
+        $BodyObj['terminationAt'] = $TerminationAt
+    }
 
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
     try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
+        $Result = Invoke-AkamaiRestMethod -Method GET -Path $Path -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+        return $Result
     }
     catch {
-
+        throw $_ 
     }
 }
-
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
-}
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDiTDhoHpTXh+B5
+# CwoKRsZ7kwknhbh/mP5zjPS7bQnIL6CCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +131,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgj07mrHL9j8XVHIJmz9Kpwvl0KqS9oMAhkgDNHrPyyNcw
+# DQYJKoZIhvcNAQEBBQAEggIAdk7lIHZbcv2NddsiurmY36/fMFv6DJlUVA56Z6MW
+# +AHn6qGnghWAn+AV9XpinKhF1nBdvGnHdFA33KMmfnlFKwR2HAx1vw/3PjiqsrEK
+# E5lxI6YuUMjFBjOjs7ZNwfGEsn1heWUgBlJ3wHePFWVB20DeNH4s8q2n23lD9CAF
+# jCtLSMlfeQUKLXEQmQH3+pi85Zs6oTstCgdCC8+DnqTfSm67AlH1Kv/qflcekESp
+# Y8ZuskdM1Ms5adR0iBKOOwKl7CVrxQuwTCCecUqsBExw5ixokaJy1gyKCbNp05ih
+# adL8dDSrve6HVwSnOLJrZh3NRV7Hd0L9VCIidX3TDALXKdcioazjE8Dn7gbec8JC
+# bWz3zTvT+mbqpCZhNd4pA9VdSLCKRGpid+RULVp8+1Rpd0Sq5yuOlo8D6gc8hkZP
+# WYmXuzi/o1lmRp7XrfBCBh2bGtE8zCaXoLDr2R1DY/R/MOlPv8I/MYFPHXbHB2P2
+# G3D9x2VVA37Z2trTMptlgkOZJ7E/iqbPB+PROySO1K2AvAAxYhYmW5ELj2spWz12
+# qqeDtZqmWqw6YYyxi6eaPWqmfpt/TbgBJB47rmYdomOY1mStelMKR3m+gtdmFNrt
+# kb7mynAfFwCPlLMc7VHVUJgjVKMPB9sRFTiNKv8X/S4gtFddL/omDZFavj2BlOON
+# LJWhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgC5p8M6ctJ7Us+m1DKOtP33PL6LXn
+# tSd7D11z5eYtUAoCEAHMHUVJkdbqt0rloWYcwfAYDzIwMjMxMTA2MTY0MzE2WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +252,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MzE2WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQg/20CT6H+R64NqpnmYmzTNA2MaNoKrusmgjvqDnYgdjEwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAWIxAa/OIxi7r9w8X31s1ksAPgE90XHmvRVs2
+# WRZbcx1YeyuZBObq2fuCbq7gMvbvk2qYdV21CL8dUU6yNgHokoILM4CM0LgUxqtN
+# 4wc35E0VQv3U3c21rC8ZS1zCp2Bg+pz1chvahJ1pP3ZHAiPCMiWwtXAf4A+YjpG/
+# oe+wLG0I/ohDRbLr/o8LiczjzUEi9lY0HD0NSJMFHcyz6zMgBprmezuNm//Qb02s
+# Oh+IxArYUTdqYLWAhzOFJDlcm406rFGnzFRFwfdII1lqcmKh1ZLHxuCwqUP6LKhK
+# 3uXoImpT64Al/aRP6mBAtJxHpRfve5zZ3uOmEhPQQLu0/jvAyYrQ26HIe8ypmvBD
+# WoTVF+JRVnZxfwI3WEqWciAPjP59EulmjQHIcMCrFCHQwcNlELZAndRRfyUdzarx
+# nrWBdQ4WlvFRPjKrUYqVhqM6piLPJduLcz4Src+2fAH9yfvQatHLvXERkR+hDQft
+# NU0mA1y29GUgpgbrveG4UAxVOS1V1G1xaPLK4GBgz7Cd5eYUbSozOzwjLgAX+NLF
+# HwKVq4XdI9gXxXyPAmpuygkxs+fUMTh7bpiuFyjnsZXGjoz+KrAUpVWo7TPC0NDn
+# OJcb0b0uX00pnan3KqnxPdvy0bRWYYE5v0nC7iRysIt/Nawf6wupiVKEEGWq1LA9
+# EOf4hxI=
 # SIG # End signature block

@@ -1,5 +1,9 @@
 # Akamai Powershell
 
+------------------------------------------------------------------------------------------------------------------------------------
+_WARNING: This module is now deprecated and we strongly advise you to upgrade to version 2, the code for which [can be found here](https://github.com/akamai/powershell). See [our documentation](https://techdocs.akamai.com/powershell/docs/overview) for more information._
+------------------------------------------------------------------------------------------------------------------------------------
+
 This module is designed to abstract the sometimes complex Akamai API commands, and their auth in particular. It can be used in Powershell 5.x or later (6+ is recommended), and has been tested on MacOS and Linux. It is in no way complete, but rather is meant to be a collaborative effort to provide Powershell implementation of most (if not all) Akamai APIs. Pull requests are welcome, and encouraged!
 
 The central function of the module is Invoke-AkamaiRestMethod, which is a heavily modified version of the deprecated Invoke-AkamaiOpen you can find [here](https://github.com/akamai/AkamaiOPEN-edgegrid-powershell).

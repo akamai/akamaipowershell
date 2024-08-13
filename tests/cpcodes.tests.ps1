@@ -1,49 +1,133 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
-
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
-
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
-
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
-    try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestCPCode = 1277303
+$Script:TestReportingGroup = 247962
+$Script:TestReportingGroupBody = '{
+    "reportingGroupName": "akamaipowershell-testing",
+    "contracts": [
+      {
+        "contractId": "1-1NC95D",
+        "cpcodes": [
+          {
+            "cpcodeId": 1277303,
+            "cpcodeName": "akamaipowershell-testing"
+          }
+        ]
+      }
+    ],
+    "accessGroup": {
+      "groupId": 209759,
+      "contractId": "1-1NC95D"
     }
-    catch {
+}'
+$Script:TestReportingGroupObject = ConvertFrom-Json $TestReportingGroupBody
 
+Describe 'Safe CP Codes Tests' {
+
+    BeforeDiscovery {
+        
+    }
+
+    ### List-CPCodes
+    $Script:CPCodes = List-CPCodes -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-CPCodes returns a list' {
+        $CPCodes.count | Should -Not -Be 0
+    }
+
+    ### List-CPReportingGroups
+    $Script:ReportingGroups = List-CPReportingGroups -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-CPReportingGroups returns a list' {
+        $ReportingGroups.count | Should -Not -Be 0
+    }
+
+    ### List-CPCodeWatermarkLimits
+    $Script:WatermarkLimits = List-CPCodeWatermarkLimits -ContractID $TestContract -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-CPCodeWatermarkLimits returns a list' {
+        $WatermarkLimits.count | Should -Not -Be 0
+    }
+
+    ### Get-CPCode
+    $Script:CPCode = Get-CPCode -CPCode $TestCPCode -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-CPCode returns the correct data' {
+        $CPCode.cpcodeId | Should -Be $TestCPCode
+    }
+
+    ### Set-CPCode by pipeline
+    $Script:SetByPipeline = ( $CPCode | Set-CPCode -CPCode $TestCPCode -EdgeRCFile $EdgeRCFile -Section $Section )
+    it 'Set-CPCode by pipeline returns the correct data' {
+        $SetByPipeline.cpcodeName | Should -Be $CPCode.cpCodeName
+    }
+
+    ### Set-CPCode by param
+    $Script:SetByParam = Set-CPCode -CPCode $TestCPCode -CPCodeObject $CPCode -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-CPCode by param returns the correct data' {
+        $SetByParam.cpcodeName | Should -Be $CPCode.cpCodeName
+    }
+
+    ### Set-CPCode by body
+    $Script:SetByBody = Set-CPCode -CPCode $TestCPCode -Body (ConvertTo-Json -Depth 10 $CPCode) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-CPCode by body returns the correct data' {
+        $SetByBody.cpcodeName | Should -Be $CPCode.cpCodeName
+    }
+
+    ### Rename-CPCode
+    $Script:Rename = Rename-CPCode -CPCode $TestCPCode -NewName $CPCode.cpcodename -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Rename-CPCode returns the correct data' {
+        $Rename.cpcodeName | Should -Be $CPCode.cpCodeName
+    }
+
+    ### Get-CPReportingGroup
+    $Script:ReportingGroup = Get-CPReportingGroup -ReportingGroupID $TestReportingGroup -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-CPReportingGroup returns the correct data' {
+        $ReportingGroup.reportingGroupId | Should -Be $TestReportingGroup
+    }
+
+    ### Set-CPReportingGroup by pipeline
+    $Script:SetRGByPipeline = ( $ReportingGroup | Set-CPReportingGroup -ReportingGroupID $TestReportingGroup -EdgeRCFile $EdgeRCFile -Section $Section )
+    it 'Set-CPReportingGroup by pipeline returns the correct data' {
+        $SetRGByPipeline.reportingGroupName | Should -Be $ReportingGroup.reportingGroupName
+    }
+
+    ### Set-CPReportingGroup by param
+    $Script:SetRGByParam = Set-CPReportingGroup -ReportingGroupID $TestReportingGroup -ReportingGroupObject $ReportingGroup -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-CPReportingGroup by param returns the correct data' {
+        $SetRGByParam.reportingGroupName | Should -Be $ReportingGroup.reportingGroupName
+    }
+
+    ### Set-CPReportingGroup by body
+    $Script:SetRGByBody = Set-CPReportingGroup -ReportingGroupID $TestReportingGroup -Body (ConvertTo-Json -Depth 10 $ReportingGroup) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-CPReportingGroup by body returns the correct data' {
+        $SetRGByBody.reportingGroupName | Should -Be $ReportingGroup.reportingGroupName
+    }
+
+    AfterAll {
+        
+    }
+    
+}
+
+Describe 'Unsafe CP Codes Tests' {
+    ### New-CPReportingGroup
+    $Script:NewReportingGroup = ( $TestReportingGroupObject | New-CPReportingGroup -EdgeRCFile $SafeEdgeRCFile -Section $Section )
+    it 'New-CPReportingGroup returns the correct data' {
+        $NewReportingGroup.reportingGroupName | Should -Not -BeNullOrEmpty
+    }
+
+    ### Remove-CPReportingGroup
+    it 'Remove-CPReportingGroup completes successfully' {
+        { Remove-CPReportingGroup -ReportingGroupID $TestReportingGroup -EdgeRCFile $SafeEdgeRCFile -Section $Section } | Should -Not -Throw
     }
 }
-
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
-}
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBt4ANd2Vm+Oo53
+# S73UOt6lq9FrMddMlHOIMtj7t1LBKqCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +210,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgBg1BS0wNojNKHeSzg3SiBlLu7TVrNAb4JJABdZJIEXMw
+# DQYJKoZIhvcNAQEBBQAEggIATMHbcuBBtS09+NN+fAuZVyE6Wb8JQvSolrPtjf4h
+# u7EYnr4OMF0uIUHSKleQ2W4YtVrSYhYbXhNP9hiqd7UJ4iCh9E31CIquqRuT+VyT
+# FOUeACpNZFSFOfcbzBZ7z+Dw5OlIJSnyd/IQCwuMGcL7Ejty1J3/ksstwvzQ9S6W
+# q3aoOOarG3uDFmnYJZjJ8YYBXujLUsvQkGU92BJhYNckIHG64L+0H+ex85UeaGKu
+# uvcNZ4PVL7MgUdE2TBZ/iRUhnPDvuLzjwaEAn4en39Cy1q1NBGdqSV24+ib7V0y0
+# CdyD+eSoovw4Xt8yzXEAOuVGSSkkl0Uwo4wRbHzwGfVOXR9Ns4pkwZ6Lk/0ijqII
+# fKxH5xM28Xx7c4BgGw08MAwtsNrqbBqxXQc1+qO++5AypZtqHQz0vVi60X0h/AZ5
+# g3m4PQhN2VSLWprgDHA++OU5ZDPqLFFp9/6rwtgUyF12LdpsIWH9WAFAqDuOjYT5
+# Vt9NgNqV9TBn9rLiJ3xcbGakFTFkdWDi8sSE38gTLXROdTLCGNtTrTbW0+snNl2B
+# eceGjZ3EMtptFCxufWZKFjNAoSuMGH/Su9sDfEv41Dk2eX+naO6GR+wWRSq6I/6p
+# kt0Y43+qN/u4u0dFgmh3aSnyllIiunRKCRHzrtMTkXMGXUuFCNQ7yIQsobmVnw02
+# b4yhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgGSTnsY8XS4wADXX/q39sjX6+iqnp
+# sndXqOYcPgRzERkCEFuxssEdCszjaNFNZap195cYDzIwMjMxMTA2MTcxMTI4WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +331,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTI4WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQgWeAJWs5hm27soII/rE9Xz/YEG5rJgX1xZLI+ZMIbXU8wNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAR4HPBUufplbHkuaFoKbo2AwStcUUhRIo1MTy
+# IH1nxdNNSU9BBLp9o88B1eC9PlTZQIp38TMz55YQ/ecxBrTFs2N4hoM8fj3JDCov
+# RvvhO84MXkcyjWe0rKmwFO1zNvT4qyf429IMbdkA4eO2YeOWRE2+MkiSTJszWIdy
+# HvPlrPYDZ6mgj+AVKTczOR+ubAJ1AzqRF6VpjmEvpsvq2N3hUX/UDkueURN7RhbA
+# i8kbHhpE6pX7SsJWKbOe6fNond2hhnlwjfuZ3bVQODg2twT5QLcPfKaEL3HxWffl
+# QoTe2eR6KgKjfZUmFQvv+URHyNHYdgQmf1s0QcRf9tDxCkOQlRaQ90/ApzRUiusD
+# 6eR/Ugn0/94Fs+RMPcdNgW/+y69f1aUURT1m2RklMkLV3P5Fbc0LBO6lwfoGEYva
+# cxoZ5yqEo7stJz9B+2wIP0ReVCfKUblMf6GmrD6kDz7WNajiZrT7P1j0cBGxAmjA
+# HfemtgpAS3kWIKfbVP+KzPGzuW1W884K7xTLxS5JZSqJVyEKfotF4ATyZxgO1IgR
+# q+23rgpq66h5ZbOdXa3mNSOl1GUe+QMsGoNcqCUid9ArVY3HFszE/GYa+w+4rIrr
+# UYSe0gFXcMVR2izBq5ryCGxd8z0ftrZ20ZA4lMkz0J4b13yIAQnL48j0WMDsi9iv
+# F+uiJo8=
 # SIG # End signature block

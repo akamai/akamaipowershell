@@ -1,49 +1,36 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
+function New-EdgeWorker {
+    Param(
+        [Parameter(Mandatory = $true)]  [string] $Name,
+        [Parameter(Mandatory = $false)]  [int]    $GroupID,
+        [Parameter(Mandatory = $true)]  [int] [ValidateSet(100, 200)] $ResourceTierID,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
+    )
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
+    $Path = "/edgeworkers/v1/ids"
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
+    $BodyObj = @{
+        name           = $Name
+        groupId        = $GroupID
+        resourceTierId = $ResourceTierID
+    }
+    $Body = $BodyObj | ConvertTo-Json
 
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
     try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
+        $Result = Invoke-AkamaiRestMethod -Method POST -Path $Path -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+        return $Result
     }
     catch {
-
+        throw $_
     }
 }
-
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
-}
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDfbBICzaHHBc6Q
+# Qw/L/mDwRS67jZs//zFVLpte32iDRaCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +113,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgyZWiY3eEfVdPKWMZo4BLn2RfYYIXYXcs46xNaD/hv/Ew
+# DQYJKoZIhvcNAQEBBQAEggIALig1nkzGdliaev/Ayg8Fm9PeGYszigyMkHLrmqcn
+# oWf6QMy0YyriRe/C4AKLFoXK2mZORaPcxqaU7a9nh7Ts/RHAcU2FxOkqftU2w/q8
+# WmPovQS3ik1qT8OwH0e3b2OIue7SIvC+hfnF+fVK1fUCkJw7Z/r4T6j6XJ6oZ46O
+# Y/+a0+12kjHrE+L1e3XgJv8m4iZaWJ3Q7k1ucmAIUNGNk3PeQNR1Y1NtrRamyzfY
+# cgYtJJEUm7UemyYkjAg5CN7NVKGLiq7cJGL7HHJmVqw2d6N1mObOvENxLNEyl88u
+# R+o3fxNKsJQGGzz/mIAqgZssVmYedBAYzPc8GU1eVWFHAbv+TRlZ6UG3W1YFdF7h
+# kN0YqGuunZXDSSTMjoEdy3D39PeXfij7T8tqf0UQK9RINjBwdSb6cmD+9Nia3CTL
+# GQxPMG3nE5xrZ+VdTQ/hYgy30Np/ikrDNt0YaZFOZG3IwiNrvjtIsFG86i6cDu6y
+# upa2zYHPqOKbtAYaOzObmL5JLtncTfkcXoUwPZI6fTZDBzDrhkor0yzJKNFjz1HK
+# oolVlQU997b8Bb5u39AZdCYpGrPcW0bquDsoO3L1p7PWD5nnKhp8oL8cZNFLXzf/
+# 1uAmBuVE68p4zRbKTDD9JcQKpuAbHHIsmQbdIdlxXfzFDSj9W9vaImrQNAnT4cXg
+# glShghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgPjMkCYSiEWCKF5pnad31FoKJWgDc
+# Bqw9qMg01tsSHNYCEBAcE1lWnK7o5LbcusLqpoEYDzIwMjMxMTA2MTcwNDI0WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +234,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcwNDI0WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQgRPmOYI/WFGGoeoddlS1qStofZVafmq1ybwiH4FDeF5AwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAIp03Srp5P9t8Ojxh18sgPxbVDNPlpCsQAGct
+# yVxuU5/BSsx3apcKUH3UKe/t1ZPdWDl+feR+18k5vROinN/NfpfSDqLwIJ2/VNwS
+# UKJ5SB7NYqXo9a6FrWYvTcNN2euyqg/cj8JHUZMDtqj3qAWAsdbEfOds7YIUYr1J
+# Yje9O9TayBCcW8yW+u3oX6EN8jGY7+1MBLMKjGDyTTu4rCFr2iwcs+Zm8SpE1lve
+# bWbiz4YPYLqeA3nJd7SEnRPty1aBg5ISEyTcdsCQA+I1X5PlYs3IxJf5ZOervOOQ
+# 5gKjYdDm1djiLkgqrAmO/fCTax8urltkDhTw9IkJvQYwVmHKxYdnJmOV5sKwSK5s
+# raZjPhdZI1+bfVUC+B0sJKVhtgaeNlZJKaljrXHd1CE1Q5QZ2oyoN6w7SMwBc9sJ
+# 8VUV1mLT0VWm3T60ZqL+s8tAa1v1CI7Nz1d/FPde9UKRp1D+CyD8W1Dh9Q0f1egx
+# qRBfmfgqvJTmvH/2vdQjI+3jpB40i4/PWq6O4JcZXxfkM3iEPaYH9vef89WCgGcX
+# lwrEDy4ci6Yluv/J7OoqiqVbnsOPoSyO75jBQg7LrR8Joij/lPXTtZSCnIivcXRm
+# Db+J16XPES036jwBxlYoZaj7PVp3abcwYyPTrEpuuNJ+8/rEkBCP/Vx771AvwmhN
+# Zsv9LUI=
 # SIG # End signature block

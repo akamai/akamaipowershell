@@ -1,49 +1,101 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
+Describe 'Safe NSAPI Tests' {  
+    BeforeAll {
+        Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+        # Setup shared variables
+        $TestDirectory = "akamaipowershell"
+        $AuthFile = $env:PesterAuthFile
+        $NewDirName = "temp"
+        $NewFileName = "temp.txt"
+        $NewFileContent = "new"
+        $NewFileContent | Out-File $NewFileName
+        $SymlinkFileName = "symlink.txt"
+        $RenamedFileName = "renamed.txt"
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
-
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
-    try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
+        $PD = @{}
     }
-    catch {
 
+    AfterAll {
+        Remove-Item $NewFileName -Force
     }
-}
 
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
+    ### New-NetstorageDirectory
+    it 'New-NetstorageDirectory creates successfully' {
+        $PD.NewDir = New-NetstorageDirectory -Path "/$TestDirectory/$NewDirName" -AuthFile $AuthFile
+        $PD.NewDir | Should -Match 'successful'
+    }
+
+    ### Upload-NetstorageFile
+    it 'Upload-NetstorageFile lists content' {
+        Upload-NetstorageFile -LocalPath $NewFileName -RemotePath "/$TestDirectory/$NewDirName/$NewFileName" -AuthFile $AuthFile
+    }
+
+    ### Dir-NetstorageDirectory
+    it 'Dir-NetstorageDirectory lists content' {
+        $PD.Dir = Dir-NetstorageDirectory -Path $TestDirectory -AuthFile $AuthFile
+        $PD.Dir.count | Should -Not -Be 0
+    }
+
+    ### List-NetstorageDirectory
+    it 'List-NetstorageDirectory lists content' {
+        $PD.List = List-NetstorageDirectory -Path $TestDirectory -AuthFile $AuthFile
+        $PD.List.count | Should -Not -Be 0
+    }
+
+    ### Du-NetstorageDirectory
+    it 'Du-NetstorageDirectory returns stats' {
+        $PD.Du = Du-NetstorageDirectory -Path $TestDirectory -AuthFile $AuthFile
+        $PD.Du.files | Should -Not -BeNullOrEmpty
+    }
+
+    ### Symlink-NetstorageFile
+    it 'Symlink-NetstorageObject creates a symlink' {
+        $PD.Symlink = Symlink-NetstorageObject -Path "/$TestDirectory/$NewDirName/$SymlinkFileName" -Target "/$TestDirectory/$NewDirName/$NewFileName" -AuthFile $AuthFile
+        $PD.Symlink | Should -Match 'successful'
+    }
+
+    ### Download-NetstorageFile
+    it 'Download-NetstorageFile downloads successfully' {
+        Download-NetstorageFile -RemotePath "/$TestDirectory/$NewDirName/$NewFileName" -LocalPath $NewFileName -AuthFile $AuthFile
+        $NewFileName | Should -FileContentMatchExactly $NewFileContent
+    }
+
+    ### Set-NetstorageFileMTime
+    it 'Set-NetstorageFileMTime sets mtime' {
+        $PD.MTime = Set-NetstorageFileMTime -Path "/$TestDirectory/$NewDirName/$NewFileName" -mtime 0 -AuthFile $AuthFile
+        $PD.MTime | Should -Match 'successful'
+    }
+
+    ### Stat-NetstorageDirectory
+    it 'Stat-NetstorageObject gets object stats' {
+        $PD.Stat = Stat-NetstorageObject -Path "/$TestDirectory/$NewDirName/$NewFileName" -AuthFile $AuthFile
+        $PD.Stat.name | Should -Be $NewFileName
+    }
+
+    ### Rename-NetstorageFile
+    it 'Rename-NetstorageFile renames a file' {
+        $PD.Rename = Rename-NetstorageFile -Path "/$TestDirectory/$NewDirName/$NewFileName" -NewFilename $RenamedFileName -AuthFile $AuthFile
+        $PD.Rename | Should -Match 'renamed'
+    }
+
+    ### Remove-NetstorageFile
+    it 'Remove-NetstorageFile removes a file' {
+        $PD.RemoveFile = Remove-NetstorageFile -Path "/$TestDirectory/$NewDirName/$SymlinkFileName" -AuthFile $AuthFile
+        $PD.RemoveFile | Should -Match 'deleted'
+    }
+
+    ### Remove-NetstorageDirectory
+    it 'Remove-NetstorageDirectory removes a dir' {
+        $PD.RemoveDir = Remove-NetstorageDirectory -Path "/$TestDirectory/$NewDirName" -ImReallyReallySure -AuthFile $AuthFile
+        $PD.RemoveDir | Should -Match "quick-delete scheduled"
+    } 
 }
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCC3seKjDfGOkL2B
+# TH+6OrNKtBq9k2II1y3qulakW8hAUKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +178,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgW9piCjuj8tv5ebQVweOimvuJPvDszDtDSiyZV8mLre8w
+# DQYJKoZIhvcNAQEBBQAEggIArApgaR2k2bgrYuncvn9YKJrA/GB9I7LNLP3Strp0
+# hLd5wf9qK4mszNk0+lmS15Abifrxbx6edoRxgD5ulXHaWBCdokR2Y13hWztSxjZY
+# xjKk0LAky/m5AitD2Qjc84JIBHoT1ZYA1lOPDJnfWVznWkR8XP0IAheAmwIL546N
+# 8SeETcKC8jBIJwHo8TumL/N05Ftw2dJs3iq2zU65EV+NnGeHd6AwDg9b610jRPIm
+# zEDzXkuRd5V3w1TA2qqZBl540QjHEV0K4ekqYfsVcWGl9WWPldmWDrR653f2enzL
+# s7yU54Q6YLunmAtg8dioxC8qhJBTIlbvoRapmQnZGT616k4tBZfTJ76q/ufnDLmO
+# PDgilLEuPCCpEjQsNAeQQX4Hvo+9qIHZuRKQ5cHhgVNk1IiLKmk0vtCoBdgFQxWa
+# UMsOZnScQ86JY5iVTM8titeQXK0Rt3EzxlSpLoEHQVAIzdW+Cp/Rv763hIAgz1ZZ
+# kFluENhLgwwyDWKlfpeXaq9OWwFxXDK60zj/dl+5hMLJJYxfTUYLvBGvD947EECS
+# KwKJlxLQ2rHoUg+yMM4UG/qS7z9C9LCcc3T9O0ZHx4mpkfz3KVPZQWp+GYNRApyq
+# awIY0D2jb5dp8roFb+0bBZhcH8Z1y3xl2+wf0fCwdR7qZcFyPvFDa6QI/I391vep
+# 5oyhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg16o9ShIRcBebf0DuHiwXn4YYz8dj
+# /4ABLdiWzwXn0ZwCEGYOskZzZuDJTezh1w4n+xUYDzIwMjMxMTA2MTcxMTUyWqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +299,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTUyWjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQgISvnmLuZ09xdcJ8pHkNBCSf8eVZM0E3yn4ZIp6Qk9UAwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAUpgHqS2f0rvuFE0JVyqF/Aw9ObbYASTggvO8
+# 9JVPhOTvhuOYj+RZLdgOPAyFLFIwJ11fSIUwGcCBNNpaq6fP2HHoZkSysgb6+fG5
+# ocHd9bGN52tlKJDVORuaOPRSUDEm2Uj0eQQ5FFMAmKJLXZAMasNpRYhugONuasWr
+# fcHg1eaAx4kPiaLPrmqWDC2dIvYDYnBvO9fyNiD5j7LliBtdG58oMxMVk1oX5a3k
+# uvnMOUJK2cHN/Ud7NfO7lYEClbjRv0rK124vwK+ib4boql3KjJst+Lt4tYRBsLzT
+# paoFWsny8o6W86nJudDNNuDzCryC8hHYkF2Ia1K9woxw9lkpWIYAAY5n7As3A91B
+# nftTCbBfMA6Bf/n9rHel67lUzPuN453fD+Bv4KK2HkDiifeOfaDKM2tYUxcOHZzw
+# TCv5dWmkKYPZmhxsaRO9gF67OTIsrOsjC2r+CpSb9ZzBle+c1zao7sYoATby0m5M
+# hSTQOCsNarnJdBR9OICeX680uo9hCVG/F3QwnE2sFZNortbYZnrsgiJt3cmrtMtV
+# VN2hds3RI8mHqbbNgv+Ei+BJLT5ze7D6h08g8H6yX46myH/gUqMHtwDv79FmGemD
+# +1pxE1Qo5KybxzL3eUtNnjs4BpHiHN3+3o2s+Bzca7MwOFdchjzhfLXDdhGEKTGJ
+# pY3ypIg=
 # SIG # End signature block

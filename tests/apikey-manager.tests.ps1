@@ -1,49 +1,230 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestGroupID = 209759
+$Script:TestCollectionName = "Akamai PowerShell"
+$Script:TestCollectionBody = "{
+    `"contractId`": `"$TestContract`",
+    `"groupId`": $TestGroupID,
+    `"name`": `"$TestCollectionName`"
+}"
+$Script:TestAPIEndpointID = 817948
+$Script:TestKey = (New-Guid).Guid
+$Script:ImportKeys = '[{"value":"7131e629-41fa-4dfb-9ab9-5e556221b8d5","label":"premium","tags":["external","premium"]}]'
+$Script:TestCounterName = 'Akamai PowerShell counter'
+$Script:TestCounterBody = "{
+    `"enabled`": true,
+    `"groupId`": $TestGroupID,
+    `"name`": `"$TestCounterName`",
+    `"throttling`": 1000,
+    `"contractId`": `"$TestContract`",
+    `"onOverLimit`": `"DENY`"
+}"
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
+Describe 'Safe API Key Manager Tests' {
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
-
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
-    try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
+    BeforeDiscovery {
+        
     }
-    catch {
 
+    ### List-APIKeyCollections
+    $Script:KeyCollections = List-APIKeyCollections -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-APIKeyCollections returns a list' {
+        $KeyCollections.count | Should -Not -BeNullOrEmpty
     }
+
+    ### New-APIKeyCollection
+    $Script:NewCollection = New-APIKeyCollection -Body $TestCollectionBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-APIKeyCollection creates successfully' {
+        $NewCollection.name | Should -Be $TestCollectionName
+    }
+
+    ### Get-APIKeyCollection
+    $Script:Collection = Get-APIKeyCollection -CollectionID $NewCollection.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-APIKeyCollection returns the collection collection' {
+        $Collection.name | Should -Be $TestCollectionName
+    }
+
+    ### Set-APIKeyCollection by pipeline
+    $Script:CollectionByPipeline = ( $NewCollection | Set-APIKeyCollection -CollectionID $NewCollection.id -EdgeRCFile $EdgeRCFile -Section $Section )
+    it 'Set-APIKeyCollection by pipeline updates successfully' {
+        $CollectionByPipeline.name | Should -Be $TestCollectionName
+    }
+
+    ### Set-APIKeyCollection by body
+    $Script:CollectionByBody = Set-APIKeyCollection -CollectionID $NewCollection.id -Body (ConvertTo-Json -depth 100 $NewCollection) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-APIKeyCollection by body updates successfully' {
+        $CollectionByBody.name | Should -Be $TestCollectionName
+    }
+
+    ### Set-APIKeyCollectionACL by pipeline
+    $Script:ACLByPipeline = Set-APIKeyCollectionACL -CollectionID $NewCollection.id -ACL @("ENDPOINT-$TestAPIEndpointID") -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-APIKeyCollectionACL by pipeline updates successfully' {
+        $ACLByPipeline.dirtyACL | Should -Contain "ENDPOINT-$TestAPIEndpointID"
+    }
+
+    ### Set-APIKeyCollectionACL by body
+    $Script:ACLByBody = Set-APIKeyCollectionACL -CollectionID $NewCollection.id -Body "[`"ENDPOINT-$TestAPIEndpointID`"]" -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-APIKeyCollectionACL by body updates successfully' {
+        $ACLByBody.dirtyACL | Should -Contain "ENDPOINT-$TestAPIEndpointID"
+    }
+
+    $EnabledQuota = $NewCollection.quota
+    $EnabledQuota.enabled = $true
+    ### Set-APIKeyCollectionQuota by pipeline
+    $Script:QuotaByPipeline = ($EnabledQuota | Set-APIKeyCollectionQuota -CollectionID $NewCollection.id -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-APIKeyCollectionQuota by pipeline updates successfully' {
+        $QuotaByPipeline.quota.enabled | Should -Be $true
+    }
+
+    ### Set-APIKeyCollectionQuota by body
+    $Script:QuotaByBody = Set-APIKeyCollectionQuota -CollectionID $NewCollection.id -Body (ConvertTo-Json -Depth 100 $EnabledQuota) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-APIKeyCollectionQuota by body updates successfully' {
+        $QuotaByBody.quota.enabled | Should -Be $true
+    }
+
+    ### List-APIKeyCollectionEndpoints
+    $Script:Endpoints = List-APIKeyCollectionEndpoints -CollectionID $NewCollection.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-APIKeyCollectionEndpoints returns a list' {
+        $Endpoints.count | Should -Not -Be 0
+    }
+
+    ### New-APIKey
+    $Script:NewKey = New-APIKey -CollectionID $NewCollection.id -Value $TestKey -Label "Create single" -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-APIKey creates successfully' {
+        $NewKey.value | Should -Be $TestKey
+    }
+
+    ### Get-APIKey
+    $Script:GetKey = Get-APIKey -KeyID $NewKey.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-APIKey returns the correct key' {
+        $GetKey.value | Should -Be $TestKey
+    }
+
+    ### Set-APIKey by pipeline
+    $Script:SetKeyByPipeline = ($NewKey | Set-APIKey -KeyID $NewKey.id -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-APIKey by pipeline returns the correct key' {
+        $SetKeyByPipeline.value | Should -Be $TestKey
+    }
+
+    ### Set-APIKey by body
+    $Script:SetKeyByBody = Set-APIKey -KeyID $NewKey.id -Body (ConvertTo-Json -Depth 100 $NewKey) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-APIKey by body returns the correct key' {
+        $SetKeyByBody.value | Should -Be $TestKey
+    }
+
+    ### New-APIKeys
+    it 'New-APIKey creates successfully' {
+        { New-APIKeys -CollectionID $NewCollection.id -Count 2 -Label "Create multiple" -IncrementLabel -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    ### List-APIKeys
+    $Script:Keys = List-APIKeys -CollectionID $NewCollection.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-APIKeys returns a list of keys' {
+        $Keys.items.count | Should -BeGreaterThan 0
+    }
+
+    ### Import-APIKey
+    it 'Import-APIKey completes successfully' {
+        { Import-APIKey -CollectionID $NewCollection.id -Content $ImportKeys -Filename sample.json -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    ### Reset-APIKeyQuota
+    it 'Reset-APIKeyQuota completes successfully' {
+        { Reset-APIKeyQuota -Keys $NewKey.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    ### Revoke-APIKey
+    it 'Revoke-APIKey completes successfully' {
+        { Revoke-APIKey -Keys $NewKey.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    ### Restore-APIKey
+    it 'Restore-APIKey completes successfully' {
+        { Restore-APIKey -Keys $NewKey.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    ### List-APITags
+    $Script:Tags = List-APITags -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-APIKeys returns a list' {
+        $Tags.count | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-APIThrottlingCounters
+    $Script:Counters = List-APIThrottlingCounters -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-APIThrottlingCounters returns a list' {
+        $Counters.count | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-APIThrottlingCounter
+    $Script:NewCounter = New-APIThrottlingCounter -Body $TestCounterBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-APIThrottlingCounter creates successfully' {
+        $NewCounter.name | Should -Be $TestCounterName
+    }
+
+    ### Get-APIThrottlingCounter
+    $Script:Counter = Get-APIThrottlingCounter -CounterID $NewCounter.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-APIThrottlingCounter finds the correct counter' {
+        $Counter.name | Should -Be $TestCounterName
+    }
+
+    ### Set-APIThrottlingCounter by pipeline
+    $Script:CounterByPipeline = ($NewCounter | Set-APIThrottlingCounter -CounterID $NewCounter.id -EdgeRCFile $EdgeRCFile -Section $Section)
+    it 'Set-APIThrottlingCounter by pipeline updates correctly' {
+        $CounterByPipeline.name | Should -Be $TestCounterName
+    }
+
+    ### Set-APIThrottlingCounter by body
+    $Script:CounterByBody = Set-APIThrottlingCounter -CounterID $NewCounter.id -Body (ConvertTo-Json -Depth 100 $NewCounter) -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-APIThrottlingCounter by body updates correctly' {
+        $CounterByBody.name | Should -Be $TestCounterName
+    }
+
+    ### List-APIThrottlingCounterEndpoints
+    $Script:CounterEndpoints = List-APIThrottlingCounterEndpoints -CounterID $NewCounter.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-APIThrottlingCounterEndpoints returns the correct data' {
+        $CounterEndpoints[0].apiEndPointId | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-APIThrottlingCounterKeys
+    $Script:CounterKeys = List-APIThrottlingCounterKeys -CounterID $NewCounter.id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-APIThrottlingCounterKeys returns the correct data' {
+        $CounterKeys[0].id | Should -Not -BeNullOrEmpty
+    }
+
+    ### Remove-APIThrottlingCounter
+    it 'Remove-APIThrottlingCounter removes successfully' {
+        { $Script:RemoveCounter = Remove-APIThrottlingCounter -CounterID $NewCounter.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    ### Remove-APIKeyCollection
+    it 'Remove-APIKeyCollection removes successfully' {
+        { $Script:RemoveCollection = Remove-APIKeyCollection -CollectionID $NewCollection.id -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    AfterAll {
+        
+    }
+    
 }
 
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
+Describe 'Unsafe API Key Manager Tests' {
+    ### Generate-APIKeyReport
+    $Script:Report = Generate-APIKeyReport -ReportType rapidkey-by-time -Version 1 -Start 2022-08-13T00:00:00Z -End 2022-08-14T00:00:00Z -Interval HOUR -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Generate-APIKeyReport returns data' {
+        $Report.data | Should -Not -BeNullOrEmpty
+    }
+    
 }
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCvT2SdmYpfCkc5
+# HFA0H1zWrdZsXMcZl5ZZWFLXL90gb6CCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +307,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQghZJqpxQhUvIppSd12x5T7fLeYqRswGSTNqH5anFfBugw
+# DQYJKoZIhvcNAQEBBQAEggIAvTqUcALccdzI5cgZXEGducZSSbauLl6TFAOZohQY
+# a/FV+BtcBO/Ckgc9PlGQ03TpEj0+9zRVSmu9G9eGnGyTjiQhgxfSj0RlAyIAuP8f
+# szkDF44pjouDon+vwqvxjqqdEP2P8eILhbQhScDXz2+JovqLA1qGm3UGof/iJo4V
+# 4MejVwp71smid6+uNh2Qn9W3v1zuP8QPTUQKDLDpRfphdNlUXoq3J6XlXNmogxRq
+# rJMhbJgESknoJlncxQL3x9c60j+3lUw7yy/UMGUBofMbF9aLGarNsjVdrpmRAweY
+# khxdreuYJnWnzb+UpHY5Vm+G4DzLFLuYOSmeDE8a4TJAIGnKYs5Z4c4JLsUHnn1Q
+# sb/JvuUehShJ6XiqrnbFNn8mP8cuSJ9DHZssOGFxcQLChwrQaJ/5pD70Aj10bF/I
+# 7CZltoSjqDDdmjfjpKXyq/MvBwiGJCCVT+ujpzbwr4KP58qKnPk3WIR31RY3+2ZT
+# tsqei6i/M4wmXn30aN9JeG2zXBDIz95V0Sq/d5NUo0U+IkhYQuO4vAtVavJhtbqB
+# NjE3b+ckYzP1h+tOQivsQMNbYNVYnV7vNewpDva3mc1jHXrb2xXx7vQ/X5Owz6cI
+# Q3ckLPB8FpN0MzEIX8vrB+bzd6CQxgdbb9nnQtztAfjkkJP/PL/iDV34oW4AZEEx
+# BEOhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg5ri7o9u9kedMeSemfScq1/bX2YT6
+# DFwwxWwyd27ftBMCEAWpP5yYccFn1mtC6IjhslcYDzIwMjMxMTA2MTcxMTEzWqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +428,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTEzWjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQgnruI6k0+asKvmB5MJNdMrl2fSHEexOs0juwjlSXHij8wNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAJ9E/+49YXBxAHbdI4h48aoE2D2SDBzgJjCIC
+# ojCK5mqIuV4f4P9v5aZWOcElB8EJf02cpqLp0zKGgLukY/LKniobvWJLx/AvGTMA
+# 3SdZ4eM8X9VtZWxwaOVAkN51GJw3faz62i0TCVBoLXyExlEp1ebr/2o8UeHBm24K
+# HTxP2gc3O5ADldYMVeYUFjDdQYC4gr7iEPm+JFhwpT1IUwpnybYNDecfNcmoN7xp
+# pzTJ7H91OaSptp7U7XMPlPuXBWwY0p5pksDhBA0WZsd+L4iJQDpGmKP98hRdVn4Z
+# lxRKEKr7iCdJznxkRagHAkVX2PKuVjSVpFDR5qen7aKPhDpH4I8Jog08gNEMnNg6
+# SAvXXulybJF3AwOOw6az/yyhdl09iFHK0LhOeowRiE2Dl4VMlZysygU/PtO9s2TF
+# MZHRfCD/dwaapZN9vc8yx2XXu/GlF4+mTWIl4U07EeA5W6A73564HA02yBoX6Y3M
+# FMUObMw1E5yiUDzpOEpmME35ZcGRAhjC7VqaE6WjCbLngcgrKI0AdlC05OXqv3xk
+# /KsjtQIt2UlhecTSo44Ke+t14U6Nk1654Qv4XozkPOFYUorcrMiYCnQ9MEmDWH4L
+# JE58v/f5YF/EPf1xRUDAlpjZAJwhHWkgotoa/kQ2pZRYNjyWGJG79hfoBs7QAJET
+# S8Bercg=
 # SIG # End signature block

@@ -2,6 +2,24 @@
 
 # Changelog
 
+## 1 13.0 (13/8/2024)
+
+### Deprecations and v2 warnings
+
+Version 2 of the Akamai module has been released, so we are now actively pushing users to upgrade. This is the last release of v1, so please consult our documentation about an upgrade path. Note: You must remove v1 before installing v2, as there is no direct update available.
+
+- [All] Removed deprecated TCM API
+- [BotMan / Billing / LDS] Code removed due to API being classified as sensitive. A new version will be released behind a Control Centre login
+- [CPS] Fixed issue in Get-CPSDVHistory response
+- [AppSec] Fixed HTTP method on Remove-AppSecConfigurationVersion
+- [Cloudlets] Expanded acceptable Cloudlet types for New-SharedCloudletPolicy
+- [Examples] Fixed List-HostnamesInContract script for PowerShell 5.1 users
+- [ChinaCDN] Fixed missing parameter on several functions
+- [Datastream] Removed functions which called deprecated v1 of the DS API
+- [Image Manager] Removed deprecated ImageCollection functions
+- [Shared] Added option to handle location header in 200 response in pwsh 7.4+
+- [Shared] Removed scoping on code to disable 100-continue 
+
 ## 1.12.0 (3/11/2023)
 
 ### Signing updates, proxy credential support & bugfixes

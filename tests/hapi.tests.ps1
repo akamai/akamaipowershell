@@ -1,49 +1,86 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestEHN = 'akamaipowershell-testing.edgesuite.net'
+$Script:TestSecureEHN = 'akamaipowershell-testing.edgekey.net'
+$Script:TestEHNRecordName = 'akamaipowershell-testing'
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
+Describe 'Safe HAPI Tests' {
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
-
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
-    try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
+    BeforeDiscovery {
+        
     }
-    catch {
 
+    ### List-EdgeHostnames
+    $Script:Edges = List-EdgeHostnames -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeHostnames returns a list' {
+        $Edges.count | Should -Not -Be 0
     }
+
+    ### List-EdgeHostnameProducts
+    $Script:Products = List-EdgeHostnameProducts -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeHostnameProducts returns a list' {
+        $Products.count | Should -Not -Be 0
+    }
+
+    ### Get-EdgeHostname by name
+    $Script:EdgeByName = Get-EdgeHostname -EdgeHostname $TestSecureEHN -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeHostname by name returns the correct data' {
+        $EdgeByName.recordName | Should -Be $TestEHNRecordName
+    }
+
+    ### Get-EdgeHostname by ID
+    $Script:EdgeByID = Get-EdgeHostname -EdgeHostnameID $EdgeByName.edgeHostnameID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeHostname by ID returns the correct data' {
+        $EdgeByID.recordName | Should -Be $TestEHNRecordName
+    }
+
+    ### Get-EdgeHostnameLocalizationData
+    $Script:LocalisationData = Get-EdgeHostnameLocalizationData -Language en_US -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-EdgeHostnameLocalizationData contains problems object' {
+        $LocalisationData.problems | Should -Not -BeNullOrEmpty
+    }
+
+    ### List-EdgeHostnameChangeRequests
+    it 'List-EdgeHostnameChangeRequests does not error' {
+        { List-EdgeHostnameChangeRequests -Status PENDING -EdgeRCFile $EdgeRCFile -Section $Section } | Should -Not -Throw
+    }
+
+    AfterAll {
+        
+    }
+    
 }
 
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
+Describe 'Unsafe HAPI Tests' {
+    ## Set-EdgeHostname
+    $Script:UpdatedEdge = Set-EdgeHostname -RecordName $TestEHNRecordName -DNSZone edgekey.net -Path ttl -Value 300 -Comments "Testing" -StatusUpdateEmail 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Set-EdgeHostname returns correct data' {
+        $UpdatedEdge.action | Should -Be 'EDIT'
+    }
+
+    ## Remove-EdgeHostname
+    $Script:RemoveEdge = Remove-EdgeHostname -RecordName $TestEHNRecordName -DNSZone edgekey.net -Comments "Testing" -StatusUpdateEmail 'mail@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Remove-EdgeHostname returns correct data' {
+        $RemoveEdge.action | Should -Be 'DELETE'
+    }
+
+    ### Get-EdgeHostnameCertificate
+    $Script:EdgeCert = Get-EdgeHostnameCertificate -RecordName $TestEHNRecordName -DNSZone edgekey.net $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeHostnameCertificate returns the correct data' {
+        $EdgeCert.slotNumber | Should -Not -BeNullOrEmpty
+    }
+    
 }
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCR+bTykJOhSonJ
+# XRxExAo7YVXeUaVJcPF9OS7WadC5wKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +163,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgvtflUvnL54f/LAoaNRTEJV5lT30BPwt3n5zMp1HdaBkw
+# DQYJKoZIhvcNAQEBBQAEggIAfQ6UKKBBaGYpShC/ZFDxAFY/b2i5a0o4/85tDIu8
+# 8g/KAZphYm5KuYNIvr8vLRDtdQ+W//aCy6wDp6b8NKb5ZVUZTZdJk8C4DijkEClk
+# 6zEv+XAx44nfr8S95w8pSYJmkj75RhxJMUE3z6NIp/9hOwO+4vuD+fT1iPQJ3c7K
+# jgEDSOth/b43YYYxvgFazwsgXNcA6znlgbhk3Wd64z+rQDIidkBe9ELp60Ke8t+2
+# MpKVOxrUepBNFcp4ee5gw2fsRL2ugTSGXp9gG2gHbrAJ6zO3u7i4GWB6vKXNGwoQ
+# D8trFQPHeQHLbSAwplAi2AIp56UhHmHxUsKBw3MjJPKmzaZ632pszPQErys2lA0V
+# H7//z6q4wZdH+foezl27lmtwRpA4LXeCgSG9V3hZL5ncg5hGQAqGwEPcZkBPcdTv
+# FmoOR7ZGAtj3b+37Rtr0hXkeTirjltf6NJTK/QEj0L7uXfblde/+bt4WCtmO2Gq6
+# pAexH4u6T08vBqyc/+udnLN77/fh/DgZQ9UrhHG6c3C4A9e/uNz/FxkJR4hlEdTF
+# dBzyuari89THmTM2KgZ2gC+e/JJQ3f7WsS2yhjRaCV7XySLSjsIQAwv+2fZYgSow
+# YQx3oJKeY2DmEx3//fQ8wagZUzor6UfE/cOlG+tgie3Q5sW7MIVJxmSeb5Ufh60N
+# gxmhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgxVMI/VabTdBDV0b606pjMARUQk+G
+# 8ZyNh8n/lqvU7iwCECVxlr63IHRBUUnKTo5oJnkYDzIwMjMxMTA2MTcxMTQ0WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +284,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTQ0WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQgkI59htpYNtOvvmffgKtYFBc7XSqUayM6xhBb+2RfgFIwNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAFeiZY3VtKmzs3kXOvL7iR9ez1WLhRmekk/gO
+# Mw242K3mM8C61nsjzo5APtGDvcE99VkczmNx+e0+RrUXydPthlrvgcxox4GBIwtb
+# 0dt8w0VmiY15DG9q0KaY5nyJ9aAeI2m8+XJqYcv5M8HTpYr3a4fLIt2ipZj+IwrG
+# pInQCS1scw8Kt/3iy1DuH/K7J4jfGEnIz8YePZr6HugDruiKXxdMpJ4xyiuCpg+G
+# CwyVgmhEbUbWwcjxnaMPaWsezq/UnnKbIzfKeP11KptsXBA0XdV0u7AWdmvJflYH
+# k2Y8o4HOWEP7QhjduXesLgGsZPCcON0rfc3htW2wwLBuYR+cEG0Yr7Xg4+ht6C8b
+# 7ZLiXzfklrf1mMoGI7ZJbw/ZIvZnW8XQaAQkeRZscTs1EJ3Pm9t8XIP8bkfwomKV
+# /qGd7M8p1FA26DsRxS6tMlpDzVYdfFwd2q56tLPWT9ycMSEttqfDwBm35qlDnR/k
+# WQlNvCb+We1550prqpVnOhYongw0ajdAwXZK2WhDPTt4D04jkx8wDieWWEZ+c083
+# 22ZZ5XMVZGejiJGYDpiLJKH+FPVnCTrgyR2aI9wUGYCo58teBTtv6JNk/ix7Z2NI
+# QShDn0iUdakHU9LzRJtOOfvt2rOTaPKFXEAtKSkbmsz/3mDJNq3/TyCq33A1t7GK
+# ADVzASY=
 # SIG # End signature block

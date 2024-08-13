@@ -1,49 +1,59 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
+function Set-ChinaCDNPropertyHostname {
+    Param(
+        [Parameter(Mandatory = $true, ParameterSetName = 'pipeline', ValueFromPipeline = $true)]  [object] $PropertyHostname,
+        [Parameter(Mandatory = $true, ParameterSetName = 'body')]  [string] $Body,
+        [Parameter(Mandatory = $false)] [string] $EdgeRCFile,
+        [Parameter(Mandatory = $false)] [string] $Section,
+        [Parameter(Mandatory = $false)] [string] $AccountSwitchKey
+    )
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
+    begin {}
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
+    process {
+        $Path = "/chinacdn/v1/property-hostnames/$Hostname"
 
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
-    try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
+        $AdditionalHeaders = @{
+            Accept         = 'application/vnd.akamai.chinacdn.property-hostname.v1+json'
+            'Content-Type' = 'application/vnd.akamai.chinacdn.property-hostname.v1+json'
+        }
+
+        if ($PSCmdlet.ParameterSetName -eq 'attributes') {
+            $BodyObj = @{
+                hostname = $Hostname
+            }
+            if ($ICPNumberID) {
+                $BodyObj['icpNumberId'] = $ICPNumberID
+            }
+            if ($ServiceCategory) {
+                $BodyObj['serviceCategory'] = $ServiceCategory
+            }
+            if ($Comments) {
+                $BodyObj['comments'] = $Comments
+            }
+
+            $Body = $BodyObj | ConvertTo-Json -Depth 100
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'pipeline') {
+            $Body = $PropertyHostname | ConvertTo-Json -Depth 100
+        }
+
+        try {
+            $Result = Invoke-AkamaiRestMethod -Method PUT -Path $Path -AdditionalHeaders $AdditionalHeaders -Body $Body -EdgeRCFile $EdgeRCFile -Section $Section -AccountSwitchKey $AccountSwitchKey
+            return $Result
+        }
+        catch {
+            throw $_ 
         }
     }
-    catch {
 
-    }
+    end {}
 }
-
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
-}
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAuQAlfCSQrn4Ng
+# tLWqTZ8yXpEgMCXDJOWGB1p+VcjNo6CCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +136,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQg35qUgQmYNQg995tAgcmrrf3HdUQXBzHBtgcL6MyO5CAw
+# DQYJKoZIhvcNAQEBBQAEggIAtCxllK+zqCwDp2+BH6I4lEfXptcclkP2SqVjjjHj
+# HUWqmHWhN67RKeWRJdp/YUBGVgLt3kO546/eRqVh75bpiO1L9iRwOykxSH7n8ByL
+# 9uhmo15brid1aWI1LMDpyiM/GzWDBlhSFCw03JRDtoAJjqUs0cBYlbne3A3G+mrA
+# zI1m1UiyOxI5Oq2mu9VCM2cO6kVoo2dPzh4apr8xQQxRGlv/QuWeuZ8dfIOY1rrc
+# jAs340UcBGwILwGIJE0wRgepIOCzh9Ih3qqcZZ3ou8OS9ge67i3qRpXkSgZ2ohjP
+# KqV7SxH9Rz0fV+kaLdHIt0qVP+eL1AdrGw76pm/iSB8zDbISanaG0epcrRsomquy
+# nSeHQ4xqxaBGMG38pj5lI8l45q44iBN72jYIPIG9fbxxSErobN1TLHBy4mt1dePQ
+# o6/mWwvaxQQhjNLr3O7u/lmfcyRc4Rpp++prGaMSrYC0MGLAXqkk1vbASBdhaupJ
+# 2zjnxOI17twalJtu5Hx1o7H4Pseh4VB527KpaQCF/aFDB6ol/3k5mBddNzFwandv
+# aozE1gNfUVbRMihL2zoR6ombtqZhOpjevQZvprJKtQzzyUdcMdlypZJ8lyJkBX4G
+# rsvxdamoCOIASYJvmhCaYEl11CSHmcX2SDa+WRFNov8Mzbe1FEQBmmmzxgbn0xVO
+# 9/+hghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgp5+WQuoXfojfpoZwjObBBqCrKXYe
+# Injrto2ycb9u678CEEYXw7OvN3m8O+zksYr5RdsYDzIwMjMxMTA2MTY1NTMxWqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +257,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY1NTMxWjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQgtpQthu26H3KiUUORlYlV73rbl335u8WOYPhOeJNH1D4wNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAgwRKzVP9c7pIHf95Js7dncHms8MCN1DQ/hbd
+# qkJfcTNxx2/lnZ56p6QKhlVzAYqrba8va8GRF1HiYEr5h2eOFGH3hJ1mTb8xHqkd
+# oiIDHz+l/Hhipi/ABmjd44cFWHd1FuQ3/x3nIpJaUoJ+Q1o0CQ9jSog4RaNuyNfh
+# Hn68T7ldKpDgLK3Hy6EMSytyV+O7Wtmunemx1/tui3GqJrMUKYLQoRVTbyGhNDpa
+# ARqkQizHu/wbWZLAiZEOsbYCXvNoPfmVc0nw/E8ths3xAWnhkrUTvlWswOp0jNEl
+# B73newiUslWga8C7gU3Tl1F7N3Ee7oGne9THRBq5RA8Orb0DISrkv4oI680zdPg8
+# qqXtD5oY9Bflcfa9NQYjmAErlGwt4wNqLrhdqQSFr0y843pDyrUgWPHCNEu4RNH9
+# l7GAaQfEbbqoX4p3xR0t7yDPQjMF5ojsysmERhbNBCEgV0G1BpYGkIKiSoIwOHdX
+# 4zyvmRMKlJV8f633IIOKiaEe9NXtBvE57omZL+xTci5rviYpJQlDc8PYYNk8DTMC
+# 4wTbSA6hfYpZEm90gY5Dcvm7XnBL3s4gkMxnZvB7AB6izpIZTBeLC++AeFcJ7P5T
+# txy7TPtk5jQLRV3UvVZRKE7GRiWbaQxG1wFTPIixJI4MXfpQmrVnQmiHiTx7GSwW
+# c7rRW7s=
 # SIG # End signature block

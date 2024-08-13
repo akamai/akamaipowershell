@@ -1,49 +1,133 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestContract = '1-1NC95D'
+$Script:TestIPAddress = '1.2.3.4'
+$Script:TestHostname = 'ion.stuartmacleod.net'
+$Script:1HourAgo = (Get-Date).AddHours(-1)
+$Script:EpochTime = [Math]::Floor([decimal](Get-Date($1HourAgo).ToUniversalTime() -uformat "%s"))
+$Script:TestErrorCode = "9.44ae3017.$($EpochTime).38e4d065"
+$Script:TestDiagnosticsNote = 'AkamaiPowerShell testing. Please ignore'
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
+Describe 'Safe Edge Diagnostics Tests' {
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
-
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
-    try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
-    }
-    catch {
+    BeforeDiscovery {
 
     }
+
+    ### List-EdgeLocations
+    $Script:EdgeLocations = List-EdgeLocations -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-EdgeLocations returns a list' {
+        $EdgeLocations.count | Should -Not -Be 0
+    }
+
+    ### List-IPAccelerationHostnames
+    $Script:IPAHostnames = List-IPAccelerationHostnames -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-IPAccelerationHostnames returns a list' {
+        $IPAHostnames.count | Should -Not -Be 0
+    }
+
+    ### Find-IPAddress
+    $Script:IPLocation = Find-IPAddress -IPAddresses $TestIPAddress -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Find-IPAddress returns the correct data' {
+        $IPLocation.geolocation | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-EdgeDig
+    $Script:Dig = New-EdgeDig -Hostname $TestHostname -QueryType CNAME -EdgeLocation $EdgeLocations[0].id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-EdgeDig returns the correct data' {
+        $Dig.result | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-EdgeCurl
+    $Script:Curl = New-EdgeCurl -URL "https://$TestHostname" -IPVersion IPV4 -EdgeLocation $EdgeLocations[0].id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-EdgeCurl returns the correct data' {
+        $Curl.result | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-EdgeMTR
+    $Script:MTR = New-EdgeMTR -Destination $TestHostname -DestinationType HOST -PacketType TCP -Port 80 -ResolveDNS -Source $EdgeLocations[0].id -SourceType LOCATION -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-EdgeCurl returns the correct data' {
+        $MTR.result | Should -Not -BeNullOrEmpty
+    }
+
+    ### New-MetadataTrace
+    $Script:NewTrace = New-MetadataTrace -URL "https://$TestHostname" -Method GET -EdgeLocation $EdgeLocations[0].id -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-MetadataTrace returns the correct data' {
+        $NewTrace.requestId | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-MetadataTrace
+    $Script:GetTrace = Get-MetadataTrace -RequestID $NewTrace.requestId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-MetadataTrace returns the correct data' {
+        $GetTrace.requestId | Should -Be $NewTrace.requestId
+    }
+
+    ### Test-EdgeIP
+    $Script:TestIP = Test-EdgeIP -IPAddresses $TestIPAddress -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Test-EdgeIP executes successfully' {
+        $TestIP.executionStatus | Should -Be 'SUCCESS'
+    }
+
+    ### New-ErrorTranslation
+    $Script:NewErrorTranslation = New-ErrorTranslation -ErrorCode $TestErrorCode -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-ErrorTranslation executes successfully' {
+        $NewErrorTranslation.executionStatus | Should -Be 'IN_PROGRESS'
+    }
+
+    ### Get-ErrorTranslation
+    $Script:GetErrorTranslation = Get-ErrorTranslation -RequestID $NewErrorTranslation.requestId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-ErrorTranslation executes successfully' {
+        $GetErrorTranslation.requestId | Should -Be $NewErrorTranslation.requestId
+    }
+
+    ### New-DiagnosticLink
+    $Script:DiagLink = New-DiagnosticLink -URL "https://$TestHostname" -Note $TestDiagnosticsNote  -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-DiagnosticLink executes successfully' {
+        $DiagLink.note | Should -Be $TestDiagnosticsNote
+    }
+
+    ### List-DiagnosticsGroups
+    $Script:DiagGroups = List-DiagnosticsGroups -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-DiagnosticsGroups returns a list' {
+        $DiagGroups.count | Should -Not -Be 0
+    }
+
+    ### Get-DiagnosticGroupData
+    $Script:DiagGroup = Get-DiagnosticGroupData -GroupID $DiagGroups[0].groupId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-DiagnosticGroupData returns records' {
+        $DiagGroup.diagnosticLink | Should -Not -BeNullOrEmpty
+    }
+
+    AfterAll {
+        
+    }
+    
 }
 
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
+Describe 'Unsafe Edge Diagnostics Tests' {
+    
+    ## Get-EdgeErrorStatistics
+    $Script:EStats = Get-EdgeErrorStatistics -CPCode 123456 -ErrorType EDGE_ERRORS -Delivery ENHANCED_TLS -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-EdgeErrorStatistics returns the correct data' {
+        $EStats.result | Should -Not -BeNullOrEmpty
+    }
+
+    ## Get-EdgeLogs
+    $Script:Logs = Get-EdgeLogs -EdgeIP 1.2.3.4 -CPCode 123456 -ClientIP 3.4.5.6 -LogType F -EdgeRCFile $SafeEdgeRCFile -Start 2022-12-20 -End 2022-12-21 -Section $Section
+    it 'Get-EdgeLogs returns the correct data' {
+        $Logs.result | Should -Not -BeNullOrEmpty
+    }
+
 }
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAgZWsDD6JJ0FAv
+# ow08wJRO1wL12ydHsM0qqs+gDNDA0KCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +210,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQg0LloEH2u3+El/dihAFtADgSJMxA5ytYbIzb99m82Lrow
+# DQYJKoZIhvcNAQEBBQAEggIARBVc/Gza6gDtLkYfBCcEaXhTzeCPS/bMfmkn/LP7
+# X2ZCtmrBAkVrswp6Uqfj9dxSXLSBdE679jaYaZL7eK/EJWY7A7lYjDjSDoujjVi/
+# IgrP+gt3HoxatW6iD4oXmATjX4NGAE6A+i84xFYdC98Pnd2Rqd8t7p+1IvSGypGZ
+# D31cGBpnfqlVdLtwwcMLbugC+s2cRKkn1ose7p+tAhjt5IgdfgDXKJp7F8PoxsII
+# gBvi82qK15CrQYoCFQDPRvYYFjOTtDBAAGO7V+jVX4Fevw/izwOLRu+6pXa612FD
+# rlWaiDGjnq+HItMZKvA6QzBkuTZY0OZJtsz+6TBoUvDIn3xYc/sER/cOevUrO6zQ
+# c5l5VZ051lEXu/tqdxIDmkiZyMWxXSKDld2DtQJjNXMF1Bx0fPim/YocVH1+m2RK
+# 8BCVtE713CKLWwoLra2wW3UvnObTFY2Ac76Ugo1nOfNxlmphLKPSGKEx3YCYhVC+
+# MK2Afw2VofqO9BNKjXF4UAXTlyWXjUh0sMeA7dFv+SXz0zNI9e5GVcGhxmXNnG6a
+# 7Gbc8C24HHDlCHSwo8WywBU9pmrE8OexkX8KVMtlG7joLlZ6ruBRimWZN8OjU61X
+# 5Gntb71I4cQ1UR3i6iBJfOYcZCdvGch0aGu7V4nU8xVg1BKzSx8kevRxhbetr/sy
+# Dluhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgzVXubvkQTJMxF7aeniMRsAB3wrq6
+# 41xoAy5OdxztAjcCEB/hDshI1i/moRwtHKZOFOoYDzIwMjMxMTA2MTcxMTM2WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +331,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTM2WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQgtosAUpUxLdkiG/AU4a61LdNXnkpd5ue8GaA3s0P1RlswNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAdAnNIxlwBDxarUKs1XMNwyVGHMPZiLO3ywgd
+# PRcmGUKRwdHZlhsRp34FsEeu8wkrFW6aGoPw3wSr13Xb3l6suBz0livqFbJbw/zr
+# aG7ipDOqoEWtgFgTIROWu2DzsMgaFiOS9zcUjvoA8KwTr2UOi1f7IT22rmTVjrEX
+# sjJoaKgCm5JtZV3KeT/nBYAlgokUE9x/cfz2zTbiqH/PfvWv0+wXjHKYXHnqaiuO
+# wr2yKisiA+9cPi9b8MamyGH2WoscDWc6QNclPxXKUaxoA5F/w4P9b4ZG6DbJIEy1
+# SfWmAMt4rsocRhHitCOMUAW9H3Myht6oFAWT+wJnTMMxG3PeBdb46v69LmWGCu+u
+# XKJR1U0tqu9pFeE3F2I4N5MhrkSgeMmbHN24Vd4xraiX73pXE81nkpyLbuKyr5yV
+# eHFWp/2VIUIlwNeYR9fUgLKE4xNFsnp0n/yrYNOVXiZt3CGATX6tmKvyVmb+Lw7e
+# Y7WD9N6DMy7EouofaEbFux1MpgzJiR1R7ttOR+l/zQpPQ4exLUgwlMtgY/VZDhaH
+# aBIGm0DM3krS1ZFTq1KSsaTTmgPLBq8dLsyh583aSsHWZO+bgDmMGhO97gL8HCXW
+# 6aNMHArXDIGmk8buPPUCRDITy9se1sQYZA2U8xhSPG7h7QNv2X3p6Fem6A2qBrKa
+# jlbDpGE=
 # SIG # End signature block

@@ -1,49 +1,99 @@
-#------------------------------------------------------------------------
-#
-#	Name: build.ps1
-#	Author: S Macleod
-#	Purpose: Sets module data file with version, functions and aliases
-#            to export
-#	Date: 03/02/2023
-#	Version: 1 - Initial
-#
-#------------------------------------------------------------------------
+Import-Module $PSScriptRoot/../src/AkamaiPowershell.psm1 -DisableNameChecking -Force
+# Setup shared variables
+$Script:EdgeRCFile = $env:PesterEdgeRCFile
+$Script:SafeEdgeRCFile = $env:PesterSafeEdgeRCFile
+$Script:Section = 'default'
+$Script:TestGroupID = 209759
+$Script:TestContract = '1-1NC95D'
+$Script:TestListName = 'akamaipowershell-testing'
+$Script:TestElement = '1.1.1.1'
+$Script:NewTestElements = '2.2.2.2, 3.3.3.3'
 
-param(
-    [Parameter(Mandatory = $false)] [string] $Version
-)
+Describe 'Safe Network Lists Tests' {
 
-Import-Module $PSScriptRoot/src/AkamaiPowershell.psm1 -Force -DisableNameChecking
-
-$PS1Files = Get-ChildItem $PSScriptRoot/src -exclude examples, pester | Where-Object { $_.PSIsContainer } | Get-ChildItem -Filter *.ps1
-$Aliases = New-Object -TypeName System.Collections.ArrayList
-foreach ($File in $PS1Files) {
-    try {
-        $Alias = Get-Alias -Definition $File.baseName -ErrorAction Stop
-        if ($Alias) {
-            $Aliases.Add($Alias.Name) | Out-Null
-        }
+    BeforeDiscovery {
     }
-    catch {
 
+    ### New-NetworkList
+    $Script:NewList = New-NetworkList -Name $TestListName -Type IP -Description "testing" -ContractId $TestContract -GroupID $TestGroupID -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'New-NetworkList creates a list successfully' {
+        $NewList.name | Should -Be $TestListName
+    }
+
+    ### AddTo-NetworkList
+    $Script:Add = AddTo-NetworkList -NetworkListID $NewList.uniqueId -Element $TestElement -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'AddTo-NetworkList adds element' {
+        $Add.list | Should -Contain $TestElement
+    }
+
+    ### List-NetworkLists
+    $Script:NetworkLists = List-NetworkLists -Extended -IncludeElements -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'List-NetworkLists returns a list of lists' {
+        $NetworkLists.count | Should -BeGreaterThan 0
+    }
+
+    ### Get-NetworkList
+    $Script:List = Get-NetworkList -NetworkListID $NewList.uniqueId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Get-NetworkList returns specific list' {
+        $List.name | Should -Be $TestListName
+    }
+
+    ### Set-NetworkList by pipeline
+    $Script:SetListByPipeline = $Script:List | Set-NetworkList -NetworkListID $NewList.uniqueId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-NetworkList returns successfully' {
+        $SetListByPipeline.name | Should -Be $TestListName
+    }
+
+    ### Set-NetworkList by body
+    $Script:SetListBody = $Script:List | ConvertTo-Json -Depth 100
+    $Script:SetListByBody = Set-NetworkList -NetworkListID $NewList.uniqueId -Body $SetListBody -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Set-NetworkList returns successfully' {
+        $SetListByBody.name | Should -Be $TestListName
+    }
+
+    ### Append-NetworkList
+    $Script:Append = Append-NetworkList -NetworkListID $NewList.uniqueId -Elements $NewTestElements -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Append-NetworkList adds elements to the correct count' {
+        $Append.list.count | Should -Be 3
+    }
+
+    ### RemoveFrom-NetworkList
+    $Script:Remove = RemoveFrom-NetworkList -NetworkListID $NewList.uniqueId -Element $TestElement -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'RemoveFrom-NetworkList removes element' {
+        $Remove.list | Should -Not -Contain $TestElement
+    }
+
+    ### Remove-NetworkList
+    $Script:Removal = Remove-NetworkList -NetworkListID $NewList.uniqueId -EdgeRCFile $EdgeRCFile -Section $Section
+    it 'Remove-NetworkList removes given list' {
+        $Removal.status | Should -Be 200
+    }
+
+    AfterAll {
+        
+    }
+    
+}
+
+Describe 'Unsafe Network Lists Tests' {
+    ### Activate-NetworkList
+    $Script:Activate = Activate-NetworkList -NetworkListID $NewList.uniqueId -Environment STAGING -Comments "Activating" -NotificationRecipients 'email@example.com' -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Activate-NetworkList activates correctly' {
+        $Activate.activationStatus | Should -Not -BeNullOrEmpty
+    }
+
+    ### Get-NetworkListActivationStatus
+    $Script:Status = Get-NetworkListActivationStatus -NetworkListID $NewList.uniqueId -Environment STAGING -EdgeRCFile $SafeEdgeRCFile -Section $Section
+    it 'Get-NetworkListActivationStatus returns status' {
+        $Status.activationStatus | Should -Not -BeNullOrEmpty
     }
 }
-
-$Params = @{
-    Path              = 'src/AkamaiPowershell.psd1'
-    FunctionsToExport = $PS1Files.BaseName
-    AliasesToExport   = $Aliases
-}
-if ($Version) {
-    $Params.ModuleVersion = $Version
-}
-Update-ModuleManifest @Params
 
 # SIG # Begin signature block
 # MIIpoQYJKoZIhvcNAQcCoIIpkjCCKY4CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCB/mJXXB/MFom4C
-# UP6pxvnUaLIu2s69mh0/uUvtK8sZBKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDdp2UqO2t2j3hR
+# iLX7TarQa8Y4NN53mLFs9ITK4s4QAKCCDo4wggawMIIEmKADAgECAhAIrUCyYNKc
 # TJ9ezam9k67ZMA0GCSqGSIb3DQEBDAUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNV
 # BAMTGERpZ2lDZXJ0IFRydXN0ZWQgUm9vdCBHNDAeFw0yMTA0MjkwMDAwMDBaFw0z
@@ -126,22 +176,22 @@ Update-ModuleManifest @Params
 # IFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAHJkf0nnQCyP+gcdt4d
 # yXMwDQYJYIZIAWUDBAIBBQCgfDAQBgorBgEEAYI3AgEMMQIwADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAv
-# BgkqhkiG9w0BCQQxIgQgQPj2QGt0/8Atcm6gpq7riGVpRCjDJe6QkezZl/cttmYw
-# DQYJKoZIhvcNAQEBBQAEggIAif/YvX/WzGm3wmJqhD/KU0uBltXY69o+qCMo5ba4
-# UnWHvAp6g+ZS8U0l92fHIqL8UMn+VI/hzIC8o81C17O8aXnr3inOEukSpZyp2XQM
-# IMfFPGvuAtVEelBq7J2TVDviQ4/mgAhxEy80DBFOlLkuPlkTyHL5BIMemPkT6LMf
-# zwhzNHN0S1/13jAJWmosz/wpIznaU5gSQafmOp6Dy9aBsHpjsInS4pJyASzxo5kg
-# 2YJNYda3mz//NSiaRDS/XDABqbTqoSelxRMQk+qfEj0eVtx56ldDYAZWtcre/NkT
-# idToR0urBCzg6oypCN/HXFhj20QGAXy3LWCLa7UGwTkwQvnCWkFTsVsE0nBXPx23
-# X+FPgP3gUpiqR53B+Du3Ai+oMDVF8yp7/lJZCz4QEv7usBL8UpobvQbV84snAyUY
-# LUzYyqT44A8oQ4ZbOYxoCTpHs08TJkrM4ZFRUtHsfyBtEiv5W3tV153KwWDkciGj
-# krENZ15L6K6xzkI9W0TdUIZ5E7GxcAFAewbnLNubzAGddrlfCno/99QOqzdxQj/I
-# Q5qidaBBeqG72uP1/WrYlgwu7CI23X1sfC+x7vlETY83sD8nHsVuey/Cg56Odxym
-# Rt9ZyEneTIQM9d4HGZWXGbbmZea3uvRquMBtNI84oWu6YC+ocPYUzyESEnP8Dp8k
-# g1Shghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
+# BgkqhkiG9w0BCQQxIgQgV9KXQIXTtyChclSgFrDlvStiPB+mlbDN80X7Rr8+JkMw
+# DQYJKoZIhvcNAQEBBQAEggIADx4wkGsC+EbBAPqltLsdBn6/BAducwru0COF368P
+# al31J3csb+2dynfvoqAUfqZEyvhIWyH1jkilO2pQsOeGSERb1O80G3XaR75bLDFx
+# 3iUymCF6Gq7KlwAOwz5lYYCmwEvjc6sYKCKPttj+gBrPDzMVOXjpESQtrFr/hTKv
+# k2IhxaOppRchkjhzKmIMRdY0EkBTx6lFMaC57Iucr05SzrEkID7FJb7RKlKsmo0P
+# KlSC0kqjj1abkOHpWuIOcFQXpNtj99m4zdDnqCecbn4zeZNL+756wCp/nxaTf+8e
+# ZsJpMQhgaXGGzLhCNovc+ui8Sq/GDIDVHnszJHP7oTHiJOdN8sbsoRFHKotKd/uC
+# gt9sIHLxSn3XATEHOnAPtT1WD6PjxhFkvN5t5AKA8keynGN0cBHpJT+yqcsW3wdg
+# DbL/iisLLUTrhfG50yEhb3QL4zWxajEdDAE2rW4AF7A3dBTGiHX49UR7zb5sMm9t
+# K38HSC9k5wOrKHjI51tkTvYpOSHuc1UsoOdFAIPMn0OrEwZjduFvq0l3JiPiHfLY
+# quO83Jx1S1VxcLJfgRbHwC2lYPXqQ0Cp8PmIOkGm6jJWmyBMhIFNzMhMAT26vUcs
+# +LEyDfmc/obJVPNZkyG8vbVHdN/j5jya+vVgVc+43N9nZmhlFix/C6j55ApDVs6H
+# TMKhghc/MIIXOwYKKwYBBAGCNwMDATGCFyswghcnBgkqhkiG9w0BBwKgghcYMIIX
 # FAIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqGSIb3DQEJEAEEoGgEZjBkAgEBBglg
-# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg13omfthv7Ma7ajEz9mhb92w5B1cd
-# xb+dZe8m0tWJ2rwCEFn2ampfgIkeRFGiv9DEupsYDzIwMjMxMTA2MTY0MTQyWqCC
+# hkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQgNNUoosKB4X26mzUu+VJAaLvM/Hup
+# rEXND8cTw+wppeACEDBiKmsdh7AS0BzIOY0Tcy0YDzIwMjMxMTA2MTcxMTQ5WqCC
 # EwkwggbCMIIEqqADAgECAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCSqGSIb3DQEBCwUA
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBp
@@ -247,20 +297,20 @@ Update-ModuleManifest @Params
 # VQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lD
 # ZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAF
 # RK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoIHRMBoGCSqGSIb3DQEJAzEN
-# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTY0MTQyWjArBgsq
+# BgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMjMxMTA2MTcxMTQ5WjArBgsq
 # hkiG9w0BCRACDDEcMBowGDAWBBRm8CsywsLJD4JdzqqKycZPGZzPQDAvBgkqhkiG
-# 9w0BCQQxIgQgpI8n0FjFqYBg/sZeX9JTh4sAXHb4DctaDuJfmxbDzWcwNwYLKoZI
+# 9w0BCQQxIgQgE8luc96XLejxPkD5iScCgrsv7kijq5lYIbvgQnFVX5owNwYLKoZI
 # hvcNAQkQAi8xKDAmMCQwIgQg0vbkbe10IszR1EBXaEE2b4KK2lWarjMWr00amtQM
-# eCgwDQYJKoZIhvcNAQEBBQAEggIAH8aiQa4ap9UVNMzTXdGHuod4ZEJU19XB2Hdh
-# qYSjThGLGycz8cYDVh/3WDzC9xBP+ttM6PmnAmHZLMDjH5OnfonSwEF+NMJjh1Sw
-# RUW+mc8+L/tmhZeP3/XqlP89xBE1zsFAusPme9Ts8n0X6CNLQDQan63k/8WV5O2t
-# RbSPfENza1yZ/3wW3ll+qW9KUb7PaiIhunaUJGNhX7mzP52YZNjxCpifliZdW/7n
-# bsYpzoTUeS8QNWT+5Z0Ej9ZXG5ekEFYJZYtSn5eefOW/4H4fZt6WoMb2HX75go/v
-# rXaBVD2dvkrdRe972e0A1ueXNJ7wmjXtVJy+3Lu8HTkuxxts1ll5xzD1DmPqNovA
-# PewpsOUIPHhX5vq2bTQ/xf6InK0EHSxTyqtSalKZqC4GteODZIGS4VjiJ85/HVqQ
-# 1oJ56nyHYeEqz+rTLrEnioA+gzT9QA0e3ytekZ1MlgNutyDZDM/0+ODCJwCPtT+L
-# 5szw0nbpyIQaWZxKCmH00UBPLYFhO+zC0vsvN2G4w6lvt6Oe8ikiOzMdRD14euLH
-# xWofrCehbhowQJW9rPxL2JESXEOjsn5pt5BYDqv/JYt7/DiOz49aDG+drsJ6AZPO
-# redfI52V2cpsSg1do+Skj/5scLwKkrnzbmzKUQ2VNcVO/R+JL3kdgf6BsaR+r6Bl
-# MPm9RTI=
+# eCgwDQYJKoZIhvcNAQEBBQAEggIAjPf8W/Y+kxM3aep5OYpB9CdbhYv7vCLScmmg
+# MYW0IAJypsAJpspPUbCTOC9T+u25kbfRqvDM+zVop4qqizGHh5jim/4FP/KqdiQG
+# dGTm4x/b24HAiIpEYxL6NzuMMvYqP7Zhy0sLJyPXZNJic0ECqdPWlx8x7BCSc5pg
+# g01rieM/RUBOvDKNZiXyRC44gGUhBOO2EbRnueidyQiLNZldySGP2NpS/3vSSwag
+# RvF0NbQTpvkA99cnuAezSTjw3DJAS4fOEZJ3xvFtWTbBLyO1isUNOYsqDWHPVqX3
+# pGl+CduFDzlj8KcbL+5/6AwEqp/oS7hbOlOZpkWonjOWNdwJfM7g5xT5nl4f+C9u
+# 3PFMhnCm+0sflk1KseBj8spkVQfc8PN9s6/LKh3uvNbbKN7gf9OMur/eZPPP5EzA
+# D5PMCn45ngM9M+QacWqH/lSS23rBzVpzMOui/CzOJlaZCpTfMop9PP3ZPvmFNjwO
+# m4CMG473aZ/5hBVH72gdH3Ju4lkdwsrsA3YfU2iZXU+dI04rqGNohuEchCN9g820
+# Mr7Dwou/PRPL2QulIvuEtfFtYgonGMr8q61tcT5ayUNTNjrkGoGVX9acMvnlbC8w
+# PBKlbgysw0kehbZdj5A7zTbtlJlDZcHYRUtNXuF5jkoY+Rlyb6cPNmCFdpZzYzod
+# bSoUwLk=
 # SIG # End signature block
